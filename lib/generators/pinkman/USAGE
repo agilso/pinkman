@@ -1,0 +1,16 @@
+Description:
+    pinkman generators
+
+Api:
+    rails generate pinkman:api name
+
+    This will create an api controller and its routes.
+        app/controllers/api/pluralized_name_controller.rb
+
+Model
+  rails generate pinkman:model name
+      Pinkman model: app/assets/javascripts/pinkman/models/name/name.js
+      Pinkman collection: app/assets/javascripts/pinkman/models/name/pluralized_name.js
+
+Install
+  This creates common pinkman directories

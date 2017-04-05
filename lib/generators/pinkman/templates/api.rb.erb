@@ -1,0 +1,88 @@
+class Api::<%= controller_name %> < ApiController
+
+  before_action :set_objects
+  before_action :permissions
+
+  def index
+    <%= collection_name %> = <%= active_record_model_name %>.admin_visible.limit(params[:limit]).offset(params[:offset])
+    render json: ActiveModel::ArraySerializer.new(<%= collection_name %>, each: <%= serializer_name %>, scope: {user: current_user, lang: current_language}).to_json
+  end
+
+  # get api/<%= api_name %>/:id
+  def show
+    render json: @<%= instance_name %>
+  end
+
+  # get api/<%= api_name %>/search/:query
+  def search
+    if params[:query].present?
+      <%= collection_name %> = <%= active_record_model_name %>.search(params[:query]).limit(params[:limit]).offset(params[:offset])
+      render json: ActiveModel::ArraySerializer.new(<%= collection_name %>, each: <%= serializer_name %>, scope: {user: current_user, lang: current_language}).to_json
+    end
+  end
+
+  # post api/<%= api_name %>
+  def create
+    @<%= instance_name %>.assign_attributes <%= params_method_name %>
+    if @<%= instance_name %>.save
+      render json: @<%= instance_name %>
+    else
+      render json: {errors: @<%= instance_name %>.errors}
+    end
+  end
+
+  # put/patch api/<%= api_name %>
+  def update
+    @<%= instance_name %>.assign_attributes <%= params_method_name %>
+    if @<%= instance_name %>.save
+      render json: @<%= instance_name %>
+    else
+      render json: {errors: @<%= instance_name %>.errors}
+    end
+  end
+
+
+  # delete api/<%= api_name %>/:id
+  def destroy
+    @<%= instance_name %>.destroy
+    render json: @<%= instance_name %>
+  end
+
+  protected
+
+  # --- begin permissions  --- #
+
+  def can
+    if @user.admin?
+      self.class.action_methods
+    else
+      []
+    end 
+  end
+
+  def cannot
+    self.class.action_methods - self.can
+  end
+
+  def permissions
+    if cannot.include? action_name
+      render json: {errors: 'You have no permission.'}
+    end
+  end
+
+  # --- end permissions  --- #
+
+  def set_objects
+    if params[:id].present?
+      @<%= instance_name %> = <%= active_record_model_name %>.find params[:id]
+    else
+      @<%= instance_name %> = <%= active_record_model_name %>.new
+    end
+  end
+
+  def <%= params_method_name %>
+    params["pink_obj"].keep_if {|k,v| <%= active_record_model_name %>.column_names.include? k}
+    params["pink_obj"].permit!
+  end
+
+end
