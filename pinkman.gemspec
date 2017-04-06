@@ -12,7 +12,7 @@ Gem::Specification.new do |spec|
   spec.summary       = %q{Small rails-js framework.}
   spec.description   = %q{Pinkman.js - The way javascript should be structured within a Rails App. Or not.}
 
-  spec.homepage      = "TODO: Put your gem's website or public repo URL here."
+  spec.homepage      = "https://github.com/agilso/pinkman"
   spec.license       = "MIT"
 
   # Prevent pushing this gem to RubyGems.org. To allow pushes either set the 'allowed_push_host'
@@ -34,6 +34,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "bundler", "~> 1.13"
   spec.add_development_dependency "rake", "~> 10.0"
   spec.add_development_dependency "rspec", "~> 3.0"
+  spec.add_development_dependency 'jasmine'
 
   spec.add_dependency 'rails'
   spec.add_dependency 'jquery-rails'
