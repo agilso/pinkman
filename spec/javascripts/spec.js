@@ -53,10 +53,15 @@
         a = new PinkmanObject;
         return expect(Pinkman.all).toContain(a);
       });
-      return it('is in Pinkman.objects', function() {
+      it('is in Pinkman.objects', function() {
         var a;
         a = new PinkmanObject;
         return expect(Pinkman.objects).toContain(a);
+      });
+      return it('has pinkmanType == "object"', function() {
+        var a;
+        a = new Dummy;
+        return expect(a.pinkmanType).toEqual('object');
       });
     });
     return describe('Functions', function() {

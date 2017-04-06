@@ -33,6 +33,10 @@ describe 'PinkmanObject', ->
       a = new PinkmanObject
       expect(Pinkman.objects).toContain a
 
+    it 'has pinkmanType == "object"', ->
+      a = new Dummy
+      expect(a.pinkmanType).toEqual 'object'
+
   describe 'Functions', ->
     # scopes a variable 
     a = null

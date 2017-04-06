@@ -1,12 +1,12 @@
-class window.PinkmanObject
+class window.PinkmanObject extends window.PinkmanCommon
 
   @pinkmanType: 'object'
-  @privateAttributes: ['isPink','isObject','pinkey','config']
+  @privateAttributes: ['isPink','isObject','pinkey','config','pinkmanType','collections']
 
   constructor: ->
     @isPink = true
     @isObject = true
-    @pinkmanType=  'object'
+    @pinkmanType = 'object'
 
     @collections = new PinkmanCollection
     @pinkey = Pinkman.all.length + 1
@@ -14,13 +14,10 @@ class window.PinkmanObject
     Pinkman.objects.push(this)
     Pinkman.all.push(this)
 
-  apiUrl: () ->
-    @config.apiUrl
-
   # Desc: assign attributes from a pure javascript object
   # Usage: a.assign( {attribute: value} )
   assign: (obj) ->
-    if typeof obj == "object"
+    if typeof obj == 'object'
       for k,v of obj
         if typeof v == 'object' and this[k]? and this[k].isPink? and not v.isPink
           this[k].assign(v)
@@ -36,17 +33,12 @@ class window.PinkmanObject
     a = new Object
     for k,v of this
       if PinkmanObject.privateAttributes.indexOf(k) == -1 and typeof v != 'function'
-        if v.isPink and v.isObject
+        if v.isPink
           a[k] = v.attributes()
         else
           a[k] = v
     return a
-
-  # Desc: returns the class name (constructor name)
-  # Usage: a.className()  #=> a.constructor.name
-  className: ->
-    @constructor.name
-
+  
   # Desc: returns a array of attributes keys
   # Usage:
   # a.set('a','b'); a.set('x',value)
@@ -58,36 +50,12 @@ class window.PinkmanObject
   keys: () ->
     @attributesKeys()
 
-  # Desc: set a pair of key/value for this object. Triggers reRender if watch is active.
-  # Usage:
-  # a.set 'a', 'b', (a) ->
-    # do something with a
-  set: (attr,value, callback = "" ) ->
-    if attr? and value?
-      this[attr] = value
-      callback(this) if typeof callback == "function"
-      @reRender() if @watch
-      return true
-
   toString: () ->
     array = []
     array.push("(#{@className()})")
-
     for a in @attributesKeys()
       array.push "#{a}: #{this[a]};"
     array.join(" ")
-
-  # --- Render related --- #
-
-  render: (options) ->
-    if typeof options == 'object'
-      options.object = this
-      Pinkman.render options
-
-  reRender: (options) ->
-    if typeof options == 'object'
-      options.object = this
-      Pinkman.reRender options    
 
   # --- Collection related functions --- # 
 
@@ -180,7 +148,7 @@ class window.PinkmanObject
   #     this[attribute] = collection
   #     callback(collection) if typeof callback == "function"
   #     return this
-  #   else if pinkmanClass.pinkmanType == "object" and (typeof this[attribute] == "object")
+  #   else if pinkmanClass.pinkmanType == 'object' and (typeof this[attribute] == 'object')
   #     pinkmanObject = new pinkmanClass
   #     if (this[attribute] instanceof Array) and (this[attribute].length)
   #       pinkmanObject.assign(this[attribute][0]) 
