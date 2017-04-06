@@ -20,7 +20,6 @@ class window.PinkmanCommon
       @reRender() if @watch
       return true
 
-
   # --- Render related --- #
 
   render: (options) ->

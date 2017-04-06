@@ -44,10 +44,6 @@ describe 'PinkmanObject', ->
       a = new Dummy
       a.set('a','b')
 
-    it 'apiUrl: returns api url as expected (config object)', ->
-      a = new Dummy
-      expect(a.apiUrl()).toBe '/api/dummy'
-
     it 'assign: receives a js object and assigns its values', ->
       a = new Dummy
       b = {attributeA: 'a', attributeB: 'b'}
@@ -81,23 +77,6 @@ describe 'PinkmanObject', ->
     it 'attributesKeys: has an alias called keys', ->
       a.set('x','y')
       expect(a.keys()).toEqual a.attributesKeys()
-
-
-    it 'className: returns a string with the class name', ->
-      a = new Dummy
-      expect(a.className()).toBe 'Dummy'
-
-    it 'set: sets a pair of key and value', ->
-      a = new Dummy
-      a.set('uhu','bozo')
-      expect(a.uhu).toEqual 'bozo'
-
-    it 'set: triggers reRender if watch is true', ->
-      a = new Dummy
-      spyOn a, 'reRender'
-      a.set 'watch', yes
-      a.set 'a', 'b'
-      expect(a.reRender).toHaveBeenCalled()
 
     it 'toString: returns a human readable string', ->
       a = new Dummy
