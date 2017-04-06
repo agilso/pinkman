@@ -27,7 +27,7 @@
 
     it 'is pink', ->
       a = new Dummies
-      expect(a.isPink).toBe true
+      expect(a.isPink).toBeTruthy
 
     it 'is in Pinkman.all', ->
       a = new PinkmanCollection

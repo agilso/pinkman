@@ -52,7 +52,7 @@
       it('is pink', function() {
         var a;
         a = new Dummies;
-        return expect(a.isPink).toBe(true);
+        return expect(a.isPink).toBeTruthy;
       });
       it('is in Pinkman.all', function() {
         var a;
@@ -262,7 +262,7 @@
       it('is pink', function() {
         var a;
         a = new Dummy;
-        return expect(a.isPink).toBe(true);
+        return expect(a.isPink).toBeTruthy;
       });
       it('is in Pinkman.all', function() {
         var a;
@@ -308,7 +308,7 @@
           }
         };
         a.assign(attributes);
-        expect(a.b.isPink).toBe(true);
+        expect(a.b.isPink).toBeTruthy;
         return expect(a.b.something).toBe('cool');
       });
       it('assign: does substitute pinkman.object by anything except js.objects', function() {
@@ -319,7 +319,7 @@
           b: 'value'
         };
         a.assign(attributes);
-        expect(a.b.isPink).not.toBe(true);
+        expect(a.b.isPink).not.toBeTruthy;
         return expect(a.b).toBe('value');
       });
       it('attributes: returns a javascript object version', function() {

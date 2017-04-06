@@ -23,7 +23,7 @@ describe 'PinkmanObject', ->
 
     it 'is pink', ->
       a = new Dummy
-      expect(a.isPink).toBe true
+      expect(a.isPink).toBeTruthy
 
     it 'is in Pinkman.all', ->
       a = new PinkmanObject
@@ -56,7 +56,7 @@ describe 'PinkmanObject', ->
       a.b = new Dummy
       attributes = {b: {something: 'cool'}}
       a.assign attributes
-      expect(a.b.isPink).toBe true
+      expect(a.b.isPink).toBeTruthy
       expect(a.b.something).toBe 'cool'
 
     it 'assign: does substitute pinkman.object by anything except js.objects', ->
@@ -64,7 +64,7 @@ describe 'PinkmanObject', ->
       a.b = new Dummy
       attributes = {b: 'value'}
       a.assign attributes
-      expect(a.b.isPink).not.toBe true
+      expect(a.b.isPink).not.toBeTruthy
       expect(a.b).toBe 'value'      
 
     it 'attributes: returns a javascript object version', ->
