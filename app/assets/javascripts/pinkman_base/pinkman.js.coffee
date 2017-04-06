@@ -1,5 +1,12 @@
 class window.Pinkman
 
+  @collections = []
+  @objects = []
+  @all = []
+
+  @get: (id) ->
+    this.all[id]
+
   @helper =
     createSelector: (id) ->
       if typeof id=='string' 
@@ -251,9 +258,6 @@ class window.Pinkman
         @popstateActivated = true
         window.onpopstate = (event) ->
           Pinkman.get(event.state.pinkey).reRender()
-
-  @get: (pinkey) ->
-    PinkmanGlue.get(pinkey)
   
   @callOnce: (f,args...) ->
     if typeof f == 'function'

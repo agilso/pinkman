@@ -1,193 +1,25 @@
 class window.PinkmanObject
 
   @pinkmanType: "object"
+  @privateAttributes: ['isPink','isObject','pinkey','config']
 
-  @_objectsCount = 0
-   
-  @getCount: ->
-    return @_objectsCount
+  constructor: ->
+    @isPink = true
+    @isObject = true
+    @pinkey = Pinkman.all.length + 1
+    Pinkman.objects.push(this)
+    Pinkman.all.push(this)
 
-  @increaseCount: ->
-    @_objectsCount++
-
-
-  @view = new Object
-
-  className: ->
-    @constructor.name
-  
-  constructor: () ->
-    # console.log arguments.callee.caller.caller
-    @pinkey = PinkmanGlue.count()
-    @objectId = PinkmanObject.getCount()
-    PinkmanObject.increaseCount() 
-    PinkmanGlue.objects.push(this)
-    PinkmanGlue.increaseCount() 
-    PinkmanGlue.all.push(this)
 
   apiUrl: () ->
     @config.apiUrl
 
-  cycle: ->
-    return(@collections()[0].cycle()) if @collections().length == 1
-
-  autoTranslate: (callback='') ->
-    Pinkman.ajax.post
-      url: '/' + @apiUrl() + '/translate'
-      data: 
-        pink_obj: this.attributes()
-      complete: (r) =>
-        this.assign r
-        callback(this) if typeof callback=='function'
-
-  helper:
-    langClass: (lang,render) ->
-      if @errors? and @errors[lang.replace(/\s/g,'')]? then 'error' else ''
-      # if @errors? and @errors[lang.replace(/\s/g,'')]? 
-      #   console.log this
-      #   console.log "#{lang} com erro"
-      #   'error' 
-      # else 
-      #   console.log "#{lang} sem erro"
-      #   ''
-              
-
-  @find: (id, callback = "") ->
-    obj = new this
-    ajax = jQuery.ajax "/" + obj.apiUrl() + "/" + id.toString(),
-      type: "GET"
-      dataType: 'json'
-    ajax.done (response) =>
-      if response.errors?
-        obj.set('errors',response.errors)
-        return false
-      else
-        # window.r = response
-        # console.log response
-        # console.log 'resposta acima - obj abaixo'
-        # window.o = obj
-        # console.log obj
-        obj.assign(response)
-      if typeof callback == "function"
-        callback(obj)
-    return obj
-
-  @fetchFromUrl: (url,callback = "") ->
-    obj = new this
-    ajax = jQuery.ajax "/" + url,
-      type: "GET"
-      dataType: 'json'
-    ajax.done (response) =>
-      if response.errors?
-        obj.set('errors',response.errors)
-        return false
-      else
-        obj.assign response
-      if typeof callback == "function"
-        callback(obj)
-    return obj
-
-  @fetchFrom: (actionUrl, id, callback = "") ->
-    if actionUrl? and id?
-      obj = new this
-      ajax = jQuery.ajax "/" + obj.apiUrl() + "/" + actionUrl.toString() + "/" + id.toString(),
-        type: "GET"
-        dataType: 'json'
-      ajax.done (response) =>
-        if response.errors?
-          obj.set('errors',response.errors)
-          return false
-        else
-          obj.assign response
-        if typeof callback == "function"
-          callback(obj)
-      return obj
-
-  pushToRenderQueue: (options) ->
-    @renderQueue = [] unless @renderQueue?
-    options.reRendering = no
-
-    # check if this exactly options is already in the renderQueue
-    alreadyPresent = false
-    for obj in @renderQueue
-      value = true
-      for k,v of obj
-        if typeof(obj[k]) == 'function' and typeof(options[k]) == 'function'
-          value = false if obj[k].toString().replace(/\s/g, '') != options[k].toString().replace(/\s/g, '')
-        else if obj[k] != options[k]
-          value = false 
-        else
-      alreadyPresent = true if value
-
-    # insert options to renderQueue if it isn't already there
-    @renderQueue.push options unless alreadyPresent
-
-  clearRenderQueue: () ->
-    @renderQueue = []
-
-
-  create: (callback = "") ->
-    unless @id?
-      ajax = jQuery.ajax "/" + @apiUrl(),
-        beforeSend: (xhr) -> 
-          xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))
-        dataType: 'json'
-        type: "POST"
-        data: { "pink_obj": @attributes() }
-
-      ajax.done (response) =>
-        if response.errors?
-          @errors = response.errors
-        else
-          delete @errors
-          @assign(response)
-        if typeof callback == "function"
-          callback(this)
-    return this
-
-
-  update: (callback= "") ->
-    if @id?
-      ajax = jQuery.ajax("/" + @apiUrl() + "/" + @id,
-        beforeSend: (xhr) -> 
-          xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))
-        dataType: 'json'
-        type: "PATCH"
-        data: { "pink_obj": @attributes() }
-      )
-      ajax.done (response) =>
-        if response.errors?
-          @errors = response.errors
-        else
-          delete @errors
-          @assign(response)
-        if typeof callback == "function"
-          callback(this)
-    return this
-
-  reload: (callback) ->
-    if @id?
-      ajax = jQuery.ajax "/" + @apiUrl() + "/" + @id,
-        type: "GET"
-        dataType: 'json'
-      ajax.done (response) =>
-        if response.errors?
-          @errors = response.errors
-          return false
-        else
-          @assign(response)
-          if typeof callback == 'function'
-            callback(this)
-      return this
-
+  # Desc: assign attributes from a pure javascript object
+  # Usage: a.assign( {attribute: value} )
   assign: (obj) ->
     if typeof obj == "object"
       for k,v of obj
         if typeof v == 'object' and this[k]? and this[k].isPink? and not v.isPink
-          # console.log 'pegou pink na base'
-          # console.log k
-          # console.log v
-          # console.log this[k]
           this[k].assign(v)
         else
           this.set(k,v) 
@@ -195,77 +27,17 @@ class window.PinkmanObject
     else
       return false
 
-  updateAttributes: (obj) ->
-    if this.assign(obj)
-      this.save()
-      return this
-    else
-      return false
-
-
-  save: (callback = "") ->
-    # console.log 'entrou no save'
-    # console.log this.pinkey
-    if @id?
-      if typeof callback == "function"
-        this.update (obj) ->
-          callback(obj)
-      else
-        this.update()
-    else
-      if typeof callback == "function"
-        this.create (obj) ->
-          callback(obj)
-      else
-        this.create()
-
-  destroy: (callback="") ->
-    if @id?
-      ajax = jQuery.ajax("/" + @apiUrl() + "/" + @id,
-        beforeSend: (xhr) -> 
-          xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))
-        dataType: 'json'
-        type: "DELETE"
-      )
-      ajax.done (response) =>
-        if response.errors?
-          @errors = response.errors
-        else
-          @assign(response)
-          @id = null
-          @clearCollections()
-        if typeof callback == "function"
-          callback(this)
-      return this
-    else
-      return false
-
-  clearCollections: ->
-    if @collectionsIds? and @collectionsIds.length >= 1
-      for col in @collections()
-        col.remove this
-      @collectionsIds = []
-
+  # Desc: returns a javascript object version of this
+  # Usage: a.attributes() #-> {key: value, key: value, ...}
   attributes: () ->
-    attr = new Object
+    a = new Object
     for k,v of this
-      attr[k] = v unless typeof v == "function" or (v? and typeof v == "object" and v.constructor != Object)
-      if v? and typeof v == 'object' and v.isPink? and v.isPink and v.pinkmanType != 'collection'
-        attr[k] = v.attributes() 
-    return attr
-
-  attributesKeys: () ->
-    array = Object.keys(@attributes()) 
-    if array.length > 0
-      for attr in ['pinkey','objectId','config','pinkey','helper']
-        array.splice array.indexOf(attr), 1
-    array
-
-  toString: () ->
-    array = []
-    for a in @attributesKeys()
-      array.push "#{a}: #{this[a]};"
-    array.join("\n")
+      if PinkmanObject.privateAttributes.indexOf(k) == -1 and typeof v != 'function'
+        if v.isPink and v.isObject
+          a[k] = v.attributes()
+        else
+          a[k] = v
+    return a
 
   set: (attr,value, callback = "" ) ->
     if attr? and value?
@@ -275,267 +47,332 @@ class window.PinkmanObject
     else 
       return false
 
-  addCollection: (id) ->
-    if id?
-      @collectionsIds = [] unless @collectionsIds?
-      @collectionsIds.push(id)
-      return true
-    else
-      return false
+  # attributesKeys: () ->
+  #   array = Object.keys(@attributes()) 
+  #   if array.length > 0
+  #     for attr in ['pinkey','objectId','config','pinkey','helper']
+  #       array.splice array.indexOf(attr), 1
+  #   array
+ 
 
-  removeCollection: (id) ->
-    if id? and @collectionsIds?
-      @collectionsIds.splice @collectionsIds.indexOf(id), 1
-      return true
-    else
-      return false    
+  className: ->
+    @constructor.name
 
-  collections: () ->
-    if @collectionsIds? and @collectionsIds.length >= 1
-      c = []
-      for id in @collectionsIds
-        c.push(PinkmanGlue.collections[id])
-      return c
-    else
-      return false
+  # @view = new Object
 
-
-  render: (options) ->
-    defaultOptions =
-      template: null
-      target: null
-      reRender: yes
-      reRendering: no
-      callback: ""
-      history: null
-
-    # setting options object
-    if typeof options == "object" 
-      for k,v of defaultOptions
-        options[k] = defaultOptions[k] unless options[k]?
-    else
-      options = defaultOptions
-
-    if options.template? and options.target?
-
-      # Compiling template
-      content = Pinkman.render template: options.template, object: this      
-
-      # history
-      if window? and history? and options.history? and !options.reRendering
-        options.reRendering = no
   
-        history.pushState({ pinkey: @pinkey }, "", (Pinkman.pathname + options.history)) 
-        Pinkman.popstate()
+  # pushToRenderQueue: (options) ->
+  #   @renderQueue = [] unless @renderQueue?
+  #   options.reRendering = no
+
+  #   # check if this exactly options is already in the renderQueue
+  #   alreadyPresent = false
+  #   for obj in @renderQueue
+  #     value = true
+  #     for k,v of obj
+  #       if typeof(obj[k]) == 'function' and typeof(options[k]) == 'function'
+  #         value = false if obj[k].toString().replace(/\s/g, '') != options[k].toString().replace(/\s/g, '')
+  #       else if obj[k] != options[k]
+  #         value = false 
+  #       else
+  #     alreadyPresent = true if value
+
+  #   # insert options to renderQueue if it isn't already there
+  #   @renderQueue.push options unless alreadyPresent
+
+  # clearRenderQueue: () ->
+  #   @renderQueue = []
+
+
+
+  # clearCollections: ->
+  #   if @collectionsIds? and @collectionsIds.length >= 1
+  #     for col in @collections()
+  #       col.remove this
+  #     @collectionsIds = []
+
+  # toString: () ->
+  #   array = []
+  #   for a in @attributesKeys()
+  #     array.push "#{a}: #{this[a]};"
+  #   array.join("\n")
+
+  
+
+  # addCollection: (id) ->
+  #   if id?
+  #     @collectionsIds = [] unless @collectionsIds?
+  #     @collectionsIds.push(id)
+  #     return true
+  #   else
+  #     return false
+
+  # removeCollection: (id) ->
+  #   if id? and @collectionsIds?
+  #     @collectionsIds.splice @collectionsIds.indexOf(id), 1
+  #     return true
+  #   else
+  #     return false    
+
+  # collections: () ->
+  #   if @collectionsIds? and @collectionsIds.length >= 1
+  #     c = []
+  #     for id in @collectionsIds
+  #       c.push(PinkmanGlue.collections[id])
+  #     return c
+  #   else
+  #     return false
+
+
+  # render: (options) ->
+  #   defaultOptions =
+  #     template: null
+  #     target: null
+  #     reRender: yes
+  #     reRendering: no
+  #     callback: ""
+  #     history: null
+
+  #   # setting options object
+  #   if typeof options == "object" 
+  #     for k,v of defaultOptions
+  #       options[k] = defaultOptions[k] unless options[k]?
+  #   else
+  #     options = defaultOptions
+
+  #   if options.template? and options.target?
+
+  #     # Compiling template
+  #     content = Pinkman.render template: options.template, object: this      
+
+  #     # history
+  #     if window? and history? and options.history? and !options.reRendering
+  #       options.reRendering = no
+  
+  #       history.pushState({ pinkey: @pinkey }, "", (Pinkman.pathname + options.history)) 
+  #       Pinkman.popstate()
       
-      # saves rendering information to rerender later      
-      @pushToRenderQueue(options) if options.reRender
+  #     # saves rendering information to rerender later      
+  #     @pushToRenderQueue(options) if options.reRender
 
-      # rendering
-      $("#" + options.target).html(content)
+  #     # rendering
+  #     $("#" + options.target).html(content)
 
-      # checks and sync select options with the pinkman object
-      $("##{options.target} select").each (i,el) ->
-        obj = Pinkman.get($(el).data('pinkey'))
-        $(el).find("option[value='#{obj[$(el).attr('name')]}']").attr('selected','selected')
+  #     # checks and sync select options with the pinkman object
+  #     $("##{options.target} select").each (i,el) ->
+  #       obj = Pinkman.get($(el).data('pinkey'))
+  #       $(el).find("option[value='#{obj[$(el).attr('name')]}']").attr('selected','selected')
 
-      options.callback(this) if typeof options.callback == "function"
-    true
+  #     options.callback(this) if typeof options.callback == "function"
+  #   true
 
-  reRender: (options) ->
-    defaultOptions =
-      collection: yes
-      callback: ""
+  # reRender: (options) ->
+  #   defaultOptions =
+  #     collection: yes
+  #     callback: ""
 
-    # setting options object
-    if typeof options == "object" 
-      for k,v of defaultOptions
-        options[k] = defaultOptions[k] unless options[k]?
-    else
-      options = defaultOptions
+  #   # setting options object
+  #   if typeof options == "object" 
+  #     for k,v of defaultOptions
+  #       options[k] = defaultOptions[k] unless options[k]?
+  #   else
+  #     options = defaultOptions
 
-    if @renderQueue? and @renderQueue instanceof Array and @renderQueue.length >= 1
-      for config in @renderQueue
-        config.reRendering = yes
-        @render(config)
-    if options.collection
-      if @collectionsIds? and @collectionsIds.length >= 1
-        for c in @collections()
-          c.reRender()
-    options.callback(this) if typeof options.callback == "function"
+  #   if @renderQueue? and @renderQueue instanceof Array and @renderQueue.length >= 1
+  #     for config in @renderQueue
+  #       config.reRendering = yes
+  #       @render(config)
+  #   if options.collection
+  #     if @collectionsIds? and @collectionsIds.length >= 1
+  #       for c in @collections()
+  #         c.reRender()
+  #   options.callback(this) if typeof options.callback == "function"
   
 
-  prev: (collectionID=0) =>
-    @collections()[collectionID].prev(this) if @collections()[collectionID]?
-    # @collections()[collectionID].prev(this) if @collections()?
+  # prev: (collectionID=0) =>
+  #   @collections()[collectionID].prev(this) if @collections()[collectionID]?
+  #   # @collections()[collectionID].prev(this) if @collections()?
 
-  next: (collectionID=0) =>
-    @collections()[collectionID].next(this) if @collections()[collectionID]?
+  # next: (collectionID=0) =>
+  #   @collections()[collectionID].next(this) if @collections()[collectionID]?
 
-  isPink:true
-  
-  # Form method will do a few things.
-    # 1: It will render its form template in the specified target element.
-      # 1.1: After render, it will match checkboxes and radio buttons names and values to the pinkman object
-    # 2: On submit, it will get form values and put those into this pinkmanObject.
-    # 3: 
-      # It prevents default form submission and 
-      # make a assynchronous call to save pinkmanObject new values.
-    # 4: 
-      # On success, it will update every single template that uses this 
-      # pinkmanObject and execute success callbacks function.
-      # Success callback functions can be a single function or an array of functions.
-    # 5: 
-      # On error, it will add class "error" to the respective fields 
-      # (or their imediated parents if setErrorOnParent is true) 
-      # and execute errors callbacks function (single or array).
-    
-    # And it can be configured through an options object:
-      # "afterRender": 
-      #   function or array of functions to be executed after rendering template
-      # "success": function or array of function to be executed after saving success
-      # "error": function or array of function to be executed after error on saving
-      # "save": When true it will save on form submission. When false it won't (success and errors callbacks won't be executed).
-      # "reRender": When true it will reRender all templates using this object on form submission. When false... you guessed it.
-      # unbindAfterSuccess: When true, after one submission and its success on saving, pinkman won't intercept this form submission again.
-      # Note
-      # ... every callback function will be executed with the pinkmanObject passed as parameter ...
-  form: (options = {}) ->
-
-    # default values
-    defaultOptions =
-      afterRender: ""
-      afterSubmit: ""
-      success: ""
-      error: ""
-      save: yes
-      reRender: yes
-      reRendering: no
-      setErrorOnParent: yes
-      unbindAfterSuccess: no
-
-    template = options["template"]
-    target = options["target"]
-
-    # starts rendering if template and target are both specified/present
-    if template? and target?
-
-      # setting options object
-      if typeof options == "object" 
-        for k,v of defaultOptions
-          options[k] = defaultOptions[k] unless options[k]?
-      else
-        options = defaultOptions
-
-      # render
-      @render 
-        template: template
-        target: target
-        reRender: options['reRender']
-        callback: =>
-          $('body').off "submit", "##{target} form"
-
-          # form binding
-          for k,v of this
-            formEl = $("##{target} form [name='#{k}']")
-            formEl.val(v) if formEl.length
-
-          checksAndRadios = $("#" + target).find("input[type='radio'],input[type='checkbox']")
-
-          if checksAndRadios.length
-            $("#" + target).find("input[type='radio'],input[type='checkbox']").each (i,el) =>
-              if this[el.name]? and typeof this[el.name] == "number"
-                el.checked = "checked" if this[el.name].toString() == el.value
-              else
-                el.checked = "checked" if this[el.name] == el.value
-
-          # callbacks (afterRender)
-          if typeof options.afterRender == "function"
-            options.afterRender(this)
-          else if options.afterRender instanceof Array
-            for f in options.afterRender
-              f(this) if typeof f == "function"
-
-
-          # binding submit event
-          $('body').on "submit", "##{target} form", (e) =>
-            # console.log 'entrou on submit'
-            # prevent submiting()
-            e.preventDefault()
-
-            if typeof options.afterSubmit == "function"
-              options.afterSubmit(this)
-            else if options.afterSubmit instanceof Array
-              for f in options.afterSubmit
-                f(this) if typeof f == "function"
-
-            # getting values from form and inserting in PinkmanObject
-            form = $(e.target)
-            for item in form.serializeArray()
-              this[item.name] = item.value
-
-            # saving object
-            if options.save
-              this.save (obj) ->
-                if obj.errors?
-                  for k of obj.errors
-                    field = $("#" + target).find("form [name='" + k + "']")
-                    if options.setErrorOnParent
-                      field.parent().addClass "error"
-                    else
-                      field.addClass "error"
-
-                  # errors callbacks
-                  if typeof options.error == "function"
-                    options.error(obj)
-                  else if options.error instanceof Array
-                    for f in options.error
-                      f(obj) if typeof f == "function"
-                else
-                  # success callbacks
-                  if typeof options.success == "function"
-                    options.success(obj)
-                  else if options.success instanceof Array
-                    for f in options.success
-                      f(obj) if typeof f == "function"
-
-                  # remove bind of submission after success
-                  $('body').off("submit", "##{target} form") if options.unbindAfterSuccess
-    else
-      return false
-
-  pinkfy: (attribute,pinkmanClass,callback = "") ->
-    if pinkmanClass.pinkmanType == "collection" and (this[attribute] instanceof Array)
-      collection = new pinkmanClass
-      for obj in this[attribute]
-        pinkmanObject = collection.config.memberClass()
-        pinkmanObject.assign(obj)
-        collection.push(pinkmanObject)
-      this[attribute] = collection
-      callback(collection) if typeof callback == "function"
-      return this
-    else if pinkmanClass.pinkmanType == "object" and (typeof this[attribute] == "object")
-      pinkmanObject = new pinkmanClass
-      if (this[attribute] instanceof Array) and (this[attribute].length)
-        pinkmanObject.assign(this[attribute][0]) 
-      else
-        pinkmanObject.assign this[attribute]
+  # pinkfy: (attribute,pinkmanClass,callback = "") ->
+  #   if pinkmanClass.pinkmanType == "collection" and (this[attribute] instanceof Array)
+  #     collection = new pinkmanClass
+  #     for obj in this[attribute]
+  #       pinkmanObject = collection.config.memberClass()
+  #       pinkmanObject.assign(obj)
+  #       collection.push(pinkmanObject)
+  #     this[attribute] = collection
+  #     callback(collection) if typeof callback == "function"
+  #     return this
+  #   else if pinkmanClass.pinkmanType == "object" and (typeof this[attribute] == "object")
+  #     pinkmanObject = new pinkmanClass
+  #     if (this[attribute] instanceof Array) and (this[attribute].length)
+  #       pinkmanObject.assign(this[attribute][0]) 
+  #     else
+  #       pinkmanObject.assign this[attribute]
       
-      this[attribute] = pinkmanObject
-      callback(pinkmanObject) if typeof callback == "function"
-      return this
-    else
-      return false
+  #     this[attribute] = pinkmanObject
+  #     callback(pinkmanObject) if typeof callback == "function"
+  #     return this
+  #   else
+  #     return false
 
-  switcher: (attr) ->
-    if this[attr]? and this[attr] and this[attr] != 'f' and this[attr] != 'false'
-      'on'
-    else
-      'off'
-
+  # firstError: ->
+  #   if @errors?
+  #     attr = Object.keys(@errors)[0]
+  #     "#{attr} #{@errors[attr][0]}"
 
 
-  firstError: ->
-    if @errors?
-      attr = Object.keys(@errors)[0]
-      "#{attr} #{@errors[attr][0]}"
+  # # Ajax - Area
+
+  # @find: (id, callback = "") ->
+  #   obj = new this
+  #   ajax = jQuery.ajax "/" + obj.apiUrl() + "/" + id.toString(),
+  #     type: "GET"
+  #     dataType: 'json'
+  #   ajax.done (response) =>
+  #     if response.errors?
+  #       obj.set('errors',response.errors)
+  #       return false
+  #     else
+  #       # window.r = response
+  #       # console.log response
+  #       # console.log 'resposta acima - obj abaixo'
+  #       # window.o = obj
+  #       # console.log obj
+  #       obj.assign(response)
+  #     if typeof callback == "function"
+  #       callback(obj)
+  #   return obj
+
+  # @fetchFromUrl: (url,callback = "") ->
+  #   obj = new this
+  #   ajax = jQuery.ajax "/" + url,
+  #     type: "GET"
+  #     dataType: 'json'
+  #   ajax.done (response) =>
+  #     if response.errors?
+  #       obj.set('errors',response.errors)
+  #       return false
+  #     else
+  #       obj.assign response
+  #     if typeof callback == "function"
+  #       callback(obj)
+  #   return obj
+
+  # @fetchFrom: (actionUrl, id, callback = "") ->
+  #   if actionUrl? and id?
+  #     obj = new this
+  #     ajax = jQuery.ajax "/" + obj.apiUrl() + "/" + actionUrl.toString() + "/" + id.toString(),
+  #       type: "GET"
+  #       dataType: 'json'
+  #     ajax.done (response) =>
+  #       if response.errors?
+  #         obj.set('errors',response.errors)
+  #         return false
+  #       else
+  #         obj.assign response
+  #       if typeof callback == "function"
+  #         callback(obj)
+  #     return obj
+
+
+  # create: (callback = "") ->
+  #   unless @id?
+  #     ajax = jQuery.ajax "/" + @apiUrl(),
+  #       beforeSend: (xhr) -> 
+  #         xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))
+  #       dataType: 'json'
+  #       type: "POST"
+  #       data: { "pink_obj": @attributes() }
+
+  #     ajax.done (response) =>
+  #       if response.errors?
+  #         @errors = response.errors
+  #       else
+  #         delete @errors
+  #         @assign(response)
+  #       if typeof callback == "function"
+  #         callback(this)
+  #   return this
+
+
+  # update: (callback= "") ->
+  #   if @id?
+  #     ajax = jQuery.ajax("/" + @apiUrl() + "/" + @id,
+  #       beforeSend: (xhr) -> 
+  #         xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))
+  #       dataType: 'json'
+  #       type: "PATCH"
+  #       data: { "pink_obj": @attributes() }
+  #     )
+  #     ajax.done (response) =>
+  #       if response.errors?
+  #         @errors = response.errors
+  #       else
+  #         delete @errors
+  #         @assign(response)
+  #       if typeof callback == "function"
+  #         callback(this)
+  #   return this
+
+  # reload: (callback) ->
+  #   if @id?
+  #     ajax = jQuery.ajax "/" + @apiUrl() + "/" + @id,
+  #       type: "GET"
+  #       dataType: 'json'
+  #     ajax.done (response) =>
+  #       if response.errors?
+  #         @errors = response.errors
+  #         return false
+  #       else
+  #         @assign(response)
+  #         if typeof callback == 'function'
+  #           callback(this)
+  #     return this
+
+  # updateAttributes: (obj) ->
+  #   if this.assign(obj)
+  #     this.save()
+  #     return this
+  #   else
+  #     return false
+
+  # save: (callback = "") ->
+  #   # console.log 'entrou no save'
+  #   # console.log this.pinkey
+  #   if @id?
+  #     if typeof callback == "function"
+  #       this.update (obj) ->
+  #         callback(obj)
+  #     else
+  #       this.update()
+  #   else
+  #     if typeof callback == "function"
+  #       this.create (obj) ->
+  #         callback(obj)
+  #     else
+  #       this.create()
+
+  # destroy: (callback="") ->
+  #   if @id?
+  #     ajax = jQuery.ajax("/" + @apiUrl() + "/" + @id,
+  #       beforeSend: (xhr) -> 
+  #         xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))
+  #       dataType: 'json'
+  #       type: "DELETE"
+  #     )
+  #     ajax.done (response) =>
+  #       if response.errors?
+  #         @errors = response.errors
+  #       else
+  #         @assign(response)
+  #         @id = null
+  #         @clearCollections()
+  #       if typeof callback == "function"
+  #         callback(this)
+  #     return this
+  #   else
+  #     return false
