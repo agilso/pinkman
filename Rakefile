@@ -1,13 +1,13 @@
-require 'pinkman'
 require "bundler/gem_tasks"
 require "rspec/core/rake_task"
+require 'pinkman'
 require Pinkman.root.join('spec/support/sprockets')
-
-RSpec::Core::RakeTask.new(:spec)
 
 task :default => :spec
 require 'jasmine'
 load 'jasmine/tasks/jasmine.rake'
+RSpec::Core::RakeTask.new(:spec)
+
 
 namespace :pinkman do
   desc 'Precompile pinkman.js'

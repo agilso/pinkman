@@ -1,6 +1,6 @@
-require "pinkman/version"
 require 'pathname'
 require 'rails'
+require 'pinkman/version'
 
 module Pinkman
   class Engine < ::Rails::Engine

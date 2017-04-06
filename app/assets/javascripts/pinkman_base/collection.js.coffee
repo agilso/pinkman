@@ -1,5 +1,17 @@
 class window.PinkmanCollection
 
+  constructor: () ->
+    # console.log arguments.callee.caller.caller
+    @pinkmanType = "collection"
+    @type = 'main'
+    @collection = []
+    @pinkey = PinkmanGlue.count()
+    PinkmanGlue.increaseCount() 
+    PinkmanGlue.all.push(this)
+    @collectionId = PinkmanCollection.getCount()
+    PinkmanCollection.increaseCount() 
+    PinkmanGlue.collections.push(this)
+
   attributes: ->
     return @collection
 
@@ -21,18 +33,6 @@ class window.PinkmanCollection
 
   @increaseCount: ->
     @_collectionsCount++
-
-  constructor: () ->
-    # console.log arguments.callee.caller.caller
-    @pinkmanType = "collection"
-    @type = 'main'
-    @collection = []
-    @pinkey = PinkmanGlue.count()
-    PinkmanGlue.increaseCount() 
-    PinkmanGlue.all.push(this)
-    @collectionId = PinkmanCollection.getCount()
-    PinkmanCollection.increaseCount() 
-    PinkmanGlue.collections.push(this)
 
 
   set: (attr,value, callback = "" ) ->

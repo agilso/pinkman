@@ -39,8 +39,9 @@
         var a, b;
         a = new PinkmanObject;
         b = new Dummy;
-        expect(a.pinkey).toBe(1);
-        return expect(b.pinkey).toBe(2);
+        expect(a.pinkey).not.toBe(null);
+        expect(b.pinkey).not.toBe(null);
+        return expect(a.pinkey).not.toEqual(b.pinkey);
       });
       it('is pink', function() {
         var a;
@@ -59,24 +60,29 @@
       });
     });
     return describe('Functions', function() {
+      var a;
+      a = null;
+      beforeEach(function() {
+        a = new Dummy;
+        return a.set('a', 'b');
+      });
       it('apiUrl: returns api url as expected (config object)', function() {
-        var a;
         a = new Dummy;
         return expect(a.apiUrl()).toBe('/api/dummy');
       });
       it('assign: receives a js object and assigns its values', function() {
-        var a, b;
+        var b;
         a = new Dummy;
         b = {
           attributeA: 'a',
           attributeB: 'b'
         };
         a.assign(b);
-        expect(a.attributeA).toBe('a');
-        return expect(a.attributeB).toBe('b');
+        expect(a.attributeA).toEqual('a');
+        return expect(a.attributeB).toEqual('b');
       });
-      it('assign: does not substitute pinkman.object by js.objects', function() {
-        var a, attributes;
+      it('assign: does not substitute pinkman.objects by js.objects', function() {
+        var attributes;
         a = new Dummy;
         a.b = new Dummy;
         attributes = {
@@ -89,7 +95,7 @@
         return expect(a.b.something).toBe('cool');
       });
       it('assign: does substitute pinkman.object by anything except js.objects', function() {
-        var a, attributes;
+        var attributes;
         a = new Dummy;
         a.b = new Dummy;
         attributes = {
@@ -99,18 +105,39 @@
         expect(a.b.isPink).not.toBe(true);
         return expect(a.b).toBe('value');
       });
-      it('attributes returns a javascript object version', function() {
-        var a;
-        a = new Dummy;
-        a.set('a', 'b');
+      it('attributes: returns a javascript object version', function() {
         return expect(a.attributes()).toEqual({
           'a': 'b'
         });
       });
-      return it('className: returns a string with the class name', function() {
-        var a;
+      it('attributesKeys: returns a array of keys', function() {
+        a.set('x', 'y');
+        return expect(a.attributesKeys()).toEqual(['a', 'x']);
+      });
+      it('attributesKeys: has an alias called keys', function() {
+        a.set('x', 'y');
+        return expect(a.keys()).toEqual(a.attributesKeys());
+      });
+      it('className: returns a string with the class name', function() {
         a = new Dummy;
         return expect(a.className()).toBe('Dummy');
+      });
+      it('set: sets a pair of key and value', function() {
+        a = new Dummy;
+        a.set('uhu', 'bozo');
+        return expect(a.uhu).toEqual('bozo');
+      });
+      it('set: triggers reRender if watch is true', function() {
+        a = new Dummy;
+        spyOn(a, 'reRender');
+        a.set('watch', true);
+        a.set('a', 'b');
+        return expect(a.reRender).toHaveBeenCalled();
+      });
+      return it('toString: returns a human readable string', function() {
+        a = new Dummy;
+        a.set('a', 'b');
+        return expect(a.toString()).toEqual('(Dummy) a: b;');
       });
     });
   });
