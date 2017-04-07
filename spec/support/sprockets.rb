@@ -6,7 +6,6 @@ class Assets
     unless @app_environment
       @app_environment ||= Sprockets::Environment.new
       @app_environment.append_path Pinkman.root.join('app','assets','javascripts')
-      @app_environment.js_compressor  = :uglify
     end
     @app_environment
   end

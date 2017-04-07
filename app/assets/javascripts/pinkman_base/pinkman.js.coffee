@@ -6,6 +6,9 @@ class window.Pinkman
   @objects = []
   @all = []
 
+  @isNumber: (n) ->
+    !isNaN(parseFloat(n)) && isFinite(n)
+
 #   @get: (id) ->
 #     this.all[id]
 

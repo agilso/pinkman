@@ -15,7 +15,8 @@
       }
 
       Dummies.prototype.config = {
-        apiUrl: '/api/dummies'
+        apiUrl: '/api/dummies',
+        memberClass: Dummy
       };
 
       return Dummies;
@@ -52,7 +53,7 @@
       it('is pink', function() {
         var a;
         a = new Dummies;
-        return expect(a.isPink).toBeTruthy;
+        return expect(a.isPink).toBeTruthy();
       });
       it('is in Pinkman.all', function() {
         var a;
@@ -81,84 +82,288 @@
         object = new Dummy;
         return object.set('a', 'b');
       });
-      it('count: return collection size', function() {
-        var a;
-        expect(collection.count()).toEqual(0);
-        collection.push(object);
-        expect(collection.count()).toEqual(1);
-        a = new Dummy;
-        collection.push(a);
-        return expect(collection.count()).toEqual(2);
-      });
-      it('size: count alias', function() {
-        var a;
-        expect(collection.count()).toEqual(collection.size());
-        collection.push(object);
-        expect(collection.count()).toEqual(collection.size());
-        a = new Dummy;
-        collection.push(a);
-        return expect(collection.count()).toEqual(collection.size());
-      });
-      it('length: count alias', function() {
-        var a;
-        expect(collection.count()).toEqual(collection.length());
-        collection.push(object);
-        expect(collection.count()).toEqual(collection.length());
-        a = new Dummy;
-        collection.push(a);
-        return expect(collection.count()).toEqual(collection.length());
-      });
-      it('count: accepts a criteria function and returns a count of how many members satisfies it', function() {
-        var a, b, count;
-        a = new Dummy;
-        a.set('prettyHair', 'yes');
-        b = new Dummy;
-        b.set('prettyHair', 'no');
-        collection.push(a);
-        collection.push(b);
-        count = collection.count(function(obj) {
-          return obj.prettyHair === 'yes';
+      describe('Predicate Functions', function() {
+        it('include: check if a object is in the collection', function() {
+          var a;
+          a = new Dummy;
+          collection.push(a);
+          expect(collection.include(a)).toBeTruthy();
+          return expect(collection.include(object)).toBeFalsy();
         });
-        return expect(count).toEqual(1);
-      });
-      it('first: returns first object in this collection', function() {
-        var a, b;
-        a = new Dummies;
-        b = new Dummy;
-        a.push(object);
-        a.push(b);
-        return expect(a.first()).toBe(object);
-      });
-      it('last: returns last object in this collection', function() {
-        var a, b;
-        a = new Dummies;
-        b = new Dummy;
-        a.push(object);
-        a.push(b);
-        return expect(a.last()).toBe(b);
-      });
-      it('push: inserts in last position', function() {
-        var a;
-        a = new Dummy;
-        collection.push(a);
-        collection.push(object);
-        return expect(collection.last()).toBe(object);
-      });
-      return it('each: apply a function to all members', function() {
-        var a, i, len, obj, ref, results;
-        a = new Dummy;
-        collection.push(a);
-        collection.push(object);
-        collection.each(function(obj) {
-          return obj.set('each', 'transformed');
+        it('include (id rule): if among the members, someone has the same id of the object passed, include returns true', function() {
+          var a, b, c;
+          a = new Dummy;
+          b = new Dummy;
+          c = new Dummy;
+          a.set('id', 1);
+          a.set('who', 'i am a.');
+          b.set('id', 1);
+          b.set('who', 'i am b! I am not a! I am not really in the collection but I have the same id of "a"! Yes I am a duplicated object.');
+          collection.push(a);
+          expect(collection.include(a)).toBeTruthy();
+          return expect(collection.include(b)).toBeTruthy();
         });
-        ref = collection.collection;
-        results = [];
-        for (i = 0, len = ref.length; i < len; i++) {
-          obj = ref[i];
-          results.push(expect(obj.each).toEqual('transformed'));
-        }
-        return results;
+        it('any: returns true iff there is at least one member', function() {
+          expect(collection.any()).toBeFalsy();
+          collection.push(object);
+          return expect(collection.any()).toBeTruthy();
+        });
+        return it('any: returns true iff any member satisfies a criteria (criteria(object) is true)', function() {
+          var a, b, bullshit, thatIsTrue;
+          a = new Dummy;
+          a.set('prettyHair', 'yes');
+          b = new Dummy;
+          b.set('prettyHair', 'no');
+          collection.push(a);
+          collection.push(b);
+          thatIsTrue = collection.any(function(obj) {
+            return obj.prettyHair === 'yes';
+          });
+          bullshit = collection.any(function(obj) {
+            return obj.prettyEyesAlso === 'yes';
+          });
+          expect(thatIsTrue).toBeTruthy();
+          return expect(bullshit).toBeFalsy();
+        });
+      });
+      describe('Info / Iterators /  Modifiers', function() {
+        it('count: return collection size', function() {
+          var a;
+          expect(collection.count()).toEqual(0);
+          collection.push(object);
+          expect(collection.count()).toEqual(1);
+          a = new Dummy;
+          collection.push(a);
+          return expect(collection.count()).toEqual(2);
+        });
+        it('size: count alias', function() {
+          var a;
+          expect(collection.count()).toEqual(collection.size());
+          collection.push(object);
+          expect(collection.count()).toEqual(collection.size());
+          a = new Dummy;
+          collection.push(a);
+          return expect(collection.count()).toEqual(collection.size());
+        });
+        it('length: count alias', function() {
+          var a;
+          expect(collection.count()).toEqual(collection.length());
+          collection.push(object);
+          expect(collection.count()).toEqual(collection.length());
+          a = new Dummy;
+          collection.push(a);
+          return expect(collection.count()).toEqual(collection.length());
+        });
+        it('count: accept a criteria function and returns a count of how many members satisfies it', function() {
+          var a, b, count;
+          a = new Dummy;
+          a.set('prettyHair', 'yes');
+          b = new Dummy;
+          b.set('prettyHair', 'no');
+          collection.push(a);
+          collection.push(b);
+          count = collection.count(function(obj) {
+            return obj.prettyHair === 'yes';
+          });
+          return expect(count).toEqual(1);
+        });
+        return it('each: apply a function to all members', function() {
+          var a, i, len, obj, ref, results;
+          a = new Dummy;
+          collection.push(a);
+          collection.push(object);
+          collection.each(function(obj) {
+            return obj.set('each', 'transformed');
+          });
+          ref = collection.collection;
+          results = [];
+          for (i = 0, len = ref.length; i < len; i++) {
+            obj = ref[i];
+            results.push(expect(obj.each).toEqual('transformed'));
+          }
+          return results;
+        });
+      });
+      describe('Inserting elements', function() {
+        it('push: insert in last position', function() {
+          var a;
+          a = new Dummy;
+          collection.push(a);
+          collection.push(object);
+          return expect(collection.last()).toBe(object);
+        });
+        return it('unshift: insert in first position', function() {
+          var a;
+          a = new Dummy;
+          collection.unshift(a);
+          collection.unshift(object);
+          expect(collection.first()).toBe(object);
+          return expect(collection.last()).toBe(a);
+        });
+      });
+      describe('Retrieving elements', function() {
+        it('first: return first object in this collection', function() {
+          var a, b;
+          a = new Dummies;
+          b = new Dummy;
+          a.push(object);
+          a.push(b);
+          return expect(a.first()).toBe(object);
+        });
+        it('last: return last object in this collection', function() {
+          var a, b;
+          a = new Dummies;
+          b = new Dummy;
+          a.push(object);
+          a.push(b);
+          return expect(a.last()).toBe(b);
+        });
+        it('get (1st usage format): get by pinkey if arg is a number (similar to getByPinkey function)', function() {
+          var arg;
+          arg = 1;
+          spyOn(collection, 'getByPinkey');
+          collection.get(arg);
+          return expect(collection.getByPinkey).toHaveBeenCalled();
+        });
+        it('get (2nd usage format): get by attribute/value if arg is a pair of strings (similar to getBy function)', function() {
+          var arg;
+          arg = ['attribute', 'value'];
+          spyOn(collection, 'getBy');
+          collection.get.apply(collection, arg);
+          return expect(collection.getBy).toHaveBeenCalled();
+        });
+        it('get (3rd usage format): get by multiples attributes/values of a object (arg is a object) (similar to getByAttributes function)', function() {
+          var arg;
+          arg = {
+            attribute: 'value'
+          };
+          spyOn(collection, 'getByAttributes');
+          collection.get(arg);
+          return expect(collection.getByAttributes).toHaveBeenCalled();
+        });
+        it('find: get an element by id', function() {
+          var a, b;
+          a = new Dummy;
+          a.set('id', 1);
+          b = new Dummy;
+          collection.fetchFromArray([a, b]);
+          return expect(collection.find(1)).toBe(a);
+        });
+        it('getByPinkey: get an element by pinkey', function() {
+          var a, b;
+          a = new Dummy;
+          b = new Dummy;
+          collection.fetchFromArray([a, b]);
+          return expect(collection.getByPinkey(b.pinkey)).toBe(b);
+        });
+        it('getBy: find the first element that matches (element.attribute = value)', function() {
+          var a, b;
+          a = new Dummy;
+          a.set('attribute', 'random');
+          b = new Dummy;
+          b.set('attribute', 'random');
+          collection.fetchFromArray([a, b, object]);
+          return expect(collection.getBy('attribute', 'random')).toBe(a);
+        });
+        it('getByAttributes: find the first element that matches (multiple keys & values version of getBy)', function() {
+          var a, b;
+          a = new Dummy;
+          a.set('attribute', 'random');
+          a.set('prettyHair', 'yes');
+          b = new Dummy;
+          b.set('attribute', 'random');
+          b.set('prettyHair', 'no');
+          collection.fetchFromArray([a, b, object]);
+          return expect(collection.getByAttributes({
+            'attribute': 'random',
+            'prettyHair': 'yes'
+          })).toBe(a);
+        });
+        it('select: select/collect every member who satisfies a criteria (criteria(object) is true)', function() {
+          var a, b, selection;
+          a = new Dummy;
+          a.set('prettyHair', 'yes');
+          b = new Dummy;
+          b.set('prettyHair', 'no');
+          collection.push(a);
+          collection.push(b);
+          selection = collection.select(function(obj) {
+            return obj.prettyHair === 'yes';
+          });
+          expect(selection.include(a)).toBeTruthy();
+          return expect(selection.include(b)).toBeFalsy();
+        });
+        return it('select: accept a callback for the selection', function() {
+          var a, b;
+          a = new Dummy;
+          a.set('prettyHair', 'yes');
+          b = new Dummy;
+          b.set('prettyHair', 'no');
+          collection.push(a);
+          collection.push(b);
+          return collection.select(function(obj) {
+            return obj.prettyHair === 'yes';
+          }, function(selection) {
+            expect(selection.include(a)).toBeTruthy();
+            return expect(selection.include(b)).toBeFalsy();
+          });
+        });
+      });
+      return describe('Removing elements', function() {
+        it('pop: removes from last position and returns it', function() {
+          var a;
+          a = new Dummy;
+          collection.push(a);
+          collection.push(object);
+          expect(collection.pop()).toBe(object);
+          expect(collection.include(object)).toBeFalsy();
+          return expect(collection.include(a)).toBeTruthy();
+        });
+        it('shift: removes from first position and returns it', function() {
+          var a;
+          a = new Dummy;
+          collection.push(a);
+          collection.push(object);
+          expect(collection.shift()).toBe(a);
+          expect(collection.include(a)).toBeFalsy();
+          return expect(collection.include(object)).toBeTruthy();
+        });
+        it('remove: remove a object', function() {
+          collection.push(object);
+          expect(collection.include(object)).toBeTruthy();
+          collection.remove(object);
+          return expect(collection.include(object)).toBeFalsy();
+        });
+        it('remove: count subtracts 1', function() {
+          collection.push(object);
+          expect(collection.count()).toEqual(1);
+          collection.remove(object);
+          return expect(collection.count()).toEqual(0);
+        });
+        it('removeBy: remove the first object that matches', function() {
+          var removed;
+          removed = new Dummy;
+          removed.set('yaba', 'dabadoo');
+          object.set('yaba', 'no-scooby-here');
+          collection.push(removed);
+          collection.push(object);
+          collection.removeBy('yaba', 'dabadoo');
+          expect(collection.include(removed)).toBeFalsy();
+          return expect(collection.include(object)).toBeTruthy();
+        });
+        return it('removeAll: remove everyone', function() {
+          var a;
+          a = new Dummy;
+          collection.push(a);
+          collection.push(object);
+          expect(collection.include(a)).toBeTruthy();
+          expect(collection.include(object)).toBeTruthy();
+          expect(collection.removeAll()).toBeTruthy();
+          expect(collection.any()).toBeFalsy();
+          expect(collection.count()).toEqual(0);
+          expect(collection.include(a)).toBeFalsy();
+          return expect(collection.include(object)).toBeFalsy();
+        });
       });
     });
   });
@@ -262,7 +467,7 @@
       it('is pink', function() {
         var a;
         a = new Dummy;
-        return expect(a.isPink).toBeTruthy;
+        return expect(a.isPink).toBeTruthy();
       });
       it('is in Pinkman.all', function() {
         var a;
@@ -308,7 +513,7 @@
           }
         };
         a.assign(attributes);
-        expect(a.b.isPink).toBeTruthy;
+        expect(a.b.isPink).toBeTruthy();
         return expect(a.b.something).toBe('cool');
       });
       it('assign: does substitute pinkman.object by anything except js.objects', function() {
@@ -319,7 +524,7 @@
           b: 'value'
         };
         a.assign(attributes);
-        expect(a.b.isPink).not.toBeTruthy;
+        expect(a.b.isPink).not.toBeTruthy();
         return expect(a.b).toBe('value');
       });
       it('attributes: returns a javascript object version', function() {

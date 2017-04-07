@@ -3,7 +3,11 @@ class window.PinkmanCollection extends window.PinkmanCommon
   @pinkmanType: 'collection'
   @privateAttributes: ['isPink','isCollection','pinkey','config','pinkmanType']
 
+
   constructor: ->
+    @config =
+      memberClass: PinkmanObject
+
     @isPink = true
     @isCollection = true
     @pinkmanType = 'collection'
@@ -44,11 +48,12 @@ class window.PinkmanCollection extends window.PinkmanCommon
     return this
 
   # Desc: returns a new collection of all members that satisfies a criteria (criteria(obj) returns true)
-  select: (criteria) ->
+  select: (criteria,callback='') ->
     selection = new @constructor
     @each (object) ->
       selection.push(object) if criteria(object)
-    return(select)
+    callback(selection) if typeof callback == 'function'
+    return(selection)
 
   # Desc: insert in last position
   push: (object) ->
@@ -84,12 +89,22 @@ class window.PinkmanCollection extends window.PinkmanCommon
 
   # Desc: remove everyone from this collection
   removeAll: ->
-    @remove(object) for object in @collection
-    true
+    if @any()
+      @remove(@first())
+      @removeAll()
+    else
+      return(true)
 
   # Desc: return true if object is in this collection and false if anything else.
   include: (object) ->
-    @collection.indexOf(object) isnt -1
+    if object? and typeof object == 'object' 
+      if object.id?
+        @any (o) ->
+          object.id == o.id
+      else
+        @collection.indexOf(object) isnt -1
+    else
+      false
 
   first: (n=1) ->
     if n==1 
@@ -156,10 +171,18 @@ class window.PinkmanCollection extends window.PinkmanCommon
       return null
 
   # Desc: get by pinkey
-  get: (pinkey) ->
-    if pinkey?
-      object = @getBy('pinkey',pinkey)
-      return(object)
+  getByPinkey: (pinkey) ->
+    @getBy('pinkey',pinkey)
+
+  # Desc: sinthetize getByPinkey, getBy, and getByAttributes in one method
+  get: (args...) ->
+    if args.length > 0
+      if Pinkman.isNumber(args[0])
+        @getByPinkey(args[0])
+      else if args.length == 2
+        @getBy(args...)
+      else if typeof args[0] == 'object'
+        @getByAttributes(args[0])
   
   # Desc: find by id
   find: (id) ->
@@ -194,8 +217,11 @@ class window.PinkmanCollection extends window.PinkmanCommon
   # Desc: fetch from array ... T_T
   fetchFromArray: (array) ->
     for a in array
-      object = @new()
-      object.assign a
+      if a.isPink
+        object = a
+      else
+        object = @new()
+        object.assign a
       # if object already is in this collection, overwrite its values
       if @find(object.id)?
         @find(object.id).assign(object.attributes())
@@ -210,8 +236,8 @@ class window.PinkmanCollection extends window.PinkmanCommon
     @fetchFromArray(collection.collection)
 
   # Desc: returns a new object associated with this collection
-  new: =>
-    object = new @config.memberClass
+  new: ->
+    object = new (@config.memberClass)
     object.set('owner',this)
     object
 
