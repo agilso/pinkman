@@ -64,20 +64,34 @@ class window.PinkmanCollection extends window.PinkmanCommon
 
   pushIndividually: (object) ->
     if typeof object == 'object'
-      unless object.isPink
-        pinkObject = @new()
-        pinkObject.assign(object)
-        object = pinkObject   
+      object = @beforeInsertionPrep(object)
       unless @include(object)
         @collection.push(object)
         object.collections.push(this) if object.isObject and object.collections? and not object.collections.include(this)
 
   # Desc: insert in first position
   unshift: (object) ->
-    if typeof object == 'object' and object.isPink and not @include(object)
+    if object? and Pinkman.isArray(object)
+      for item in object
+        @unshiftIndividually(item)
+    else if typeof object == 'object' and object.isPink and not @include(object)
       @collection.unshift(object)
       object.collections.unshift(this) if object.isObject and object.collections? and not object.collections.include(this)
 
+  unshiftIndividually: (object) ->
+    if typeof object == 'object'
+      object = @beforeInsertionPrep(object)
+      unless @include(object)
+        @collection.unshift(object)
+        object.collections.push(this) if object.isObject and object.collections? and not object.collections.include(this)
+
+  beforeInsertionPrep: (object) ->
+    unless object.isPink
+      pinkObject = @new()
+      pinkObject.assign(object)
+      object = pinkObject
+    return(object)
+         
   # Desc: removes from last position and returns it
   pop: ->
     @remove(@last())
@@ -107,13 +121,19 @@ class window.PinkmanCollection extends window.PinkmanCommon
       return(true)
 
   # Desc: return true if object is in this collection and false if anything else.
-  include: (object) ->
-    if object? and typeof object == 'object' 
-      if object.id?
+  # Also accepts an array as argument. Return true if 
+  include: (args) ->
+    if args? and Pinkman.isArray(args)
+      value = true
+      for item in args
+        value=false unless @include(item)
+      return(value)
+    else if args? and typeof args == 'object' 
+      if args.id?
         @any (o) ->
-          object.id == o.id
+          args.id == o.id
       else
-        @collection.indexOf(object) isnt -1
+        @collection.indexOf(args) isnt -1
     else
       false
 
@@ -206,11 +226,7 @@ class window.PinkmanCollection extends window.PinkmanCommon
 
   fetchFromArray: (array) ->
     for a in array
-      if a.isPink
-        object = a
-      else
-        object = @new()
-        object.assign a
+      object = @beforeInsertionPrep(a)
       # if object already is in this collection, overwrite its values
       if @find(object.id)?
         @find(object.id).assign(object.attributes())
@@ -227,9 +243,10 @@ class window.PinkmanCollection extends window.PinkmanCommon
       @fetchFromArray(collection.collection)
 
   # Desc: returns a new object associated with this collection
-  new: ->
+  new: (attributes) ->
     object = new (@config.memberClass)
-    object.set('owner',this)
+    object.initialize(attributes)
+    @push(object)
     object
 
   # Desc: reload every object in this collection

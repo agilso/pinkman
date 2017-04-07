@@ -75,6 +75,16 @@
         expect(collection.include(a)).toBeTruthy()
         expect(collection.include(b)).toBeTruthy()
 
+      it 'include (array version): check if all items of an array are in the collection', ->
+        a = new Dummy
+        b = new Dummy
+        notInCollection = new Dummy
+        collection.push([a,b,object])
+        expect(collection.include([a,b])).toBeTruthy()
+        expect(collection.include([a,object])).toBeTruthy()
+        expect(collection.include([b,object])).toBeTruthy()
+        expect(collection.include([notInCollection])).toBeFalsy()
+
       it 'any: returns true iff there is at least one member', ->
         expect(collection.any()).toBeFalsy()
         collection.push(object)
@@ -172,6 +182,37 @@
         expect(collection.first()).toBe object
         expect(collection.last()).toBe a
 
+      it 'fetchFromArray: gets every element of an array and inserts pinkman objects versions of them', ->
+        a = new Dummy
+        b = new Dummy
+        c = {prettyHair: 'yes'}
+        collection.push [a,b,c]
+        expect(collection.include([a,b])).toBeTruthy()
+        expect(collection.getBy('prettyHair','yes').isPink).toBeTruthy()
+        expect(collection.getBy('prettyHair','yes').className()).toEqual 'Dummy'
+
+      it 'beforeInsertionPrep: does nothing if object isPink', ->
+        a = new Dummy
+        expect(collection.beforeInsertionPrep(a)).toBe a
+
+      it 'beforeInsertionPrep: returns a pinkman version of the object', ->
+        a = {prettyHair: 'yes', prettyEyes: 'no', prettyInteresting: 'yes'}
+        aPink = collection.beforeInsertionPrep(a)
+        expect(a.isPink).toBeFalsy()
+        expect(aPink.isPink).toBeTruthy()
+        for key,value of aPink.attributes()
+          expect(Object.keys(a)).toContain key 
+          expect(aPink.keys()).toContain key
+          expect(aPink[key]).toEqual a[key]
+
+      it 'new: returns a new pinkman object associated to this collection', ->
+        a = collection.new()
+        expect(a.isPink).toBeTruthy()
+        expect(a.className()).toEqual 'Dummy'
+
+      it 'new: new object is in this collection', ->
+        a = collection.new()
+        expect(collection.include(a)).toBeTruthy()
 
     describe 'Retrieving elements', ->
 
@@ -276,7 +317,7 @@
         collection.push [a,b]
         expect(collection.next(a)).toBe b
 
-      it 'prev: return next element', ->
+      it 'prev: return previous element', ->
         a = new Dummy
         a.set 'prettyHair', 'yes'
         b = new Dummy
