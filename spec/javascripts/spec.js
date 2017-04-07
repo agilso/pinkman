@@ -167,7 +167,7 @@
           });
           return expect(count).toEqual(1);
         });
-        return it('each: apply a function to all members', function() {
+        it('each: apply a function to all members', function() {
           var a, i, len, obj, ref, results;
           a = new Dummy;
           collection.push(a);
@@ -182,6 +182,31 @@
             results.push(expect(obj.each).toEqual('transformed'));
           }
           return results;
+        });
+        it('uniq: removes id duplicated members', function() {
+          var a, b;
+          a = new Dummy({
+            prettyHair: true
+          });
+          b = new Dummy({
+            prettyHair: false
+          });
+          a.set('id', 1);
+          b.set('id', 1);
+          collection.collection = [a, b];
+          return expect(collection.uniq().include(b)).toBeFalsy();
+        });
+        return it('uniq: removes pinkey duplicated members', function() {
+          var a, b;
+          a = new Dummy({
+            prettyHair: true
+          });
+          b = new Dummy({
+            prettyHair: false
+          });
+          b.set('pinkey', a.pinkey);
+          collection.collection = [a, b];
+          return expect(collection.uniq().include(b)).toBeFalsy();
         });
       });
       describe('Inserting elements', function() {
@@ -293,7 +318,7 @@
           expect(selection.include(a)).toBeTruthy();
           return expect(selection.include(b)).toBeFalsy();
         });
-        return it('select: accept a callback for the selection', function() {
+        it('select: accept a callback for the selection', function() {
           var a, b;
           a = new Dummy;
           a.set('prettyHair', 'yes');
@@ -307,6 +332,24 @@
             expect(selection.include(a)).toBeTruthy();
             return expect(selection.include(b)).toBeFalsy();
           });
+        });
+        it('next: return next element', function() {
+          var a, b;
+          a = new Dummy;
+          a.set('prettyHair', 'yes');
+          b = new Dummy;
+          b.set('prettyHair', 'no');
+          collection.push([a, b]);
+          return expect(collection.next(a)).toBe(b);
+        });
+        return it('prev: return next element', function() {
+          var a, b;
+          a = new Dummy;
+          a.set('prettyHair', 'yes');
+          b = new Dummy;
+          b.set('prettyHair', 'no');
+          collection.push([a, b]);
+          return expect(collection.prev(b)).toBe(a);
         });
       });
       return describe('Removing elements', function() {

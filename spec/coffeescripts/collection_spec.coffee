@@ -141,6 +141,21 @@
         for obj in collection.collection
           expect(obj.each).toEqual 'transformed'
 
+      it 'uniq: removes id duplicated members', ->
+        a = new Dummy(prettyHair: yes)
+        b = new Dummy(prettyHair: no)
+        a.set('id',1)
+        b.set('id',1)
+        collection.collection = [a,b]
+        expect(collection.uniq().include(b)).toBeFalsy()
+
+      it 'uniq: removes pinkey duplicated members', ->
+        a = new Dummy(prettyHair: yes)
+        b = new Dummy(prettyHair: no)
+        b.set('pinkey',a.pinkey)
+        collection.collection = [a,b]
+        expect(collection.uniq().include(b)).toBeFalsy()
+
 
     describe 'Inserting elements', ->
 
@@ -252,6 +267,22 @@
         , (selection) ->
           expect(selection.include(a)).toBeTruthy()
           expect(selection.include(b)).toBeFalsy()
+
+      it 'next: return next element', ->
+        a = new Dummy
+        a.set 'prettyHair', 'yes'
+        b = new Dummy
+        b.set 'prettyHair', 'no'
+        collection.push [a,b]
+        expect(collection.next(a)).toBe b
+
+      it 'prev: return next element', ->
+        a = new Dummy
+        a.set 'prettyHair', 'yes'
+        b = new Dummy
+        b.set 'prettyHair', 'no'
+        collection.push [a,b]
+        expect(collection.prev(b)).toBe a
 
     describe 'Removing elements', ->
 

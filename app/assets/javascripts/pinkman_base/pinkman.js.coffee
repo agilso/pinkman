@@ -9,6 +9,9 @@ class window.Pinkman
   @isNumber: (n) ->
     !isNaN(parseFloat(n)) && isFinite(n)
 
+  @isArray: (array) ->
+    array instanceof Array
+
 #   @get: (id) ->
 #     this.all[id]
 

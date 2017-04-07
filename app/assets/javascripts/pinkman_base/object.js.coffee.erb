@@ -3,7 +3,8 @@ class window.PinkmanObject extends window.PinkmanCommon
   @pinkmanType: 'object'
   @privateAttributes: ['isPink','isObject','pinkey','config','pinkmanType','collections']
 
-  constructor: ->
+  constructor: (attributesObject) ->
+    
     @isPink = true
     @isObject = true
     @pinkmanType = 'object'
@@ -13,6 +14,13 @@ class window.PinkmanObject extends window.PinkmanCommon
 
     Pinkman.objects.push(this)
     Pinkman.all.push(this)
+    
+    @initialize(attributesObject)
+
+  initialize: (attributesObject) ->
+    if typeof attributesObject == 'object'
+      for key, value of attributesObject
+        @set(key,value) if PinkmanObject.privateAttributes.indexOf(key) is -1
 
   # Desc: assign attributes from a pure javascript object
   # Usage: a.assign( {attribute: value} )

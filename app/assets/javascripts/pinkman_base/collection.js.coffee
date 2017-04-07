@@ -4,7 +4,7 @@ class window.PinkmanCollection extends window.PinkmanCommon
   @privateAttributes: ['isPink','isCollection','pinkey','config','pinkmanType']
 
 
-  constructor: ->
+  constructor: () ->
     @config =
       memberClass: PinkmanObject
 
@@ -56,10 +56,21 @@ class window.PinkmanCollection extends window.PinkmanCommon
     return(selection)
 
   # Desc: insert in last position
-  push: (object) ->
-    if typeof object == 'object' and object.isPink and not @include(object)
-      @collection.push(object)
-      object.collections.push(this) if object.isObject and object.collections? and not object.collections.include(this)
+  push: (arg) ->
+    if Pinkman.isArray(arg)
+      @fetchFromArray(arg)
+    else
+      @pushIndividually(arg)
+
+  pushIndividually: (object) ->
+    if typeof object == 'object'
+      unless object.isPink
+        pinkObject = @new()
+        pinkObject.assign(object)
+        object = pinkObject   
+      unless @include(object)
+        @collection.push(object)
+        object.collections.push(this) if object.isObject and object.collections? and not object.collections.include(this)
 
   # Desc: insert in first position
   unshift: (object) ->
@@ -111,33 +122,6 @@ class window.PinkmanCollection extends window.PinkmanCommon
       return @collection[0]
     else 
       return @collection[0..(n-1)]
-
-  firstTwo: ->
-    @first(2) if @first? and typeof @first == 'function'
-
-  firstThree: ->
-    @first(3) if @first? and typeof @first == 'function'
-
-  firstFour: ->
-    @first(4) if @first? and typeof @first == 'function'
-
-  firstFive: ->
-    @first(5) if @first? and typeof @first == 'function'
-
-  firstSix: ->
-    @first(6) if @first? and typeof @first == 'function'
-
-  firstSeven: ->
-    @first(7) if @first? and typeof @first == 'function'
-
-  firstEight: ->
-    @first(8) if @first? and typeof @first == 'function'
-
-  firstNine: ->
-    @first(9) if @first? and typeof @first == 'function'
-
-  firstTen: ->
-    @first(10) if @first? and typeof @first == 'function'
 
   last: (n=1) ->
     if n==1 
@@ -207,14 +191,19 @@ class window.PinkmanCollection extends window.PinkmanCommon
 
   # Desc: removes duplicated records (same id or same pinkey)
   uniq: (callback='') ->
-    for i in @collection
-      for j in @collection
-        @remove(i) if ((i.pinkey == j.pinkey) or (i.id == j.id)) and (i isnt j)
-    callback(this) if callback? and typeof callback == 'function'
+    duplicated = []
+    for object in @collection
+      @select (matching) ->
+        duplicated.push(matching) if object.pinkey? and (object.pinkey == matching.pinkey) and (object isnt matching)
+        duplicated.push(matching) if object.id? and (object.id == matching.id) and (object isnt matching)
+    for d in duplicated
+      @remove(d)
     return(this)
 
-
   # Desc: fetch from array ... T_T
+
+  ############ missing tests from here ################
+
   fetchFromArray: (array) ->
     for a in array
       if a.isPink
@@ -230,10 +219,12 @@ class window.PinkmanCollection extends window.PinkmanCommon
         @push(object)
     return(this)
 
-
   # Desc: merges this collection with another
   merge: (collection) ->
-    @fetchFromArray(collection.collection)
+    if Pinkman.isArray(collection)
+      @fetchFromArray(collection)
+    else if typeof collection == 'object' and collection.isPink and collection.isCollection
+      @fetchFromArray(collection.collection)
 
   # Desc: returns a new object associated with this collection
   new: ->
@@ -244,10 +235,11 @@ class window.PinkmanCollection extends window.PinkmanCommon
   # Desc: reload every object in this collection
   reload: (callback='') ->
     if @any()
-      @each (object) ->
-        object.reload() if object.id?
-      if typeof callback == 'function'
-        callback(this)
+      @each (object) =>
+        if object.id?
+          object.reload (object) =>
+            if object.pinkey == @last().pinkey and callback == 'function'
+              callback(this)
   
   # Desc: create a index for objects 
   makeIndex: ->
