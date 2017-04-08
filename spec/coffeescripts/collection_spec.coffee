@@ -3,14 +3,15 @@
   it 'exists', ->
     expect(PinkmanCollection).not.toBe null
 
-  class Dummies extends PinkmanCollection
-    config:
-      apiUrl: '/api/dummies'
-      memberClass: Dummy
 
-  class Dummy extends PinkmanObject
+  class window.Dummy extends PinkmanObject
     config:
       apiUrl: '/api/dummies'
+  
+  class window.Dummies extends PinkmanCollection
+    config:
+      apiUrl: '/api/dummies'
+      memberClass: window.Dummy
 
   describe 'Subclasses', ->
 

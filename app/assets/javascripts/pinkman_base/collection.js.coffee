@@ -2,11 +2,11 @@ class window.PinkmanCollection extends window.PinkmanCommon
 
   @pinkmanType: 'collection'
   @privateAttributes: ['isPink','isCollection','pinkey','config','pinkmanType']
-
+  
+  config:
+    memberClass: PinkmanObject
 
   constructor: () ->
-    @config =
-      memberClass: PinkmanObject
 
     @isPink = true
     @isCollection = true

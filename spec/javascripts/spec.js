@@ -3,26 +3,10 @@
     hasProp = {}.hasOwnProperty;
 
   describe('PinkmanCollection', function() {
-    var Dummies, Dummy;
     it('exists', function() {
       return expect(PinkmanCollection).not.toBe(null);
     });
-    Dummies = (function(superClass) {
-      extend(Dummies, superClass);
-
-      function Dummies() {
-        return Dummies.__super__.constructor.apply(this, arguments);
-      }
-
-      Dummies.prototype.config = {
-        apiUrl: '/api/dummies',
-        memberClass: Dummy
-      };
-
-      return Dummies;
-
-    })(PinkmanCollection);
-    Dummy = (function(superClass) {
+    window.Dummy = (function(superClass) {
       extend(Dummy, superClass);
 
       function Dummy() {
@@ -36,6 +20,21 @@
       return Dummy;
 
     })(PinkmanObject);
+    window.Dummies = (function(superClass) {
+      extend(Dummies, superClass);
+
+      function Dummies() {
+        return Dummies.__super__.constructor.apply(this, arguments);
+      }
+
+      Dummies.prototype.config = {
+        apiUrl: '/api/dummies',
+        memberClass: window.Dummy
+      };
+
+      return Dummies;
+
+    })(PinkmanCollection);
     describe('Subclasses', function() {
       return it('Subclass has @pinkmanType == "collection"', function() {
         return expect(Dummies.pinkmanType).toBe('collection');
