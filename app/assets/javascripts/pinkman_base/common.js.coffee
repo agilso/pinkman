@@ -1,5 +1,11 @@
 class window.PinkmanCommon
   
+  @isInstance: (object) ->
+    object.constructor is this
+
+  isInstanceOf: (prot) ->
+    this.constructor is prot
+
   # Desc: return api url path
   apiUrl: () ->
     @config.apiUrl

@@ -10,7 +10,7 @@ class window.Pinkman
     !isNaN(parseFloat(n)) && isFinite(n)
 
   @isArray: (array) ->
-    array instanceof Array
+    array? and array.constructor is Array
 
 #   @get: (id) ->
 #     this.all[id]

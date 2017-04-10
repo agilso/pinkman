@@ -35,7 +35,7 @@
       a = new PinkmanCollection
       expect(Pinkman.all).toContain a
 
-    it 'is in Pinkman.objects', ->
+    it 'is in Pinkman.collections', ->
       a = new PinkmanCollection
       expect(Pinkman.collections).toContain a
       b = new Dummies
@@ -44,6 +44,10 @@
     it 'has pinkmanType == "collection"', ->
       a = new Dummies
       expect(a.pinkmanType).toEqual 'collection'
+
+    it 'isCollection"', ->
+      a = new Dummies
+      expect(a.isCollection).toBeTruthy()
 
   describe 'Functions', ->
     # scope variables in this namespace
@@ -85,6 +89,9 @@
         expect(collection.include([a,object])).toBeTruthy()
         expect(collection.include([b,object])).toBeTruthy()
         expect(collection.include([notInCollection])).toBeFalsy()
+
+      it 'include: returns false for undefined object', ->
+        expect(collection.include(null)).toBeFalsy()
 
       it 'any: returns true iff there is at least one member', ->
         expect(collection.any()).toBeFalsy()
@@ -176,12 +183,34 @@
         collection.push(object)
         expect(collection.last()).toBe object
 
+      it 'push: does not insert same object twice', ->
+        collection.push object
+        collection.push object
+        collection.push [object,object]
+        expect(collection.count()).toEqual 1
+
+      it 'push: return true on success, false otherwise', ->
+        expect(collection.push(object)).toBeTruthy()
+        # expect(collection.push(object)).toBeFalsy()
+        # expect(collection.push(null)).toBeFalsy()
+
       it 'unshift: insert in first position', ->
         a = new Dummy
         collection.unshift(a)
         collection.unshift(object)
         expect(collection.first()).toBe object
         expect(collection.last()).toBe a
+
+      it 'unshift: does not insert same object twice', ->
+        collection.unshift object
+        collection.unshift object
+        collection.unshift [object,object]
+        expect(collection.count()).toEqual 1
+
+      it 'unshift: return true on success, false otherwise', ->
+        expect(collection.unshift(object)).toBeTruthy()
+        expect(collection.unshift(object)).toBeFalsy()
+        expect(collection.unshift(null)).toBeFalsy()
 
       it 'fetchFromArray: gets every element of an array and inserts pinkman objects versions of them', ->
         a = new Dummy
@@ -205,6 +234,21 @@
           expect(Object.keys(a)).toContain key 
           expect(aPink.keys()).toContain key
           expect(aPink[key]).toEqual a[key]
+
+      it 'beforeInsertionPrep: is called in push', ->
+        spyOn collection, 'beforeInsertionPrep'
+        collection.push object
+        expect(collection.beforeInsertionPrep).toHaveBeenCalled()
+
+      it 'beforeInsertionPrep: is called in unshift', ->
+        spyOn collection, 'beforeInsertionPrep'
+        collection.unshift object
+        expect(collection.beforeInsertionPrep).toHaveBeenCalled()
+
+      it 'beforeInsertionPrep: is called in fetchFromArray', ->
+        spyOn collection, 'beforeInsertionPrep'
+        collection.fetchFromArray [object]
+        expect(collection.beforeInsertionPrep).toHaveBeenCalled()
 
       it 'new: returns a new pinkman object associated to this collection', ->
         a = collection.new()

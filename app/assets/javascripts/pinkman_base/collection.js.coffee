@@ -58,38 +58,44 @@ class window.PinkmanCollection extends window.PinkmanCommon
   # Desc: insert in last position
   push: (arg) ->
     if Pinkman.isArray(arg)
-      @fetchFromArray(arg)
+      @pushIndividually(item) for item in arg
+      return(@include(arg))
     else
       @pushIndividually(arg)
 
-  pushIndividually: (object) ->
-    if typeof object == 'object'
-      object = @beforeInsertionPrep(object)
-      unless @include(object)
-        @collection.push(object)
-        object.collections.push(this) if object.isObject and object.collections? and not object.collections.include(this)
 
   # Desc: insert in first position
   unshift: (object) ->
-    if object? and Pinkman.isArray(object)
-      for item in object
-        @unshiftIndividually(item)
-    else if typeof object == 'object' and object.isPink and not @include(object)
-      @collection.unshift(object)
-      object.collections.unshift(this) if object.isObject and object.collections? and not object.collections.include(this)
+    if Pinkman.isArray(object)
+      @unshiftIndividually(item) for item in object
+      return(@include(object))
+    else
+      @unshiftIndividually(object)
+
+  pushIndividually: (object) ->
+    if object? and typeof object == 'object' and not @include(object)
+      @beforeInsertionPrep object, (object) =>
+        @collection.push(object)
+        object.collections.push(this) if object.isObject and object.collections?
+        return true
+    else
+      return false
 
   unshiftIndividually: (object) ->
-    if typeof object == 'object'
-      object = @beforeInsertionPrep(object)
-      unless @include(object)
+    if object? and typeof object == 'object' and not @include(object)
+      @beforeInsertionPrep object, (object) =>
         @collection.unshift(object)
-        object.collections.push(this) if object.isObject and object.collections? and not object.collections.include(this)
+        object.collections.push(this) if object.isObject and object.collections?
+        return true
+    else
+      return false
 
-  beforeInsertionPrep: (object) ->
+  beforeInsertionPrep: (object,callback='') ->
     unless object.isPink
       pinkObject = @new()
       pinkObject.assign(object)
       object = pinkObject
+    callback(object) if typeof callback == 'function'
     return(object)
          
   # Desc: removes from last position and returns it
@@ -228,7 +234,7 @@ class window.PinkmanCollection extends window.PinkmanCommon
     for a in array
       object = @beforeInsertionPrep(a)
       # if object already is in this collection, overwrite its values
-      if @find(object.id)?
+      if object? and @find(object.id)?
         @find(object.id).assign(object.attributes())
       # else, inserts it
       else
