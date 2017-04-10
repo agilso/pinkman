@@ -1,5 +1,11 @@
 class window.PinkmanCommon
   
+  @mixin: (args...) ->
+    Pinkman.mixin(args...)
+
+  @mixit: (args...) ->
+    Pinkman.mixit(this,args...)
+
   @isInstance: (object) ->
     object.constructor is this
 

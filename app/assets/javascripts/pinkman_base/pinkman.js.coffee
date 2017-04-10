@@ -12,6 +12,7 @@ class window.Pinkman
   @isArray: (array) ->
     array? and array.constructor is Array
 
+
 #   @get: (id) ->
 #     this.all[id]
 

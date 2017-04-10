@@ -305,3 +305,5 @@ class window.PinkmanCollection extends window.PinkmanCommon
       return filter
     else
       return false
+
+window.Pinkman.collection = window.PinkmanCollection
