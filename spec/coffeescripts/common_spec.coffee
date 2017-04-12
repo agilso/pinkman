@@ -2,7 +2,7 @@ describe 'PinkmanCommon', ->
 
   class Dummy extends PinkmanCommon
     config:
-      apiUrl: '/api/dummy'
+      api: '/api/dummy'
 
   describe 'Class Scope/Functions', ->
     it 'exists', ->
@@ -13,9 +13,9 @@ describe 'PinkmanCommon', ->
       expect(Dummy.isInstance(a)).toBeTruthy()
 
 
-  it 'apiUrl: returns api url as expected (config object)', ->
+  it 'api: returns api url as expected (config object)', ->
     a = new Dummy
-    expect(a.apiUrl()).toBe '/api/dummy'
+    expect(a.api()).toBe '/api/dummy/'
 
   it 'className: returns a string with the class name', ->
     a = new Dummy

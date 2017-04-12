@@ -11,8 +11,6 @@ class window.PinkmanCommon
   @isInstance: (object) ->
     object.constructor is this
 
-  @isInstanceOf: (prot) ->
-    this.constructor is prot
 
   # Desc: return api url path
   api: () ->
@@ -21,6 +19,9 @@ class window.PinkmanCommon
         @config.api + '/' 
       else
         '/' + @config.api + '/' 
+  
+  isInstanceOf: (prot) ->
+    this.constructor is prot
 
   # Desc: returns the class name (constructor name)
   # Usage: a.className()  #=> a.constructor.name
