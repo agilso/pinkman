@@ -1,4 +1,6 @@
 class window.PinkmanCommon
+
+  @privateAttributes: ['isPink','isObject,''isCollection','pinkey','config','pinkmanType','collections']
   
   @mixin: (args...) ->
     Pinkman.mixin(args...)
@@ -13,8 +15,12 @@ class window.PinkmanCommon
     this.constructor is prot
 
   # Desc: return api url path
-  apiUrl: () ->
-    @config.apiUrl
+  api: () ->
+    if @config? and @config.api?
+      if @config.api.charAt(0) == '/'
+        @config.api + '/' 
+      else
+        '/' + @config.api + '/' 
 
   # Desc: returns the class name (constructor name)
   # Usage: a.className()  #=> a.constructor.name

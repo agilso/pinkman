@@ -6,11 +6,11 @@
 
   class window.Dummy extends PinkmanObject
     config:
-      apiUrl: '/api/dummies'
+      api: 'api/dummies'
   
   class window.Dummies extends PinkmanCollection
     config:
-      apiUrl: '/api/dummies'
+      api: 'api/dummies'
       memberClass: window.Dummy
 
   describe 'Subclasses', ->

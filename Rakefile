@@ -8,11 +8,10 @@ require 'jasmine'
 load 'jasmine/tasks/jasmine.rake'
 RSpec::Core::RakeTask.new(:spec)
 
-
 namespace :pinkman do
   desc 'Precompile pinkman.js'
   task :precompile do
-    f = File.open(Pinkman.root.join('public','javascripts','pinkman.min.js'),'w+') {|f| f.write Assets.app_environment['pinkman'].to_s }
+    f = File.open(Pinkman.root.join('public','pinkman.min.js'),'w+') {|f| f.write Assets.app_environment['pinkman'].to_s }
   end
 end
 

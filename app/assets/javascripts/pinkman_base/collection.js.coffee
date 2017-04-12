@@ -1,7 +1,6 @@
 class window.PinkmanCollection extends window.PinkmanCommon
 
   @pinkmanType: 'collection'
-  @privateAttributes: ['isPink','isCollection','pinkey','config','pinkmanType']
   
   config:
     memberClass: PinkmanObject
@@ -13,7 +12,7 @@ class window.PinkmanCollection extends window.PinkmanCommon
     @pinkmanType = 'collection'
     
     @collection = []
-    @pinkey = Pinkman.all.length + 1
+    @pinkey = Pinkman.all.length
 
     Pinkman.collections.push(this)
     Pinkman.all.push(this)
@@ -218,8 +217,8 @@ class window.PinkmanCollection extends window.PinkmanCommon
   # Desc: removes duplicated records (same id or same pinkey)
   uniq: (callback='') ->
     duplicated = []
-    for object in @collection
-      @select (matching) ->
+    @each (object) =>
+      @each (matching) ->
         duplicated.push(matching) if object.pinkey? and (object.pinkey == matching.pinkey) and (object isnt matching)
         duplicated.push(matching) if object.id? and (object.id == matching.id) and (object isnt matching)
     for d in duplicated
@@ -227,9 +226,6 @@ class window.PinkmanCollection extends window.PinkmanCommon
     return(this)
 
   # Desc: fetch from array ... T_T
-
-  ############ missing tests from here ################
-
   fetchFromArray: (array) ->
     for a in array
       object = @beforeInsertionPrep(a)
@@ -305,5 +301,70 @@ class window.PinkmanCollection extends window.PinkmanCommon
       return filter
     else
       return false
+
+
+  # --- Ajax related --- #
+
+  # Desc: Fetch records from API_URL
+  # request:  get /api/API_URL/
+  # in rails: api::controller#index
+  fetch: (callback = '') ->
+    @fetchFromUrl @api(), callback      
+  
+  # Desc: Fetch records from another action of this model api
+  # request:  get /api/API_URL/:action/#id
+  # in rails: api::controller#action
+
+  # Example: fetching all orders of a user
+  # coffee: orders.fetchFrom 'user', user.id
+  # api::controler#order: render json: User.find(params[:id]).orders.to_json
+  fetchFrom: (action,id,callback = '') ->
+    if action? and id?
+      @fetchFromUrl(@api() +  "#{action}/#{id}", callback)
+    else
+      return false
+
+
+  # Desc: Fetch records from URL
+  # request:  get /api/API_URL/
+  fetchFromUrl: (options) ->
+    if object? and typeof options == 'object' and options.url?
+      limit = options.limit? ? options.limit : 1000
+      offset = options.offset? ? options.offset : 0
+      @fetchingFrom = options.url
+      Pinkman.ajax.get
+        url: options.url + "?limit=#{limit}&offset=#{offset}"
+        complete: (response) =>
+          if response.errors? or response.error?
+            [@errors, @error] = [response.errors, response.error]
+            if response.errors? then (throw new Error('Oh no... I could not fetch your records, bitch. (jk... about the "bitch" part)')) else (throw new Error(response.error))
+            return false
+          else
+            @fetchFromArray(response).emptyResponse = response.length == 0
+            options.callback(this) if options.callback? and typeof options.callback == 'function'
+            return(this)
+
+  # Desc: Fetch next records from last fetched URL or main API_URl
+  # request:  get /api/API_URL/?offset="COLLECTION_SIZE"&limit=n
+  # in rails: api::controller#index
+  fetchMore: (n=10,callback='') ->
+    if @fetchingFrom?
+      @fetchFromUrl {url: @fetchingFrom, limit: n, offset: @count(), callback: callback}
+    else
+      @fetchFromUrl {url: @api(), limit: n, offset: @count(), callback: callback}
+
+  # Desc: Fetch next n records from a action
+  # request:  get /api/API_URL/:action/?offset="COLLECTION_SIZE"&limit=n
+  # in rails: api::controller#action
+  fetchMoreFrom: (n,action,id,callback='') ->
+    @fetchFromUrl {url: @api() + "#{action}/#{id}", limit: n, offset: @count(), callback: callback}
+
+  # Desc: Connect to api to search in this model a query
+  # request:  get /api/API_URL/search?query=YOUR_QUERY
+  # in rails: api::controller#search
+  # assume models to have a Model.search("YOUR_QUERY") method.
+  search: (query,callback='') ->
+    @removeAll()
+    @fetchFromUrl { url: @api() + "search?query=#{query}", callback: callback }
 
 window.Pinkman.collection = window.PinkmanCollection

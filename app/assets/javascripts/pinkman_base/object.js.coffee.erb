@@ -1,7 +1,6 @@
 class window.PinkmanObject extends window.PinkmanCommon
 
   @pinkmanType: 'object'
-  @privateAttributes: ['isPink','isObject','pinkey','config','pinkmanType','collections']
 
   constructor: (attributesObject) ->
     
@@ -10,7 +9,7 @@ class window.PinkmanObject extends window.PinkmanCommon
     @pinkmanType = 'object'
 
     @collections = new PinkmanCollection
-    @pinkey = Pinkman.all.length + 1
+    @pinkey = Pinkman.all.length
 
     Pinkman.objects.push(this)
     Pinkman.all.push(this)
