@@ -17,6 +17,9 @@ class window.Pinkman
   @isArray: (array) ->
     array? and array.constructor is Array
 
+  @isString: (str) ->
+    str? and typeof str == 'string'
+
   # --- tools and facilities
 
   @doAfter: (ds, callback, timer = '_pinkman_doAfter') ->
@@ -39,6 +42,6 @@ class window.Pinkman
 
       if @calledFunctions.indexOf(func) == -1
         @calledFunctions.push(func)
-        f(args)
+        f(args...)
 
   @calledFunctions = []

@@ -1,6 +1,6 @@
 class window.PinkmanCollection extends window.PinkmanCommon
 
-  @pinkmanType: 'collection'
+  @pinkmanType = 'collection'
   
   config:
     memberClass: PinkmanObject
@@ -329,8 +329,8 @@ class window.PinkmanCollection extends window.PinkmanCommon
   # request:  get /api/API_URL/
   fetchFromUrl: (options) ->
     if object? and typeof options == 'object' and options.url?
-      limit = options.limit? ? options.limit : 1000
-      offset = options.offset? ? options.offset : 0
+      limit = if options.limit? then options.limit else 1000
+      offset = if options.offset? then options.offset else 0
       @fetchingFrom = options.url
       Pinkman.ajax.get
         url: options.url + "?limit=#{limit}&offset=#{offset}"
@@ -349,9 +349,9 @@ class window.PinkmanCollection extends window.PinkmanCommon
   # in rails: api::controller#index
   fetchMore: (n=10,callback='') ->
     if @fetchingFrom?
-      @fetchFromUrl {url: @fetchingFrom, limit: n, offset: @count(), callback: callback}
+      @fetchFromUrl url: @fetchingFrom, limit: n, offset: @count(), callback: callback
     else
-      @fetchFromUrl {url: @api(), limit: n, offset: @count(), callback: callback}
+      @fetchFromUrl url: @api(), limit: n, offset: @count(), callback: callback
 
   # Desc: Fetch next n records from a action
   # request:  get /api/API_URL/:action/?offset="COLLECTION_SIZE"&limit=n

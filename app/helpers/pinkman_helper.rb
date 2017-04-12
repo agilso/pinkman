@@ -1,4 +1,9 @@
 module PinkmanHelper
+
+  def input hash, *args, &block
+    name = hash[:name]
+    tag('input',hash.merge(data: {pinkey: 3,action: name}), *args, &block)
+  end
   
   def pinkman_template path
     render partial: "pinkman/#{path}"

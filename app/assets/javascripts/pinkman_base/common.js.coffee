@@ -1,6 +1,6 @@
 class window.PinkmanCommon
 
-  @privateAttributes: ['isPink','isObject,''isCollection','pinkey','config','pinkmanType','collections']
+  @privateAttributes = ['isPink','isObject','isCollection','pinkey','config','pinkmanType','collections']
   
   @mixin: (args...) ->
     Pinkman.mixin(args...)
@@ -11,7 +11,7 @@ class window.PinkmanCommon
   @isInstance: (object) ->
     object.constructor is this
 
-  isInstanceOf: (prot) ->
+  @isInstanceOf: (prot) ->
     this.constructor is prot
 
   # Desc: return api url path
