@@ -35,11 +35,40 @@ class window.PinkmanController extends window.PinkmanObject
 
   bindAll: ->
 
-  drop: ->
+  bottom: (callback) -> 
+    setTimeout ->        
+      window._pinkman_lastEndOfPage = 0 unless window._pinkman_lastEndOfPage?
+      $(window).scroll ->
+        t = Date.now()
+        distanceFromBottom = $(document).height() - $(window).scrollTop() - document.body.offsetHeight
+        if ( (distanceFromBottom < 800 and window._pinkman_lastEndOfPage < t) or distanceFromBottom == 0 ) and not window._pinkman_bottomTriggered
+          window._pinkman_bottomTriggered = true
+          window._pinkman_lastEndOfPage = t
+          callback()
+    , 50
 
-  endOfPage: ->
+  endBottom: () ->
+    window._pinkman_bottomTriggered = false
+  # drop
+  ## -- usage: 
+  ## v.drop 'action', 
+  ##   enter: callback(obj,jquery,event)  -  when user dragging enters 'action'
+  ##   over: callback(obj,jquery,event)   -  when user dragging is over 'action'
+  ##   leave: callback(obj,jquery,event)  -  when user dragging leaves 'action'
+  ##   drop: callback(obj,jquery,event)   -  when user drops something in 'action'
+  ##   files: callback(obj,files)         -  captures whatever user droped in 'action'
 
-  finishEndOfPage: ->
+          # p.drop = (action,on, 'click', (obj,j,ev) ->
+          #       options.click(obj,j,ev) if options.click? and typeof options.click == 'function'
+          #     p.action action, 'dragenter', (obj,j,ev) ->
+          #       options.enter(obj,j,ev) if options.enter? and typeof options.enter == 'function'
+          #     p.action action, 'dragover', (obj,j,ev) ->
+          #       options.over(obj,j,ev) if options.over? and typeof options.over == 'function'
+          #     p.action action, 'dragleave', (obj,j,ev) ->
+          #       options.leave(obj,j,ev if options.leave? and typeof options.leave == 'function')
+          #     p.action action, 'drop', (obj,j,ev) ->
+          #       options.drop(obj,j,ev) if options.drop? and typeof options.drop == 'function'
+          #       options.files(obj,ev.originalEvent.dataTransfer.files) if options.files? and typeof options.files == 'function'
 
 
 
@@ -49,16 +78,24 @@ class window.PinkmanControllers extends window.PinkmanCollection
 # --- actions object
 class window.PinkmanAction extends window.PinkmanObject
 
-  # expected functionality: c.action('edit','click').sameAs('anotherController','edit')
-  # 
-  sameAs: (controllerID,actionName) ->
+  # Desc: mirrors/redirects a action to another already defined
+  mirror: (controllerID,actionName) ->
     # gets all actions named 'action' in all controllers with 'controller' id
     actions = new PinkmanActions
-    Pinkman.controllers.select((c) -> c.id == controllerID).each (c) ->
-      c.actions.select((a) -> a.name == actionName).each (a) ->
+    Pinkman.controllers.select(id: controllerID).each (c) ->
+      c.actions.select(name: actionName).each (a) ->
         actions.push(a)
-    actions.each (action) =>
-      @controller.action @name, @eventName, action.call
+    @controller.action @name, @eventName, (args...) ->
+      actions.each (action) ->
+        action.call(args...)
+
+  # Desc: mirrors alias
+  redirect: (args...) ->
+    @mirror(args...)
+
+  # Desc: mirrors alias
+  redirectTo: (args...) ->
+    @mirror(args...)
 
   # Desc: attaches one single event
   attach: (eventName) ->
@@ -72,7 +109,6 @@ class window.PinkmanAction extends window.PinkmanObject
           action.call(obj,$(this),ev)
         else
           action.call($(this),ev)
-
 
   # Desc: bind action events
   listen: () ->

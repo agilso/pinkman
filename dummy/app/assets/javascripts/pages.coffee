@@ -19,7 +19,12 @@ Pinkman.controller 'index', (c) ->
   c.action 'callMeLater', 'click', ->
     'You finally called me!'
 
+  c.bottom ->
+    console.log 'sleep'
+    sleep 2, ->
+      c.endBottom()
+      console.log 'wakeup'
 
 Pinkman.controller 'another', (c) ->  
-  c.action('another-paragraph', 'click').sameAs('index','paragraph')
+  c.action('another-paragraph', 'click').mirror('index','paragraph')
 

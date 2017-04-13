@@ -39,6 +39,7 @@ class window.PinkmanCollection extends window.PinkmanCommon
   length: (criteria='') ->
     @count(criteria)
 
+  # rails/ruby equivalent: each
   # Desc: receive a function and apply it to all members
   # tip: you can chain functions. Example: collection.each(transform).first()
   each: (transformation='') ->
@@ -46,11 +47,23 @@ class window.PinkmanCollection extends window.PinkmanCommon
       transformation(o) for o in @collection
     return this
 
+  # rails/ruby equivalent: where/select
   # Desc: returns a new collection of all members that satisfies a criteria (criteria(obj) returns true)
+  # new version: accepts a object to match against the object attributes
   select: (criteria,callback='') ->
     selection = new @constructor
-    @each (object) ->
-      selection.push(object) if criteria(object)
+    # function version
+    if typeof criteria == 'function'
+      @each (object) ->
+        selection.push(object) if criteria(object)
+
+    # object version
+    else if typeof criteria == 'object'
+      @each (object) ->
+        value = true
+        (value = false if object[k] != v) for k,v of criteria
+        selection.push(object) if value
+
     callback(selection) if typeof callback == 'function'
     return(selection)
 
