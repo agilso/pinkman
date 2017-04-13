@@ -1,3 +1,6 @@
+//= require pinkman_base/handlebars
+//= require pinkman_base/hogan
+//= require pinkman_base/markup
 //= require pinkman_base/tools
 //= require pinkman_base/pinkman
 //= require pinkman_base/common

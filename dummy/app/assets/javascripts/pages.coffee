@@ -1,6 +1,13 @@
 Pinkman.controller 'index', (c) ->
 
   c.main = ->
+    johnny = new PinkmanObject(title: Pinkman.template_engine, deep: {name: 'Johnny Deep! Not Depp.'})
+    
+    Pinkman.render
+      template: 'template'
+      target: 'target'
+      context: johnny
+
     console.log 'Pinkman controller up & running'
 
     a = new PinkmanObject
@@ -38,6 +45,9 @@ Pinkman.controller 'index', (c) ->
       console.log 'dropou'
     files: (obj,files) ->
       console.log files
+
+  c.action 'who-is-this','click', (obj,j) ->
+    console.log obj.deep
 
 Pinkman.controller 'another', (c) ->  
   c.action('another-paragraph', 'click').mirror('index','paragraph')

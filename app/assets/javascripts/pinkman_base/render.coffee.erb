@@ -1,0 +1,72 @@
+Pinkman.templates = new Pinkman.collection
+
+Pinkman.template_engine = '<%= Pinkman.configuration.js_template_engine %>'
+
+Pinkman.template_engines =
+  handlebars: (options) ->
+    if options? and options.template? and $('#' + options.template).length
+      if Pinkman.templates.include(template: options.template, engine: Pinkman.template_engine)
+        template = Pinkman.templates.get(template: options.template, engine: Pinkman.template_engine)
+      else
+        template = new Pinkman.object(template: options.template, engine: Pinkman.template_engine)
+        template.handlebars = Handlebars.compile $('#' + options.template).html()
+        Pinkman.templates.push(template)
+
+      options.object = options.context if options.context?
+      content = template.handlebars(options.object)
+
+
+      if options.target?
+        $('#' + options.target).html(content)
+        $('#' + options.target).attr('data-pinkey',options.object.pinkey) if options.object? and typeof options.object == 'object' and options.object.isPink
+
+      options.callback(content) if options.callback? and typeof options.callback == 'function'
+      return(content)
+
+  hogan: (options) ->
+    if options? and options.template? and $('#' + options.template).length
+      if Pinkman.templates.include(template: options.template, engine: Pinkman.template_engine)
+        template = Pinkman.templates.get(template: options.template, engine: Pinkman.template_engine)
+      else
+        template = new Pinkman.object(template: options.template, engine: Pinkman.template_engine)
+        template.hogan = Hogan.compile $('#' + options.template).html()
+        Pinkman.templates.push(template)
+
+      options.object = options.context if options.context?
+      content = template.hogan.render(options.object)
+
+      if options.target?
+        $('#' + options.target).html(content)
+        $('#' + options.target).attr('data-pinkey',options.object.pinkey) if options.object? and typeof options.object == 'object' and options.object.isPink
+
+      options.callback(content) if options.callback? and typeof options.callback == 'function'
+      return(content)
+
+  markup: (options) ->
+    if options? and options.template? and $('#' + options.template).length
+      if Pinkman.templates.include(template: options.template, engine: Pinkman.template_engine)
+        template = Pinkman.templates.get(template: options.template, engine: Pinkman.template_engine)
+      else
+        template = new Pinkman.object(template: options.template, engine: Pinkman.template_engine)
+        template.markup = (args...) -> Mark.up(args...)
+        Pinkman.templates.push(template)
+
+      options.object = options.context if options.context?
+      content = template.markup($('#'+options.template).html(),options.object)
+
+      if options.target?
+        $('#' + options.target).html(content)
+        $('#' + options.target).attr('data-pinkey',options.object.pinkey) if options.object? and typeof options.object == 'object' and options.object.isPink
+
+      options.callback(content) if options.callback? and typeof options.callback == 'function'
+      return(content)
+
+
+Pinkman.render = (options) ->
+  engine = Pinkman.template_engines[Pinkman.template_engine]
+  engine(options)
+
+  # --- render
+
+  # Any mustache syntax like will do the job
+  

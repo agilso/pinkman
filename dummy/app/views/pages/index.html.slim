@@ -9,13 +9,19 @@
 
   #drop-zone data-action='drop-zone' style='height: 200px; width: 80%; margin: 30px auto; display: block; background-color: #ddd;'
 
+  #target
+
 #another
+  p = Pinkman.configuration.js_template_engine
   p data-action='another-paragraph' another paragraph
 
 hr/
 
-article 
-  h1 Some crazy story
+
+script id="template" type="text/x-handlebars-template"
+  h1 data-teste='{{title}}' {{title}}
+
+  p data-action='who-is-this' Hi, my name is <b>{{deep.name}}</b>
   
   p I manage a local pizza shop that offers either take-out or dine-in. Unfortunately, we don’t usually have anyone using the dine-in area, but we do occasionally have two or three large parties that come in at once and fill up the dining room. On one of these evenings, a woman comes in to pick up an order. Everything goes as usual until she gets ready to walk out.)
 
