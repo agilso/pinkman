@@ -1,3 +1,14 @@
+Pinkman.maxSearchLevel = 15
+
+Pinkman.closest = (jquery,level=0) ->
+  if jquery.is('[data-pinkey]')
+    pinkey = jquery.data('pinkey')
+    return(Pinkman.get(pinkey))
+  else if level < Pinkman.maxSearchLevel
+    Pinkman.closest(jquery.parent(),level+1)
+  else
+    return(null)
+
 # --- Controller --- #
 # Desc: Make pinkman objects and collections react to events. 
 
@@ -58,17 +69,19 @@ class window.PinkmanController extends window.PinkmanObject
   ##   drop: callback(obj,jquery,event)   -  when user drops something in 'action'
   ##   files: callback(obj,files)         -  captures whatever user droped in 'action'
 
-          # p.drop = (action,on, 'click', (obj,j,ev) ->
-          #       options.click(obj,j,ev) if options.click? and typeof options.click == 'function'
-          #     p.action action, 'dragenter', (obj,j,ev) ->
-          #       options.enter(obj,j,ev) if options.enter? and typeof options.enter == 'function'
-          #     p.action action, 'dragover', (obj,j,ev) ->
-          #       options.over(obj,j,ev) if options.over? and typeof options.over == 'function'
-          #     p.action action, 'dragleave', (obj,j,ev) ->
-          #       options.leave(obj,j,ev if options.leave? and typeof options.leave == 'function')
-          #     p.action action, 'drop', (obj,j,ev) ->
-          #       options.drop(obj,j,ev) if options.drop? and typeof options.drop == 'function'
-          #       options.files(obj,ev.originalEvent.dataTransfer.files) if options.files? and typeof options.files == 'function'
+  drop: (action,options) ->
+    @action action, 'click', (obj,j,ev) ->
+      options.click(obj,j,ev) if options.click? and typeof options.click == 'function'
+    @action action, 'dragenter', (obj,j,ev) ->
+      options.enter(obj,j,ev) if options.enter? and typeof options.enter == 'function'
+    @action action, 'dragover', (obj,j,ev) ->
+      options.over(obj,j,ev) if options.over? and typeof options.over == 'function'
+    @action action, 'dragleave', (obj,j,ev) ->
+      options.leave(obj,j,ev if options.leave? and typeof options.leave == 'function')
+    @action action, 'drop', (obj,j,ev) ->
+      options.drop(obj,j,ev) if options.drop? and typeof options.drop == 'function'
+      options.files(obj,ev.originalEvent.dataTransfer.files) if options.files? and typeof options.files == 'function'
+
 
 
 
@@ -103,12 +116,8 @@ class window.PinkmanAction extends window.PinkmanObject
       action = this
       $('body').on eventName, "##{action.controller.id} [data-action='#{action.name}']", (ev) ->
         ev.preventDefault() unless eventName == 'keypress'
-        pinkey = $(this).data('pinkey') if $(this).is('[data-pinkey]')
-        if pinkey?
-          obj = Pinkman.get(pinkey)
-          action.call(obj,$(this),ev)
-        else
-          action.call($(this),ev)
+        obj = window.Pinkman.closest($(this))
+        action.call(obj,$(this),ev)
 
   # Desc: bind action events
   listen: () ->
