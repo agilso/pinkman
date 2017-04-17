@@ -31,9 +31,9 @@ describe 'PinkmanCommon', ->
     a.set('uhu','bozo')
     expect(a.uhu).toEqual 'bozo'
 
-  it 'set: triggers reRender if watch is true', ->
+  it 'set/watch: -set- triggers reRender everytime if -watch()- has been called', ->
     a = new Dummy
     spyOn a, 'reRender'
-    a.set 'watch', yes
+    a.watch()
     a.set 'a', 'b'
     expect(a.reRender).toHaveBeenCalled()
