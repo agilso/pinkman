@@ -1,6 +1,6 @@
 class window.Dummy extends PinkmanObject
   config:
-    apiUrl: '/api/dummy'
+    api: '/api/dummy'
 
 describe 'PinkmanObject', ->
 

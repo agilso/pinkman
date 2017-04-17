@@ -75,7 +75,6 @@ class window.PinkmanCollection extends window.PinkmanCommon
     else
       @pushIndividually(arg)
 
-
   # Desc: insert in first position
   unshift: (object) ->
     if Pinkman.isArray(object)
@@ -92,6 +91,12 @@ class window.PinkmanCollection extends window.PinkmanCommon
         return true
     else
       return false
+
+  directPush: (object) ->
+    @collection.push(object) unless @include(object)
+
+  forcePush: (object) ->
+    @collection.push(object)
 
   unshiftIndividually: (object) ->
     if object? and typeof object == 'object' and not @include(object)
@@ -322,7 +327,7 @@ class window.PinkmanCollection extends window.PinkmanCommon
   # request:  get /api/API_URL/
   # in rails: api::controller#index
   fetch: (callback = '') ->
-    @fetchFromUrl @api(), callback      
+    @fetchFromUrl url: @api(), callback: callback      
   
   # Desc: Fetch records from another action of this model api
   # request:  get /api/API_URL/:action/#id
@@ -341,7 +346,7 @@ class window.PinkmanCollection extends window.PinkmanCommon
   # Desc: Fetch records from URL
   # request:  get /api/API_URL/
   fetchFromUrl: (options) ->
-    if object? and typeof options == 'object' and options.url?
+    if options? and typeof options == 'object' and options.url?
       limit = if options.limit? then options.limit else 1000
       offset = if options.offset? then options.offset else 0
       @fetchingFrom = options.url
@@ -355,7 +360,7 @@ class window.PinkmanCollection extends window.PinkmanCommon
           else
             @fetchFromArray(response).emptyResponse = response.length == 0
             options.callback(this) if options.callback? and typeof options.callback == 'function'
-            return(this)
+      return(this)
 
   # Desc: Fetch next records from last fetched URL or main API_URl
   # request:  get /api/API_URL/?offset="COLLECTION_SIZE"&limit=n

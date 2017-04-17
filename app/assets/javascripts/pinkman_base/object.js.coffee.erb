@@ -92,6 +92,18 @@ class window.PinkmanObject extends window.PinkmanCommon
   clearCollections: ->
     c.remove(this) for c in @collections.collection
 
+  # alias for clearCollections
+  removeFromCollections: ->
+    @clearCollections()
+
+  # alias for clearCollections
+  removeFromAllCollections: ->
+    @clearCollections()
+
+  # alias for clearCollections
+  removeAllCollections: ->
+    @clearCollections()
+
   # --- Error related --- #
 
   # Desc: return first error message
@@ -99,5 +111,84 @@ class window.PinkmanObject extends window.PinkmanCommon
     if @errors?
       attr = Object.keys(@errors)[0]
       "#{attr} #{@errors[attr][0]}"
+
+  # --- Ajax --- #
+
+  @find: (id, callback='') ->
+    obj = new this
+    Pinkman.ajax.get 
+      url: obj.api() + id,
+      complete: (response) ->
+        obj.assign(response)
+        if obj.error? or obj.errors? 
+          throw new Error(obj.firstError())
+          return false
+        else
+          callback(obj) if callback? and typeof callback == 'function'
+    return(obj)
+  
+  create: (callback='') ->
+    unless @id?
+      Pinkman.ajax.post
+        url: @api()
+        data: { pink_obj: @attributes() }
+        complete: (response) =>
+          @assign(response)
+          delete @errors unless response.errors?
+          callback(this) if typeof callback? and callback=='function'
+      return(this)
+
+  update: (callback='') ->
+    if @id?
+      Pinkman.ajax.patch
+        url: @api() + @id
+        data: { pink_obj: @attributes() }
+        complete: (response) =>
+          @assign(response)
+          delete @errors unless response.errors?
+          callback(this) if typeof callback? and callback=='function'
+      return(this)
+
+  reload: (callback) ->
+    Pinkman.ajax.get 
+      url: @api() + @id,
+      complete: (response) =>
+        @assign(response)
+        if @error? or @errors? 
+          throw new Error(@firstError())
+          return false
+        else
+          callback(this) if callback? and typeof callback == 'function'
+    return(this)
+  
+  updateAttributes: (obj) ->
+    if this.assign(obj)
+      this.save (obj) ->
+        return(obj)
+    else
+      return false
+
+
+  save: (callback='') ->
+    if @id? and @id!='' then @update(callback) else @create(callback)
+        
+  
+  destroy: (callback='') ->
+    if @id?
+      Pinkman.ajax.delete
+        url: @api() + @id
+        complete: (response) =>
+          @assign(response)
+          delete @errors unless response.errors?
+          if @errors?
+            throw new Error(@firstError())
+            return(false)
+          else
+            @id = null
+            @removeFromAllCollections()
+            callback(this) if typeof callback=='function'
+      return(this)
+    else
+      return(false)
 
 window.Pinkman.object = window.PinkmanObject

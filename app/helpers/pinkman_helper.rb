@@ -2,7 +2,7 @@ module PinkmanHelper
 
   def input hash, *args, &block
     name = hash[:name]
-    tag('input',hash.merge(data: {pinkey: 3,action: name}), *args, &block)
+    tag('input',hash.merge(data: {pinkey: pinkey, action: name}), *args, &block)
   end
   
   def pinkman_template path
@@ -10,7 +10,7 @@ module PinkmanHelper
   end
 
   def pinkman_enclose_with(tag,&block) 
-    raw "\n<<# #{tag} >>\n \t #{capture(&block)} \n<</ #{tag} >>\n" if block_given?    
+    raw "\n{{# #{tag} }}\n \t #{capture(&block)} \n{{/ #{tag} }}\n" if block_given?    
   end
 
   def pinkman *args
@@ -18,7 +18,7 @@ module PinkmanHelper
   end
 
   def pinkman_attr string
-    raw("<< #{string} >>")
+    raw("{{ #{string} }}")
   end
 
   def pinkey 

@@ -1,3 +1,6 @@
+PinkmanCollection.prototype.renderQueue = new PinkmanCollection
+PinkmanObject.prototype.renderQueue = new PinkmanCollection
+
 Pinkman.templates = new Pinkman.collection
 
 Pinkman.template_engine = '<%= Pinkman.configuration.js_template_engine %>'
@@ -20,7 +23,7 @@ Pinkman.template_engines =
         $('#' + options.target).html(content)
         $('#' + options.target).attr('data-pinkey',options.object.pinkey) if options.object? and typeof options.object == 'object' and options.object.isPink
 
-      options.callback(content) if options.callback? and typeof options.callback == 'function'
+      options.callback(options.object,content) if options.callback? and typeof options.callback == 'function'
       return(content)
 
   hogan: (options) ->
@@ -39,7 +42,7 @@ Pinkman.template_engines =
         $('#' + options.target).html(content)
         $('#' + options.target).attr('data-pinkey',options.object.pinkey) if options.object? and typeof options.object == 'object' and options.object.isPink
 
-      options.callback(content) if options.callback? and typeof options.callback == 'function'
+      options.callback(options.object,content) if options.callback? and typeof options.callback == 'function'
       return(content)
 
   markup: (options) ->
@@ -58,15 +61,20 @@ Pinkman.template_engines =
         $('#' + options.target).html(content)
         $('#' + options.target).attr('data-pinkey',options.object.pinkey) if options.object? and typeof options.object == 'object' and options.object.isPink
 
-      options.callback(content) if options.callback? and typeof options.callback == 'function'
+      options.callback(options.object,content) if options.callback? and typeof options.callback == 'function'
       return(content)
 
-
 Pinkman.render = (options) ->
+  options.reRender = true unless options.reRender? and options.reRender == false
+  options.collectionReRender = true unless options.collectionReRender? and options.collectionReRender == false
+
   engine = Pinkman.template_engines[Pinkman.template_engine]
-  engine(options)
+  content = engine(options)
+  options.object.renderQueue.directPush(options) if options.reRender and options.object? and options.object.isPink
 
-  # --- render
-
-  # Any mustache syntax like will do the job
-  
+Pinkman.reRender = (object) ->
+  engine = Pinkman.template_engines[Pinkman.template_engine]
+  engine(options) for options in object.renderQueue.collection
+  Pinkman.reRender(collection) for collection in object.collections.collection if options.collectionReRender
+  object.renderQueue.any()
+    

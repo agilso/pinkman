@@ -1,6 +1,6 @@
 class window.PinkmanCommon
 
-  @privateAttributes = ['isPink','isObject','isCollection','pinkey','config','pinkmanType','collections']
+  @privateAttributes = ['isPink','isObject','isCollection','pinkey','config','pinkmanType','collections','renderQueue']
   
   @mixin: (args...) ->
     Pinkman.mixin(args...)
@@ -36,7 +36,7 @@ class window.PinkmanCommon
     if attr? and value?
       this[attr] = value
       callback(this) if typeof callback == "function"
-      @reRender() if @watch
+      @reRender() if @_watching
       return true
 
   # --- Render related --- #
@@ -46,7 +46,8 @@ class window.PinkmanCommon
       options.object = this
       Pinkman.render options
 
-  reRender: (options) ->
-    if typeof options == 'object'
-      options.object = this
-      Pinkman.reRender options    
+  reRender: () ->
+    Pinkman.reRender this    
+
+  watch: () ->
+    @_watching = yes
