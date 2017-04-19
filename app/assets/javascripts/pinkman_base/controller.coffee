@@ -2,7 +2,7 @@ Pinkman.maxSearchLevel = 15
 
 Pinkman.closest = (jquery,level=0) ->
   if jquery.is('[data-pinkey]')
-    pinkey = jquery.data('pinkey')
+    pinkey = jquery.attr('data-pinkey')
     return(Pinkman.get(pinkey))
   else if level < Pinkman.maxSearchLevel
     Pinkman.closest(jquery.parent(),level+1)
@@ -39,6 +39,12 @@ class window.PinkmanController extends window.PinkmanObject
       return(a)
 
   bind: (attribute,callback='') ->
+    if Pinkman.isArray(attribute)
+      @bindIndividually(attr,callback) for attr in attribute
+    else
+      @bindIndividually(attribute,callback)
+
+  bindIndividually: (attribute,callback='') ->
     @action attribute, ['keyup','change'], (obj,jquery,args...) ->
       if obj[attribute] != jquery.val()             
         obj.set(attribute,jquery.val()) 

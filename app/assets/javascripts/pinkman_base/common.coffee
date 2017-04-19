@@ -45,6 +45,9 @@ class window.PinkmanCommon
     if typeof options == 'object'
       options.object = this
       Pinkman.render options
+    else if typeof options == 'string'
+      opts = {object: this, target: options, template: options + '-template'}
+      Pinkman.render opts
 
   reRender: () ->
     Pinkman.reRender this    

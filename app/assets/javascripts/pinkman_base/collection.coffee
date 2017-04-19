@@ -266,7 +266,6 @@ class window.PinkmanCollection extends window.PinkmanCommon
   new: (attributes) ->
     object = new (@config.memberClass)
     object.initialize(attributes)
-    @push(object)
     object
 
   # Desc: reload every object in this collection

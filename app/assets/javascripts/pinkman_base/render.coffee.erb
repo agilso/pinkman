@@ -75,6 +75,6 @@ Pinkman.render = (options) ->
 Pinkman.reRender = (object) ->
   engine = Pinkman.template_engines[Pinkman.template_engine]
   engine(options) for options in object.renderQueue.collection
-  Pinkman.reRender(collection) for collection in object.collections.collection if options.collectionReRender
+  Pinkman.reRender(collection) for collection in object.collections.collection if object.collections? and options.collectionReRender
   object.renderQueue.any()
     

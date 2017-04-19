@@ -135,10 +135,11 @@ class window.PinkmanObject extends window.PinkmanCommon
         complete: (response) =>
           @assign(response)
           delete @errors unless response.errors?
-          callback(this) if typeof callback? and callback=='function'
+          callback(this) if callback? and typeof callback=='function'
       return(this)
 
   update: (callback='') ->
+    console.log this
     if @id?
       Pinkman.ajax.patch
         url: @api() + @id
@@ -146,7 +147,7 @@ class window.PinkmanObject extends window.PinkmanCommon
         complete: (response) =>
           @assign(response)
           delete @errors unless response.errors?
-          callback(this) if typeof callback? and callback=='function'
+          callback(this) if callback? and typeof callback=='function'
       return(this)
 
   reload: (callback) ->
