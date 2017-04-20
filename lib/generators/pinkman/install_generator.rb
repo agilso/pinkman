@@ -21,5 +21,10 @@ module Pinkman
     def create_api_controller_file
       copy_file "api_controller.rb", Rails.root.join('app','controllers','api_controller.rb')
     end
+
+    def create_app_files
+      generate 'pinkman:app_base'
+    end
+    
   end
 end

@@ -1,5 +1,5 @@
 Description:
-    pinkman generators
+    Pinkman generators
 
 Api:
     rails generate pinkman:api name
@@ -7,10 +7,14 @@ Api:
     This will create an api controller and its routes.
         app/controllers/api/pluralized_name_controller.rb
 
-Model
+Model:
   rails generate pinkman:model name
       Pinkman model: app/assets/javascripts/pinkman/models/name/name.js
       Pinkman collection: app/assets/javascripts/pinkman/models/name/pluralized_name.js
 
-Install
-  This creates common pinkman directories
+Install:
+  Setup pinkman. This creates common pinkman directories, defines a api namespace in routes.rb, etc.
+
+Resource:
+  rails  generate pinkman:resource model
+    Creates all coffeescripts and api resources to interact with a Rails Model named model.

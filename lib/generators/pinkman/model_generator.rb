@@ -7,8 +7,8 @@ module Pinkman
     argument :class_name, type: :string, default: "nameHere"
 
     def generate_files
-      template "object.js.erb", "app/assets/javascripts/pinkman/models/#{directory_name}/#{object_file_name}"
-      template "collection.js.erb", "app/assets/javascripts/pinkman/models/#{directory_name}/#{collection_file_name}"
+      template "object.coffee.erb", "app/assets/javascripts/pinkman/models/#{directory_name}/#{object_file_name}"
+      template "collection.coffee.erb", "app/assets/javascripts/pinkman/models/#{directory_name}/#{collection_file_name}"
     end
 
     private
@@ -35,6 +35,18 @@ module Pinkman
 
     def guess_api_url
       "api/#{class_name.pluralize.underscore}"
+    end
+
+    def app_name
+      Rails.application.class.parent_name
+    end
+
+    def app_object_name
+      app_name.camelize + 'Object'
+    end
+
+    def app_collection_name
+      app_name.camelize + 'Collection'
     end
 
   end
