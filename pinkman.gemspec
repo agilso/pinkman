@@ -9,7 +9,7 @@ Gem::Specification.new do |spec|
   spec.authors       = ["Agilso Oliveira"]
   spec.email         = ["agilso.b@gmail.com"]
 
-  spec.summary       = %q{Small rails-js framework.}
+  spec.summary       = %q{Small Rails-js framework.}
   spec.description   = %q{Pinkman.js - The way javascript should be structured within a Rails App. Or not.}
 
   spec.homepage      = "https://github.com/agilso/pinkman"
@@ -27,19 +27,20 @@ Gem::Specification.new do |spec|
   spec.files         = `git ls-files -z`.split("\x0").reject do |f|
     f.match(%r{^(test|spec|features)/})
   end
-  spec.bindir        = "exe"
+  spec.bindir        = 'exe'
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
-  spec.require_paths = ["lib"]
+  spec.require_paths = ['lib']
 
-  spec.add_development_dependency "bundler", "~> 1.13"
+  spec.add_development_dependency 'bundler', '~> 1.13'
   spec.add_development_dependency 'coffee-script'
   spec.add_development_dependency 'sprockets', '~> 3.0'
   spec.add_development_dependency 'uglifier'
-  spec.add_development_dependency "rake", "~> 10.0"
-  spec.add_development_dependency "rspec", "~> 3.0"
+  spec.add_development_dependency 'rake', '~> 10.0'
+  spec.add_development_dependency 'rspec', '~> 3.0'
   spec.add_development_dependency 'jasmine'
   spec.add_development_dependency 'rails'
 
   spec.add_dependency 'rails'
   spec.add_dependency 'jquery-rails'
+  spec.add_dependency 'active_model_serializers', '~> 0.9.0'
 end

@@ -8,6 +8,7 @@ script id='listing-template' type='text/p-template'
           th Name
           th Age
           th Email
+          th Bla Method
           th
       tbody
         = collection do
@@ -15,6 +16,7 @@ script id='listing-template' type='text/p-template'
             td data-action='edit' {{ name }}
             td {{ age }}
             td {{ email }}
+            td {{ bla }}
             td data-action='destroy' (Destroy {{ name }})
 
 script id='form-template' type='text/p-template'

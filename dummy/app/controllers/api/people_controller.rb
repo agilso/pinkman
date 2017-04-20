@@ -2,12 +2,14 @@ class Api::PeopleController < ApiController
 
   before_action :permissions
   before_action :current_scope
+  before_action :set_objects
   
   # To do: define the current scope the way you want.
   def current_scope
-    :all
+    :admin
   end
 
+  # get api/people
   def index
     people = Person.limit(params[:limit]).offset(params[:offset])
     render json: people.json_for(current_scope)
@@ -45,7 +47,6 @@ class Api::PeopleController < ApiController
       render json: {errors: @person.errors}
     end
   end
-
 
   # delete api/people/:id
   def destroy

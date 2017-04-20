@@ -1,5 +1,5 @@
-class window.<%= collection_class_name %> extends PinkmanCollection
+class window.<%= collection_class_name %> extends Pinkman.collection
   config:
-    apiUrl: "<%= guess_api_url %>" # you should confirm this
+    api: '<%= guess_api_url %>' # you should confirm this
     memberClass: ->
       return (new <%= object_class_name %>)

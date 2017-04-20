@@ -1,23 +1,30 @@
 class Api::<%= controller_name %> < ApiController
 
-  before_action :set_objects
+  before_action :current_scope
   before_action :permissions
+  before_action :set_objects
 
+  # To do: define the current scope the way you want
+  def current_scope
+    :all
+  end
+
+  # get api/<%= api_name %>
   def index
-    <%= collection_name %> = <%= active_record_model_name %>.admin_visible.limit(params[:limit]).offset(params[:offset])
-    render json: ActiveModel::ArraySerializer.new(<%= collection_name %>, each: <%= serializer_name %>, scope: {user: current_user, lang: current_language}).to_json
+    <%= collection_name %> = <%= active_record_model_name %>.limit(params[:limit]).offset(params[:offset])
+    render json: <%= collection_name %>.json_for(current_scope)
   end
 
   # get api/<%= api_name %>/:id
   def show
-    render json: @<%= instance_name %>
+    render json: @<%= instance_name %>.json_for(current_scope)
   end
 
   # get api/<%= api_name %>/search/:query
   def search
     if params[:query].present?
       <%= collection_name %> = <%= active_record_model_name %>.search(params[:query]).limit(params[:limit]).offset(params[:offset])
-      render json: ActiveModel::ArraySerializer.new(<%= collection_name %>, each: <%= serializer_name %>, scope: {user: current_user, lang: current_language}).to_json
+      render json: <%= collection_name %>.json_for(current_scope)
     end
   end
 
@@ -25,17 +32,17 @@ class Api::<%= controller_name %> < ApiController
   def create
     @<%= instance_name %>.assign_attributes <%= params_method_name %>
     if @<%= instance_name %>.save
-      render json: @<%= instance_name %>
+      render json: @<%= instance_name %>.json_for(current_scope)
     else
       render json: {errors: @<%= instance_name %>.errors}
     end
   end
 
-  # put/patch api/<%= api_name %>
+  # put/patch api/<%= api_name %>/:id
   def update
     @<%= instance_name %>.assign_attributes <%= params_method_name %>
     if @<%= instance_name %>.save
-      render json: @<%= instance_name %>
+      render json: @<%= instance_name %>.json_for(current_scope)
     else
       render json: {errors: @<%= instance_name %>.errors}
     end
@@ -45,27 +52,15 @@ class Api::<%= controller_name %> < ApiController
   # delete api/<%= api_name %>/:id
   def destroy
     @<%= instance_name %>.destroy
-    render json: @<%= instance_name %>
+    render json: @<%= instance_name %>.json_for(current_scope)
   end
 
   protected
 
   # --- begin permissions  --- #
 
-  def can
-    if @user.admin?
-      self.class.action_methods
-    else
-      []
-    end 
-  end
-
-  def cannot
-    self.class.action_methods - self.can
-  end
-
   def permissions
-    if cannot.include? action_name
+    unless <%= serializer_name %>.scope(current_scope).can_access? action_name
       render json: {errors: 'You have no permission.'}
     end
   end
@@ -81,8 +76,12 @@ class Api::<%= controller_name %> < ApiController
   end
 
   def <%= params_method_name %>
-    params["pink_obj"].keep_if {|k,v| <%= active_record_model_name %>.column_names.include? k}
-    params["pink_obj"].permit!
+    if params['pink_obj']
+      params["pink_obj"].keep_if {|k,v| <%= serializer_name %>.scope(current_scope).can_write?(k)}
+      params["pink_obj"].permit!
+    else
+      {}
+    end
   end
 
 end

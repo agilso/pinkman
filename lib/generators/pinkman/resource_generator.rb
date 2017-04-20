@@ -9,7 +9,7 @@ module Pinkman
     def exec
       generate "pinkman:api #{class_name}"
       generate "pinkman:model #{class_name}"
-      generate "serializer #{class_name}"
+      generate "pinkman:serializer #{class_name}"
     end
   end
 end

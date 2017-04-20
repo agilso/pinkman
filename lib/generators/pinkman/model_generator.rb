@@ -22,7 +22,7 @@ module Pinkman
     end
 
     def object_file_name
-      class_name.underscore + ".js.coffee"
+      class_name.underscore + ".coffee"
     end
 
     def collection_class_name
@@ -30,7 +30,7 @@ module Pinkman
     end
 
     def collection_file_name
-      class_name.pluralize.underscore + ".js.coffee"
+      class_name.pluralize.underscore + ".coffee"
     end 
 
     def guess_api_url

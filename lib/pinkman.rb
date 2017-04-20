@@ -1,6 +1,6 @@
-require 'ostruct'
 require 'pathname'
 require 'rails'
+require 'pinkman/serializer'
 require 'pinkman/version'
 
 module Pinkman
@@ -21,8 +21,35 @@ module Pinkman
   
   class Engine < ::Rails::Engine
     config.after_initialize do
-      if Slim
+      if defined? Slim
         Slim::Engine.set_options attr_list_delims: {'(' => ')', '[' => ']'}
+      end
+      
+      # Class method: serializer
+      ActiveRecord::Base.singleton_class.class_eval do 
+        def serializer= value
+          @serializer = value
+        end
+
+        def serializer
+          @serializer || (begin eval(self.to_s + 'Serializer') rescue nil end)
+        end
+      end
+
+      # Active Record Relation: json_for
+      ActiveRecord::Relation.class_eval do 
+        def json_for scope_name
+          a = ActiveModel::ArraySerializer.new(self, each_serializer: model.serializer, scope: scope_name)
+          a.to_json
+        end
+      end
+
+      # Instance method: json_for
+      ActiveRecord::Base.class_eval do
+        def json_for scope_name
+          s = self.class.serializer.new(self,scope: scope_name)
+          s.to_json
+        end
       end
     end
   end

@@ -8,6 +8,8 @@ module Pinkman
     def create_directories
       FileUtils.mkdir_p Rails.root.join('app','views','pinkman')
       FileUtils.mkdir_p Rails.root.join('app','assets','javascripts','pinkman','models')
+      FileUtils.mkdir_p Rails.root.join('app','serializers')
+      FileUtils.mkdir_p Rails.root.join('app','controllers','api')
     end
 
     def create_api_routes
