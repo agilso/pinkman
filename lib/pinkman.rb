@@ -1,5 +1,6 @@
-require 'pathname'
 require 'rails'
+require 'pathname'
+require 'active_model_serializers'
 require 'pinkman/serializer'
 require 'pinkman/version'
 
