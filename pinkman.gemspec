@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.email         = ["agilso.b@gmail.com"]
 
   spec.summary       = %q{Small Rails-js framework.}
-  spec.description   = %q{Pinkman.js - The way javascript should be structured within a Rails App. Or not.}
+  spec.description   = %q{Pinkman: a new way to orchestrate javascript in Rails.}
 
   spec.homepage      = "https://github.com/agilso/pinkman"
   spec.license       = "MIT"
