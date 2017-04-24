@@ -1,5 +1,8 @@
 class window.PinkmanCommon
 
+  constructor: (attributesObject) ->
+    @initialize(attributesObject) if attributesObject?
+
   @privateAttributes = ['isPink','isObject','isCollection','pinkey','config','pinkmanType','collections','renderQueue']
   
   @mixin: (args...) ->
@@ -10,6 +13,12 @@ class window.PinkmanCommon
 
   @isInstance: (object) ->
     object.constructor is this
+
+
+  initialize: (attributesObject) ->
+    if typeof attributesObject == 'object'
+      for key, value of attributesObject
+        @set(key,value) if PinkmanObject.privateAttributes.indexOf(key) is -1
 
 
   # Desc: return api url path
@@ -54,3 +63,7 @@ class window.PinkmanCommon
 
   watch: () ->
     @_watching = yes
+
+  queue: (options) ->
+    @renderQueue = new PinkmanCollection unless @renderQueue?
+    @renderQueue.directPush(options)

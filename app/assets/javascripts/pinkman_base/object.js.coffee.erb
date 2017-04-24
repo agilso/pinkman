@@ -2,8 +2,8 @@ class window.PinkmanObject extends window.PinkmanCommon
 
   @pinkmanType: 'object'
 
-  constructor: (attributesObject) ->
-    
+  constructor: (args...) ->
+    super(args...)
     @isPink = true
     @isObject = true
     @pinkmanType = 'object'
@@ -13,20 +13,13 @@ class window.PinkmanObject extends window.PinkmanCommon
 
     Pinkman.objects.push(this)
     Pinkman.all.push(this)
-    
-    @initialize(attributesObject)
-
-  initialize: (attributesObject) ->
-    if typeof attributesObject == 'object'
-      for key, value of attributesObject
-        @set(key,value) if PinkmanObject.privateAttributes.indexOf(key) is -1
 
   # Desc: assign attributes from a pure javascript object
   # Usage: a.assign( {attribute: value} )
   assign: (obj) ->
     if typeof obj == 'object'
       for k,v of obj
-        if typeof v == 'object' and this[k]? and this[k].isPink? and not v.isPink
+        if typeof v == 'object' and this[k]? and this[k].isPink and not v.isPink
           this[k].assign(v)
         else
           this.set(k,v) 
@@ -44,6 +37,15 @@ class window.PinkmanObject extends window.PinkmanCommon
           a[k] = v.attributes()
         else
           a[k] = v
+    return a
+
+  # Desc: json version of this
+  # desc: used in api comunications
+  json: () ->
+    a = new Object
+    for k,v of this
+      if PinkmanObject.privateAttributes.indexOf(k) == -1 and typeof v != 'function'
+        a[k] = if v.isPink then v.json() else v
     return a
   
   # Desc: returns a array of attributes keys
@@ -131,7 +133,7 @@ class window.PinkmanObject extends window.PinkmanCommon
     unless @id?
       Pinkman.ajax.post
         url: @api()
-        data: { pink_obj: @attributes() }
+        data: { pink_obj: @json() }
         complete: (response) =>
           @assign(response)
           delete @errors unless response.errors?
@@ -139,11 +141,10 @@ class window.PinkmanObject extends window.PinkmanCommon
       return(this)
 
   update: (callback='') ->
-    console.log this
     if @id?
       Pinkman.ajax.patch
         url: @api() + @id
-        data: { pink_obj: @attributes() }
+        data: { pink_obj: @json() }
         complete: (response) =>
           @assign(response)
           delete @errors unless response.errors?

@@ -22,6 +22,14 @@ class window.PinkmanCollection extends window.PinkmanCommon
   attributes: ->
     return @collection
 
+  # Desc: json version of this
+  # desc: used in api comunications
+  json: ->
+    json = []
+    @each (object) ->
+      json.push(object.json()) if object.isPink and object.json? and typeof object.json == 'function'
+    json
+
   # Desc: collection size
   count: (criteria='') ->
     if criteria? and typeof criteria  == 'function'
@@ -254,6 +262,10 @@ class window.PinkmanCollection extends window.PinkmanCommon
       else
         @push(object)
     return(this)
+
+  # Desc: fetch from array alias
+  assign: (array...) ->
+    @fetchFromArray(array...)
 
   # Desc: merges this collection with another
   merge: (collection) ->

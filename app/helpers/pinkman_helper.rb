@@ -17,8 +17,12 @@ module PinkmanHelper
     wrap_in('collection',&block)
   end
 
+  def each &block
+    collection(&block)
+  end
+
   def write string
-    raw("{{ #{string} }}")
+    raw("{{#{string}}}")
   end
 
   def w *args

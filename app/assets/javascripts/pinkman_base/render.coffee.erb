@@ -1,6 +1,3 @@
-PinkmanCollection.prototype.renderQueue = new PinkmanCollection
-PinkmanObject.prototype.renderQueue = new PinkmanCollection
-
 Pinkman.templates = new Pinkman.collection
 
 Pinkman.template_engine = '<%= Pinkman.configuration.js_template_engine %>'
@@ -16,6 +13,7 @@ Pinkman.template_engines =
         Pinkman.templates.push(template)
 
       options.object = options.context if options.context?
+      options.object = new Object unless options.object? and typeof options.object == 'object'
       content = template.handlebars(options.object)
 
 
@@ -36,6 +34,7 @@ Pinkman.template_engines =
         Pinkman.templates.push(template)
 
       options.object = options.context if options.context?
+      options.object = new Object unless options.object? and typeof options.object == 'object'
       content = template.hogan.render(options.object)
 
       if options.target?
@@ -55,6 +54,7 @@ Pinkman.template_engines =
         Pinkman.templates.push(template)
 
       options.object = options.context if options.context?
+      options.object = new Object unless options.object? and typeof options.object == 'object'
       content = template.markup($('#'+options.template).html(),options.object)
 
       if options.target?
@@ -70,7 +70,7 @@ Pinkman.render = (options) ->
 
   engine = Pinkman.template_engines[Pinkman.template_engine]
   content = engine(options)
-  options.object.renderQueue.directPush(options) if options.reRender and options.object? and options.object.isPink
+  options.object.queue(options) if options.reRender and options.object? and options.object.isPink
 
 Pinkman.reRender = (object) ->
   engine = Pinkman.template_engines[Pinkman.template_engine]

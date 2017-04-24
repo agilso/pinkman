@@ -13,11 +13,11 @@ module Pinkman
     private
 
     def object_filename
-      app_name.underscore.downcase + '_object.coffee'
+      'app_object.coffee'
     end
 
     def collection_filename
-      app_name.underscore.downcase + '_collection.coffee'
+      'app_collection.coffee'
     end
 
     def app_name
