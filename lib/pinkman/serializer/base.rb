@@ -1,14 +1,8 @@
 require 'active_model_serializers'
 require_relative 'scope'
-require_relative 'array'
 
 module Pinkman
   module Serializer
-    
-    def self.array *args
-        binding.pry
-        args.first.map {|obj| obj.serialize_for(args[1][:scope],args[1][:params])} if args.first.is_a? Array and args.length > 1 and args[1].is_a?(Hash) and args[1][:scope]
-    end
 
     class Base < ActiveModel::Serializer
 

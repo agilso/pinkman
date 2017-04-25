@@ -45,7 +45,7 @@ module Pinkman
         
         def serialize_for scope_name, params_hash = {}
           options = {scope: scope_name}.merge(params: params_hash)
-          s = Pinkman::Serializer::Array.new(self, options)
+          s = Pinkman::Serializer::array(self, options)
           s
         end
       end
