@@ -1,4 +1,5 @@
 require 'active_model_serializers'
+require 'ostruct'
 require_relative 'scope'
 
 module Pinkman
@@ -44,7 +45,7 @@ module Pinkman
             define_method attribute do
               reflection = object.class.reflections[attribute.to_s] 
               if reflection
-                Pinkman::Serializer::Array.new(object.send(attribute), each_serializer: reflection.klass.serializer, scope: @scope)
+                Pinkman::Serializer::array(object.send(attribute), scope: @scope)
               end
             end
           end

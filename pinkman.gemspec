@@ -43,4 +43,5 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'rails'
   spec.add_dependency 'jquery-rails'
   spec.add_dependency 'active_model_serializers', '~> 0.9.0'
+  
 end
