@@ -73,8 +73,11 @@ Pinkman.render = (options) ->
   options.object.queue(options) if options.reRender and options.object? and options.object.isPink
 
 Pinkman.reRender = (object) ->
-  engine = Pinkman.template_engines[Pinkman.template_engine]
-  engine(options) for options in object.renderQueue.collection
-  Pinkman.reRender(collection) for collection in object.collections.collection if object.collections? and options.collectionReRender
-  object.renderQueue.any()
+  if object.renderQueue?
+    engine = Pinkman.template_engines[Pinkman.template_engine]
+    engine(options) for options in object.renderQueue.collection
+    Pinkman.reRender(collection) for collection in object.collections.collection if object.collections? and options.collectionReRender
+    object.renderQueue.any()
+  else
+    true
     
