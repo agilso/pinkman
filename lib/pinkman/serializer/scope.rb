@@ -9,15 +9,21 @@ module Pinkman
       attr_accessor :read, :write, :access, :serializer
 
       def read_attributes *args
-        self.read = (args.size > 0 and args.first) ? args : []
+        self.read = args
+        self.read = [] unless args.first
+        read
       end
 
       def write_attributes *args
-        self.write = (args.size > 0 and args.first) ? args : []
+        self.write = args
+        self.write = [] unless args.first
+        write
       end
 
       def access_actions *args
-        self.access = (args.size > 0 and args.first) ? args : []
+        self.access = args
+        self.access = [] unless args.first
+        access
       end
 
       def can_read? attribute

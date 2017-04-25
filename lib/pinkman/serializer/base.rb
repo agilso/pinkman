@@ -1,20 +1,39 @@
 require 'active_model_serializers'
 require_relative 'scope'
+require_relative 'array'
 
 module Pinkman
   module Serializer
+    
+    def self.array *args
+        binding.pry
+        args.first.map {|obj| obj.serialize_for(args[1][:scope],args[1][:params])} if args.first.is_a? Array and args.length > 1 and args[1].is_a?(Hash) and args[1][:scope]
+    end
+
     class Base < ActiveModel::Serializer
-      @@scopes = {}
+
+      def initialize *args
+        super(*args)
+        @params = OpenStruct.new(args[1][:params]) if args.length > 1 and args[1].is_a?(Hash) and args[1][:params]
+        self
+      end
+
+      attr_accessor :params
 
       self.root = false
 
       def self.scope name=:all, &block
+        @scopes ||= {}
         if block_given?
-          @@scopes[name.to_sym] ||= Pinkman::Serializer::Scope.new(serializer: self)
-          yield(@@scopes[name.to_sym]) 
+          @scopes[name.to_sym] = Pinkman::Serializer::Scope.new(serializer: self)
+          yield(@scopes[name.to_sym]) 
         else
-          @@scopes[name.to_sym]
+          @scopes[name.to_sym]
         end
+      end
+
+      def self.scopes
+        @scopes
       end
 
       def self.model
@@ -23,6 +42,32 @@ module Pinkman
 
       def self.model= value
         @model = value
+      end
+
+      def self.has_many *args
+        args.each do |attribute|
+          self.class_eval do |c|
+            define_method attribute do
+              reflection = object.class.reflections[attribute.to_s] 
+              if reflection
+                Pinkman::Serializer::Array.new(object.send(attribute), each_serializer: reflection.klass.serializer, scope: @scope)
+              end
+            end
+          end
+        end
+      end
+
+      def self.has_one *args
+        args.each do |attribute|
+          self.class_eval do |c|
+            define_method attribute do
+              reflection = object.class.reflections[attribute.to_s] 
+              if reflection
+                reflection.klass.serializer.new(object.send(attribute), scope: @scope)
+              end
+            end
+          end
+        end
       end
 
       def attributes *args

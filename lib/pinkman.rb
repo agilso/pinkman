@@ -39,18 +39,28 @@ module Pinkman
 
       # Active Record Relation: json_for
       ActiveRecord::Relation.class_eval do 
-        def json_for scope_name
-          a = ActiveModel::ArraySerializer.new(self, each_serializer: model.serializer, scope: scope_name)
-          a.to_json
+        def json_for scope_name, params_hash = {}
+          serialize_for(scope_name,params_hash).to_json
+        end
+        
+        def serialize_for scope_name, params_hash = {}
+          options = {scope: scope_name}.merge(params: params_hash)
+          s = Pinkman::Serializer::Array.new(self, options)
+          s
         end
       end
 
       # Instance method: json_for
       ActiveRecord::Base.class_eval do
-        def json_for scope_name
-          s = self.class.serializer.new(self,scope: scope_name)
-          s.to_json
+        def serialize_for scope_name, params_hash = {}
+          options = {scope: scope_name}.merge(params: params_hash)
+          self.class.serializer.new(self,options)
         end
+
+        def json_for scope_name, params_hash={}
+          serialize_for(scope_name,params_hash).to_json
+        end
+
       end
     end
   end

@@ -347,22 +347,21 @@ class window.PinkmanCollection extends window.PinkmanCommon
   # Example: fetching all orders of a user
   # coffee: orders.fetchFrom 'user', user.id
   # api::controler#order: render json: User.find(params[:id]).orders.to_json
-  fetchFrom: (action,id,callback = '') ->
+  fetchFrom: (action,id,callback) ->
     if action? and id?
-      @fetchFromUrl(@api() +  "#{action}/#{id}", callback)
+      @fetchFromUrl
+        url: @api() +  "#{action}/#{id}"
+        callback: callback
     else
       return false
-
 
   # Desc: Fetch records from URL
   # request:  get /api/API_URL/
   fetchFromUrl: (options) ->
     if options? and typeof options == 'object' and options.url?
-      limit = if options.limit? then options.limit else 1000
-      offset = if options.offset? then options.offset else 0
       @fetchingFrom = options.url
       Pinkman.ajax.get
-        url: options.url + "?limit=#{limit}&offset=#{offset}"
+        url: Pinkman.json2url(options.url,options.params) 
         complete: (response) =>
           if response.errors? or response.error?
             [@errors, @error] = [response.errors, response.error]
@@ -378,15 +377,25 @@ class window.PinkmanCollection extends window.PinkmanCommon
   # in rails: api::controller#index
   fetchMore: (n=10,callback='') ->
     if @fetchingFrom?
-      @fetchFromUrl url: @fetchingFrom, limit: n, offset: @count(), callback: callback
+      @fetchFromUrl
+        url: @fetchingFrom
+        params:
+          limit: n
+          offset: @count()
+        callback: callback
     else
-      @fetchFromUrl url: @api(), limit: n, offset: @count(), callback: callback
+      @fetchFromUrl 
+        url: @api()
+        params:
+          limit: n
+          offset: @count()
+        callback: callback
 
   # Desc: Fetch next n records from a action
   # request:  get /api/API_URL/:action/?offset="COLLECTION_SIZE"&limit=n
   # in rails: api::controller#action
   fetchMoreFrom: (n,action,id,callback='') ->
-    @fetchFromUrl {url: @api() + "#{action}/#{id}", limit: n, offset: @count(), callback: callback}
+    @fetchFromUrl {url: @api() + "#{action}/#{id}", params: {limit: n, offset: @count()}, callback: callback}
 
   # Desc: Connect to api to search in this model a query
   # request:  get /api/API_URL/search?query=YOUR_QUERY
@@ -394,6 +403,6 @@ class window.PinkmanCollection extends window.PinkmanCommon
   # assume models to have a Model.search("YOUR_QUERY") method.
   search: (query,callback='') ->
     @removeAll()
-    @fetchFromUrl { url: @api() + "search?query=#{query}", callback: callback }
+    @fetchFromUrl { url: @api(), params: {query: query}, callback: callback }
 
 window.Pinkman.collection = window.PinkmanCollection

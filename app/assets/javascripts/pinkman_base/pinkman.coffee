@@ -45,6 +45,20 @@ class window.Pinkman
         @calledFunctions.push(func)
         f(args...)
 
+  @json2url: (url,opts) ->
+    if url?
+      if opts? and typeof opts == 'object'
+        params = []
+        keysCount = Object.keys(opts).length
+        if keysCount >= 1
+          params.push("#{k}=#{v}") for k,v of opts
+          url = url + '?'
+          url = url + params.join('&')
+      return(url)
+    else
+      ''
+
+
   @calledFunctions = []
 
   # --- Ajax
