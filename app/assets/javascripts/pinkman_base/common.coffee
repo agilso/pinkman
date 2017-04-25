@@ -65,5 +65,6 @@ class window.PinkmanCommon
     @_watching = yes
 
   queue: (options) ->
+    options.id = options.object.pinkey if options.object? and options.object.isPink
     @renderQueue = new PinkmanCollection unless @renderQueue?
     @renderQueue.directPush(options)
