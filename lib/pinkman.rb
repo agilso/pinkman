@@ -50,6 +50,18 @@ module Pinkman
         end
       end
 
+      Array.class_eval do
+        def json_for scope_name, params_hash = {}
+          serialize_for(scope_name,params_hash).to_json
+        end
+        
+        def serialize_for scope_name, params_hash = {}
+          options = {scope: scope_name}.merge(params: params_hash)
+          s = Pinkman::Serializer::array(self, options)
+          s
+        end
+      end
+
       # Instance method: json_for
       ActiveRecord::Base.class_eval do
         def serialize_for scope_name, params_hash = {}
