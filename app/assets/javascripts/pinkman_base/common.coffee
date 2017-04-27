@@ -58,8 +58,24 @@ class window.PinkmanCommon
       opts = {object: this, target: options, template: options + '-template'}
       Pinkman.render opts
 
-  reRender: () ->
-    Pinkman.reRender this    
+  reRender: (callback='') ->
+    Pinkman.reRender(this)    
+    callback(this) if typeof callback == 'function'
+    return this
+
+
+  append: (options) ->
+    if options? and typeof options == 'object' and options.template? and options.target?
+      newOptions = new Object
+      for k,v of options
+        newOptions[k] = v if k != 'target' and k != 'callback'
+      newOptions.reRender = no
+      target = options.target
+      newOptions.object = this
+      newOptions.callback = (object,content) ->
+        $('#'+target).append(content)
+        options.callback(object,content) if options.callback? and typeof options.callback == 'function'
+      Pinkman.render(newOptions)
 
   watch: () ->
     @_watching = yes

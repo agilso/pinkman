@@ -1,4 +1,3 @@
-//= require pinkman_base/handlebars
 //= require pinkman_base/tools
 //= require pinkman_base/pinkman
 //= require pinkman_base/mixins

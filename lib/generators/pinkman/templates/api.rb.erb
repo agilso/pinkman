@@ -1,13 +1,7 @@
 class Api::<%= controller_name %> < ApiController
 
-  before_action :current_scope
   before_action :permissions
   before_action :set_objects
-
-  # To do: define the current scope the way you want
-  def current_scope
-    :all
-  end
 
   # get api/<%= api_name %>
   def index
@@ -47,7 +41,6 @@ class Api::<%= controller_name %> < ApiController
       render json: {errors: @<%= instance_name %>.errors}
     end
   end
-
 
   # delete api/<%= api_name %>/:id
   def destroy

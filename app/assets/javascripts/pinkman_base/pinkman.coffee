@@ -74,13 +74,13 @@ class window.Pinkman
             dataType: 'json'
             data: options.data
         ajax.done (response) =>
-          if response.errors?
+          if response? and response.errors?
             options.error(this) if options.error? and typeof options.error == 'function'
-            return(false)
           else
             options.success(response) if options.success? and typeof options.success == 'function'
-            options.complete(response) if options.complete? and typeof options.complete == 'function'
-            return(true)
+            
+          options.complete(response) if options.complete? and typeof options.complete == 'function'
+          return(true)
       else
         return false
 
