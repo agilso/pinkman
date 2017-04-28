@@ -2,7 +2,15 @@ module PinkmanHelper
 
   def input hash, *args, &block
     name = hash[:name]
+    hash[:type] ||= 'text'
     tag('input',hash.merge(data: {pinkey: pinkey, action: name}, value: write(name)), *args, &block)
+  end
+
+  def textarea hash, *args
+    name = hash[:name]
+    content_tag('textarea',hash.merge(data: {pinkey: pinkey, action: name}, value: write(name)), *args) do 
+      raw(write(name))
+    end
   end
   
   def template path
