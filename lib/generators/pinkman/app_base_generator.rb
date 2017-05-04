@@ -21,15 +21,15 @@ module Pinkman
     end
 
     def app_name
-      Rails.application.class.parent_name
+      'App'
     end
 
     def app_object_name
-      app_name.camelize + 'Object'
+      app_name + 'Object'
     end
 
     def app_collection_name
-      app_name.camelize + 'Collection'
+      app_name + 'Collection'
     end
   
   end

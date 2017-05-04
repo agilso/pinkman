@@ -41,20 +41,12 @@ module PinkmanHelper
     w('pinkey')
   end
 
-  def p_if condition, &block
-    raw "\n{{#if #{condition}}}\n \t #{capture(&block)} \n{{/if}}\n" if block_given?    
+  def _if condition, &block
+    wrap_in(condition,&block)
   end
 
-  def p_then &block
-    capture(&block)
+  def _unless condition, &block
+    raw "\n{{^ #{condition} }}\n \t #{capture(&block)} \n{{/ #{condition} }}\n" if block_given?    
   end
-
-  def p_else &block
-    raw "\n{{else}}\n \t #{capture(&block)}" if block_given?    
-  end
-
-  def p_unless
-  end
-
 
 end
