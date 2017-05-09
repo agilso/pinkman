@@ -70,7 +70,14 @@ Pinkman.template_engines =
       # 4 insert html on target
       @renderOntarget(options,content)
 
-      # 5 callback function
+      # 5 restore scrolling positions (when applicable)
+      if options.freeze and Pinkman.scrolling?
+        if typeof options.freeze == 'string'
+          Pinkman.restoreElementScrollPosition(options.freeze)
+        else if Pinkman.isArray(options.freeze)
+          Pinkman.restoreElementScrollPosition(o) for o in options.freeze
+
+      # 6 callback function
       options.callback(options.object,content) if options.callback? and typeof options.callback == 'function'
       return(content)
 
@@ -81,11 +88,35 @@ Pinkman.render = (options) ->
   Pinkman.template_engines.render(options) 
   options.object.queue(options) if options.reRender and options.object? and options.object.isPink
 
+Pinkman.saveElementScrollPosition = (id) ->
+  Pinkman.scrolling = new PinkmanCollection unless Pinkman.scrolling?
+  a = Pinkman.scrolling.find(id)
+  a = new Pinkman.object unless a?
+  a.set('id',id)
+  element = $("##{id}")
+  elementPos = if element? then element.offset().top else 0
+  referencePos = if element.children()? then element.children().first().offset().top else 0
+  position = elementPos - referencePos
+
+  a.set('position', position)
+  Pinkman.scrolling.push(a)
+
+Pinkman.restoreElementScrollPosition = (id) ->
+  document.getElementById(id).scrollTop = Pinkman.scrolling.find(id).position
+
 Pinkman.reRender = (object) ->
   if object.renderQueue?
     collectionReRender = false
     for options in object.renderQueue.collection
+      if options.freeze?
+        if typeof options.freeze == 'string'
+          Pinkman.saveElementScrollPosition(options.freeze)
+        else if Pinkman.isArray(options.freeze)
+          Pinkman.saveElementScrollPosition(o) for o in options.freeze
+      
       Pinkman.template_engines.render(options)
+
+
       collectionReRender = true if options.collectionReRender
     collection.reRender() for collection in object.collections.collection if collectionReRender and object.collections?
     object.renderQueue.any()
