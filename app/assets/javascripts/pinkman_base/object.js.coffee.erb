@@ -177,6 +177,7 @@ class window.PinkmanObject extends window.PinkmanCommon
   
   destroy: (callback='') ->
     if @id?
+      @removeFromAllCollections()
       Pinkman.ajax.delete
         url: @api() + @id
         complete: (response) =>
@@ -187,7 +188,6 @@ class window.PinkmanObject extends window.PinkmanCommon
             return(false)
           else
             @id = null
-            @removeFromAllCollections()
             callback(this) if typeof callback=='function'
       return(this)
     else

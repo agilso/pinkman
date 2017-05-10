@@ -122,6 +122,7 @@ class window.PinkmanAction extends window.PinkmanObject
   attach: (eventName) ->
     if Pinkman.isString(eventName)
       action = this
+      $("##{action.controller.id} [data-action='#{action.name}']").css('cursor','pointer') if eventName == 'click'
       $('body').on eventName, "##{action.controller.id} [data-action='#{action.name}']", (ev) ->
         ev.preventDefault() unless eventName == 'keypress'
         obj = window.Pinkman.closest($(this))
