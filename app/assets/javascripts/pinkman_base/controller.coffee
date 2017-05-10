@@ -1,3 +1,5 @@
+Pinkman.listening = new PinkmanCollection
+
 Pinkman.maxSearchLevel = 15
 
 Pinkman.closest = (jquery,level=0) ->
@@ -34,6 +36,8 @@ class window.PinkmanController extends window.PinkmanObject
     else
       [name, eventName,callback,unknown...] = args
       a = new PinkmanAction(name: name, eventName: eventName, call: callback, controller: this)
+      a.set('selector',"##{a.controller.id} [data-action='#{a.name}']")
+      Pinkman.listening.push(a)
       @actions.push(a)
       a.listen() if a.call? and typeof a.call == 'function'
       return(a)
@@ -122,8 +126,7 @@ class window.PinkmanAction extends window.PinkmanObject
   attach: (eventName) ->
     if Pinkman.isString(eventName)
       action = this
-      $("##{action.controller.id} [data-action='#{action.name}']").css('cursor','pointer') if eventName == 'click'
-      $('body').on eventName, "##{action.controller.id} [data-action='#{action.name}']", (ev) ->
+      $('body').on eventName, action.selector, (ev) ->
         ev.preventDefault() unless eventName == 'keypress'
         obj = window.Pinkman.closest($(this))
         action.call(obj,$(this),ev)
@@ -163,3 +166,12 @@ Pinkman.controller = (args...) ->
     Pinkman.controllers.find(args[0])
   else
     Pinkman.controllers.def(args...)
+
+$(document).ready ->
+  sleep 0.1, ->
+    array = []
+    Pinkman.listening.each (a) -> 
+      array.push(a.selector) if (a.eventName == 'click') or (Pinkman.isArray(a.eventName) and a.eventName.indexOf('click') !=-1)
+      
+    selector = array.join(', ')
+    Pinkman.css(selector, 'cursor', 'pointer !important')

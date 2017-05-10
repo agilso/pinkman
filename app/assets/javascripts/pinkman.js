@@ -6,3 +6,4 @@
 //= require pinkman_base/collection
 //= require pinkman_base/render
 //= require pinkman_base/controller
+//= require pinkman_base/css
