@@ -53,6 +53,7 @@ class window.PinkmanCommon
   render: (options) ->
     if typeof options == 'object'
       options.object = this
+      options.template = options.target + '-template' unless options.template? and options.template != ''
       Pinkman.render options
     else if typeof options == 'string'
       opts = {object: this, target: options, template: options + '-template'}
@@ -65,7 +66,8 @@ class window.PinkmanCommon
 
 
   append: (options) ->
-    if options? and typeof options == 'object' and options.template? and options.target?
+    if options? and typeof options == 'object' and options.target?
+      options.template = options.target + '-template' unless options.template? and options.template != ''
       newOptions = new Object
       for k,v of options
         newOptions[k] = v if k != 'target' and k != 'callback'
