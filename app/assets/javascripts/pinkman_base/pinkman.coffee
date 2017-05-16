@@ -73,6 +73,7 @@ class window.Pinkman
             type: options.type
             dataType: 'json'
             data: options.data
+            teste: 'quero ver'
         ajax.done (response) =>
           if response? and response.errors?
             options.error(this) if options.error? and typeof options.error == 'function'

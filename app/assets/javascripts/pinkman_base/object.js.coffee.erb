@@ -133,7 +133,7 @@ class window.PinkmanObject extends window.PinkmanCommon
     unless @id?
       Pinkman.ajax.post
         url: @api()
-        data: { pink_obj: @json() }
+        data: { pink_obj: @json(), scope: this.constructor.scope }
         complete: (response) =>
           @assign(response)
           delete @errors unless response.errors?
@@ -144,7 +144,7 @@ class window.PinkmanObject extends window.PinkmanCommon
     if @id?
       Pinkman.ajax.patch
         url: @api() + @id
-        data: { pink_obj: @json() }
+        data: { pink_obj: @json(), scope: this.constructor.scope }
         complete: (response) =>
           @assign(response)
           delete @errors unless response.errors?

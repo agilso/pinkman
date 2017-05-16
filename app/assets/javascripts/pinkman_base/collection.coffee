@@ -358,6 +358,11 @@ class window.PinkmanCollection extends window.PinkmanCommon
   # request:  get /api/API_URL/
   fetchFromUrl: (options) ->
     if options? and typeof options == 'object' and options.url?
+      
+      scope = @constructor.scope if @constructor.scope? and @constructor.scope != ''
+      scope = @scope if @scope? and @scope != ''
+      scope = options.scope if options.scope? and options.scope != ''
+      options.params.scope = scope if scope?
       @emptyResponse = null
       @fetchingFrom = options.url
       Pinkman.ajax.get
