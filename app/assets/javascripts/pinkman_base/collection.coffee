@@ -369,7 +369,7 @@ class window.PinkmanCollection extends window.PinkmanCommon
             # separate recent when this collection is already populated
             if @any()
               @_recent = new this.constructor
-              @_recent.fetchFromArray(response)
+              @_recent.fetchFromArray(response) if response.length > 0
 
             @fetchFromArray(response).emptyResponse = response.length == 0
 

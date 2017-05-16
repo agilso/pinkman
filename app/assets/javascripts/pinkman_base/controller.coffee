@@ -1,3 +1,5 @@
+Pinkman.bottomDistance = 800
+
 Pinkman.listening = new PinkmanCollection
 
 Pinkman.maxSearchLevel = 15
@@ -54,22 +56,22 @@ class window.PinkmanController extends window.PinkmanObject
         obj.set(attribute,jquery.val()) 
         callback(obj,jquery,args...) if callback? and typeof callback == 'function'
 
-  bindAll: ->
+  # bindAll: ->
 
   bottom: (callback) -> 
     setTimeout ->        
-      window._pinkman_lastEndOfPage = 0 unless window._pinkman_lastEndOfPage?
+      Pinkman._lastEndOfPage = 0 unless Pinkman._lastEndOfPage?
       $(window).scroll ->
         t = Date.now()
         distanceFromBottom = $(document).height() - $(window).scrollTop() - document.body.offsetHeight
-        if ( (distanceFromBottom < 800 and window._pinkman_lastEndOfPage < t) or distanceFromBottom == 0 ) and not window._pinkman_bottomTriggered
-          window._pinkman_bottomTriggered = true
-          window._pinkman_lastEndOfPage = t
+        if ( (distanceFromBottom < Pinkman.bottomDistance and Pinkman._lastEndOfPage < t) or distanceFromBottom == 0 ) and not Pinkman._bottomTriggered
+          Pinkman._bottomTriggered = true
+          Pinkman._lastEndOfPage = t
           callback()
     , 50
 
   endBottom: () ->
-    window._pinkman_bottomTriggered = false
+    Pinkman._bottomTriggered = false
  
 
   # drop
