@@ -358,27 +358,33 @@ class window.PinkmanCollection extends window.PinkmanCommon
   # request:  get /api/API_URL/
   fetchFromUrl: (options) ->
     if options? and typeof options == 'object' and options.url?
-      
-      scope = @constructor.scope if @constructor.scope? and @constructor.scope != ''
-      scope = @scope if @scope? and @scope != ''
-      scope = options.scope if options.scope? and options.scope != ''
-      options.params.scope = scope if scope?
-      @emptyResponse = null
+
+      if Pinkman.hasScope(this)
+        options.params = new Object unless options.params?
+        options.params.scope = Pinkman.scope(this)
+
+      @doneFetching = null
       @fetchingFrom = options.url
+
       Pinkman.ajax.get
         url: Pinkman.json2url(options.url,options.params) 
         complete: (response) =>
           if response?
             [@errors, @error] = [response.errors, response.error] if response.errors? or response.error?
             
+            if options.params? and options.params.limit?
+              @doneFetching = response.length < options.params.limit
+            else
+              @doneFetching = response.length == 0
+            
             # separate recent when this collection is already populated
-            if @any()
-              @_recent = new this.constructor
-              @_recent.fetchFromArray(response) if response.length > 0
+            @_recent = new this.constructor
 
-            @fetchFromArray(response).emptyResponse = response.length == 0
+            if response.length > 0
+              @_recent.fetchFromArray(response) 
+              @fetchFromArray(response)
 
-          @emptyResponse = true unless response?
+          @doneFetching = true unless response?
           options.callback(this) if options.callback? and typeof options.callback == 'function'
       return(this)
 
@@ -386,7 +392,7 @@ class window.PinkmanCollection extends window.PinkmanCommon
   # request:  get /api/API_URL/?offset="COLLECTION_SIZE"&limit=n
   # in rails: api::controller#index
   fetchMore: (n=10,callback='') ->
-    unless @emptyResponse
+    unless @doneFetching
       if @fetchingFrom?
         @fetchFromUrl
           url: @fetchingFrom

@@ -118,8 +118,14 @@ class window.PinkmanObject extends window.PinkmanCommon
 
   @find: (id, callback='') ->
     obj = new this
+    params = new Object
+    params.scope = Pinkman.scope(this)
+    
+    console.log params
+    console.log Pinkman.json2url(obj.api() + id,params)
+
     Pinkman.ajax.get 
-      url: obj.api() + id,
+      url: Pinkman.json2url(obj.api() + id,params)
       complete: (response) ->
         obj.assign(response)
         if obj.error? or obj.errors? 
@@ -133,7 +139,7 @@ class window.PinkmanObject extends window.PinkmanCommon
     unless @id?
       Pinkman.ajax.post
         url: @api()
-        data: { pink_obj: @json(), scope: this.constructor.scope }
+        data: { pink_obj: @json(), scope: Pinkman.scope(this) }
         complete: (response) =>
           @assign(response)
           delete @errors unless response.errors?
@@ -144,7 +150,7 @@ class window.PinkmanObject extends window.PinkmanCommon
     if @id?
       Pinkman.ajax.patch
         url: @api() + @id
-        data: { pink_obj: @json(), scope: this.constructor.scope }
+        data: { pink_obj: @json(), scope: Pinkman.scope(this) }
         complete: (response) =>
           @assign(response)
           delete @errors unless response.errors?
@@ -152,8 +158,11 @@ class window.PinkmanObject extends window.PinkmanCommon
       return(this)
 
   reload: (callback) ->
+    params = new Object
+    params.scope = Pinkman.scope(this)
+
     Pinkman.ajax.get 
-      url: @api() + @id,
+      url: Pinkman.json2url(@api() + @id,params)
       complete: (response) =>
         @assign(response)
         if @error? or @errors? 

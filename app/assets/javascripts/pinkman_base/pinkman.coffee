@@ -61,6 +61,40 @@ class window.Pinkman
 
   @calledFunctions = []
 
+  # --- Scope
+
+  @scope: (obj) ->
+    if obj?
+      scope = @getSelfScope(obj)
+      scope = @getClassScope(obj) unless scope?
+      scope = @getAppScope(obj) unless scope?
+      scope
+
+  @hasScope: (obj) ->
+    obj? and (@hasSelfScope(obj) or @hasClassScope(obj) or @hasAppScope(obj))
+
+  @hasSelfScope: (obj) ->
+    obj? and obj.scope? and obj.scope != ''
+
+  @hasClassScope: (obj) ->
+    obj? and obj.constructor.scope? and obj.constructor.scope != ''
+
+  @hasAppScope: (obj) ->
+    obj? and ((obj.pinkmanType == 'collection' and AppCollection? and AppCollection.scope? and AppCollection != '') or (obj.pinkmanType == 'object' and AppObject? and AppObject.scope? and AppObject.scope != ''))
+
+  @getSelfScope: (obj) ->
+    obj.scope if @hasSelfScope(obj)
+
+  @getClassScope: (obj) ->
+    obj.constructor.scope if @hasClassScope(obj)
+
+  @getAppScope: (obj) ->
+    if typeof obj == 'object' and obj.pinkmanType == 'collection' and AppCollection? and AppCollection.scope?
+      AppCollection.scope
+    else if typeof obj == 'object' and obj.pinkmanType == 'object' and AppObject? and AppObject.scope?
+      AppObject.scope
+
+
   # --- Ajax
 
   @ajax: 
@@ -73,7 +107,6 @@ class window.Pinkman
             type: options.type
             dataType: 'json'
             data: options.data
-            teste: 'quero ver'
         ajax.done (response) =>
           if response? and response.errors?
             options.error(this) if options.error? and typeof options.error == 'function'
