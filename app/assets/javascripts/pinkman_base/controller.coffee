@@ -73,6 +73,14 @@ class window.PinkmanController extends window.PinkmanObject
   endBottom: () ->
     Pinkman._bottomTriggered = false
  
+  scrolling: (callback) -> 
+    $(window).scroll ->
+      unless Pinkman._stopScroll
+        Pinkman._stopScroll = yes
+        callback(window.scrollY) 
+
+  endScroll: ->
+    Pinkman._stopScroll = no
 
   # drop
   ## -- usage: 
