@@ -93,16 +93,13 @@ Pinkman.saveElementScrollPosition = (id) ->
   a = Pinkman.scrolling.find(id)
   a = new Pinkman.object unless a?
   a.set('id',id)
-  element = $("##{id}")
-  elementPos = if element? then element.offset().top else 0
-  referencePos = if element.children()? then element.children().first().offset().top else 0
-  position = elementPos - referencePos
-
+  position = if document.getElementById(id) then document.getElementById(id).scrollTop else 0
   a.set('position', position)
   Pinkman.scrolling.push(a)
 
 Pinkman.restoreElementScrollPosition = (id) ->
-  document.getElementById(id).scrollTop = Pinkman.scrolling.find(id).position
+  if Pinkman.scrolling.include(id: id)
+    document.getElementById(id).scrollTop = Pinkman.scrolling.find(id).position
 
 Pinkman.reRender = (object) ->
   if object.renderQueue?
