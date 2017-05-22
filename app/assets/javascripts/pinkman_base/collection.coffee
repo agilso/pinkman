@@ -276,9 +276,12 @@ class window.PinkmanCollection extends window.PinkmanCommon
 
   # Desc: returns a new object associated with this collection
   new: (attributes) ->
-    object = new (@config.memberClass)
-    object.initialize(attributes)
-    object
+    if @_new? and not @_new.id?
+      @_new
+    else
+      @_new = new (@config.memberClass)
+      @_new.initialize(attributes)
+      @_new
 
   # Desc: reload every object in this collection
   reload: (callback='') ->
