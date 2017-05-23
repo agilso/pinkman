@@ -157,7 +157,6 @@ class window.PinkmanObject extends window.PinkmanCommon
   reload: (callback) ->
     params = new Object
     params.scope = Pinkman.scope(this)
-
     Pinkman.ajax.get 
       url: Pinkman.json2url(@api() + @id,params)
       complete: (response) =>
@@ -186,15 +185,26 @@ class window.PinkmanObject extends window.PinkmanCommon
       @removeFromAllCollections()
       Pinkman.ajax.delete
         url: @api() + @id
+        data: { scope: Pinkman.scope(this) }
         complete: (response) =>
           @assign(response)
           delete @errors unless response.errors?
-          if @errors?
-            throw new Error(@firstError())
-            return(false)
-          else
-            @id = null
-            callback(this) if typeof callback=='function'
+          @id = null unless @errors?
+          callback(this) if callback? and typeof callback=='function'
+      return(this)
+    else
+      return(false)
+
+  delete: (callback='') ->
+    if @id?
+      Pinkman.ajax.delete
+        url: @api() + @id
+        data: { scope: Pinkman.scope(this) }
+        complete: (response) =>
+          @assign(response)
+          delete @errors unless response.errors?
+          @id = null unless @errors?
+          callback(this) if callback? and typeof callback=='function'
       return(this)
     else
       return(false)

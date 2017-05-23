@@ -25,21 +25,14 @@ class Api::<%= controller_name %> < ApiController
   # post api/<%= api_name %>
   def create
     @<%= instance_name %>.assign_attributes <%= params_method_name %>
-    if @<%= instance_name %>.save
-      render json: @<%= instance_name %>.json_for(current_scope)
-    else
-      render json: {errors: @<%= instance_name %>.errors}
-    end
+    @<%= instance_name %>.save
+    render json: @<%= instance_name %>.json_for(current_scope)
   end
 
   # put/patch api/<%= api_name %>/:id
   def update
-    @<%= instance_name %>.assign_attributes <%= params_method_name %>
-    if @<%= instance_name %>.save
-      render json: @<%= instance_name %>.json_for(current_scope)
-    else
-      render json: {errors: @<%= instance_name %>.errors}
-    end
+    @<%= instance_name %>.update <%= params_method_name %>
+    render json: @<%= instance_name %>.json_for(current_scope)
   end
 
   # delete api/<%= api_name %>/:id

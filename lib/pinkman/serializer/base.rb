@@ -6,14 +6,16 @@ module Pinkman
   module Serializer
 
     class Base < ActiveModel::Serializer
+      attr_accessor :errors
+      attr_accessor :params
 
       def initialize *args
         super(*args)
+        @errors = Base.format_errors(args.first.errors.to_h) if args.first.errors.present? and args.first.errors.any?
         @params = OpenStruct.new(args[1][:params]) if args.length > 1 and args[1].is_a?(Hash) and args[1][:params]
         self
       end
 
-      attr_accessor :params
 
       self.root = false
 
@@ -65,6 +67,12 @@ module Pinkman
         end
       end
 
+      def self.format_errors errors
+        e = Hash.new
+        errors.each {|k,v| e[k] = [v].flatten}
+        e
+      end
+
       def attributes *args
         hash = super(*args)
         if scope
@@ -74,6 +82,7 @@ module Pinkman
           model.column_names.each {|attribute| hash[attribute] = object.send(attribute) } if include_all && model && model.methods.include?(:column_names)
           pinkmanscope.read.each {|attribute| hash[attribute] = object.send(attribute) if object.methods.include?(attribute)}
           pinkmanscope.read.each {|attribute| hash[attribute] = send(attribute) if self.methods.include?(attribute)}
+          hash[:errors] = self.class.format_errors(errors) if errors.present? and errors.any?
           hash
         end
       end

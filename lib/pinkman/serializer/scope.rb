@@ -27,7 +27,7 @@ module Pinkman
       end
 
       def can_read? attribute
-        read.include?(:all) or read.include?(attribute.to_sym) or attribute == :error or attribute == :errors
+        read.include?(:all) or read.include?(attribute.to_sym) or attribute.to_sym == :error or attribute.to_sym == :errors
       end
 
       def can_write? attribute
