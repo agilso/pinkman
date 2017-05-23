@@ -46,7 +46,7 @@ class window.PinkmanCommon
       this[attr] = value
       callback(this) if typeof callback == "function"
       @reRender() if @_watching
-      return true
+      return this
 
   # --- Render related --- #
 
