@@ -19,7 +19,7 @@ class window.PinkmanObject extends window.PinkmanCommon
   assign: (obj) ->
     if typeof obj == 'object'
       for k,v of obj
-        if typeof v == 'object' and this[k]? and this[k].isPink and not v.isPink
+        if typeof v == 'object' and v? and this[k]? and this[k].isPink and not v.isPink
           this[k].assign(v)
         else
           this.set(k,v) 
