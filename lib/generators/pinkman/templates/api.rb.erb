@@ -1,7 +1,7 @@
 class Api::<%= controller_name %> < ApiController
 
-  before_action :permissions
   before_action :set_objects
+  before_action :permissions
 
   # get api/<%= api_name %>
   def index
