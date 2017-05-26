@@ -66,6 +66,9 @@ class window.PinkmanCommon
     callback(this) if typeof callback == 'function'
     return this
 
+  renderLast: () ->
+    Pinkman.render @renderQueue.last()
+
 
   append: (options) ->
     if options? and typeof options == 'object' and options.target?
