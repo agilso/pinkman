@@ -11,7 +11,7 @@ module Pinkman
 
       def initialize *args
         super(*args)
-        @errors = Base.format_errors(args.first.errors.to_h) if args.first.errors.present? and args.first.errors.any?
+        @errors = Base.format_errors(args.first.errors.to_h) if args.first.present? and args.first.errors.present? and args.first.errors.any?
         @params = OpenStruct.new(args[1][:params]) if args.length > 1 and args[1].is_a?(Hash) and args[1][:params]
         self
       end
