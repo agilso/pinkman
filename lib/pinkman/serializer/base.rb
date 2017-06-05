@@ -47,7 +47,7 @@ module Pinkman
             define_method attribute do
               reflection = object.class.reflections[attribute.to_s] 
               if reflection
-                Pinkman::Serializer::array(object.send(attribute), scope: @scope)
+                Pinkman::Serializer::array(object.send(attribute), scope: @scope, params: @params)
               end
             end
           end
@@ -60,7 +60,7 @@ module Pinkman
             define_method attribute do
               reflection = object.class.reflections[attribute.to_s] 
               if reflection
-                reflection.klass.serializer.new(object.send(attribute), scope: @scope)
+                reflection.klass.serializer.new(object.send(attribute), scope: @scope, params: @params)
               end
             end
           end
