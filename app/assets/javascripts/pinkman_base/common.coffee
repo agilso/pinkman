@@ -78,9 +78,13 @@ class window.PinkmanCommon
         newOptions[k] = v if k != 'target' and k != 'callback'
       newOptions.reRender = no
       target = options.target
+      wrapIn = options.wrapIn
       newOptions.object = this
       newOptions.callback = (object,content) ->
-        $('#'+target).append(content)
+        if wrapIn?
+          $('#'+target).append("<div class='#{wrapIn}'>#{content}</div>")
+        else
+          $('#'+target).append(content)
         options.callback(object,content) if options.callback? and typeof options.callback == 'function'
       Pinkman.render(newOptions)
 

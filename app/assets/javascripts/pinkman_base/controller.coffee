@@ -27,7 +27,7 @@ class window.PinkmanController extends window.PinkmanObject
   build: ->
     if @builder? and typeof @builder == 'function'
       @builder(this)
-      @main() if @main? and typeof @main == 'function'
+      @main() if @main? and $("##{@id}").length and typeof @main == 'function'
       return(true)
     else
       return(false)
@@ -51,33 +51,36 @@ class window.PinkmanController extends window.PinkmanObject
       @bindIndividually(attribute,callback)
 
   bindIndividually: (attribute,callback='') ->
-    @action attribute, ['keyup','change'], (obj,jquery,args...) ->
-      if obj[attribute] != jquery.val()             
-        obj.set(attribute,jquery.val()) 
-        callback(obj,jquery,args...) if callback? and typeof callback == 'function'
+    if $("##{@id}").length
+      @action attribute, ['keyup','change'], (obj,jquery,args...) ->
+        if obj[attribute] != jquery.val()             
+          obj.set(attribute,jquery.val()) 
+          callback(obj,jquery,args...) if callback? and typeof callback == 'function'
 
   # bindAll: ->
 
   bottom: (callback) -> 
-    setTimeout ->        
-      Pinkman._lastEndOfPage = 0 unless Pinkman._lastEndOfPage?
-      $(window).scroll ->
-        t = Date.now()
-        distanceFromBottom = $(document).height() - $(window).scrollTop() - document.body.offsetHeight
-        if ( (distanceFromBottom < Pinkman.bottomDistance and Pinkman._lastEndOfPage < t) or distanceFromBottom == 0 ) and not Pinkman._bottomTriggered
-          Pinkman._bottomTriggered = true
-          Pinkman._lastEndOfPage = t
-          callback()
-    , 50
+    if $("##{@id}").length
+      setTimeout ->        
+        Pinkman._lastEndOfPage = 0 unless Pinkman._lastEndOfPage?
+        $(window).scroll ->
+          t = Date.now()
+          distanceFromBottom = $(document).height() - $(window).scrollTop() - document.body.offsetHeight
+          if ( (distanceFromBottom < Pinkman.bottomDistance and Pinkman._lastEndOfPage < t) or distanceFromBottom == 0 ) and not Pinkman._bottomTriggered
+            Pinkman._bottomTriggered = true
+            Pinkman._lastEndOfPage = t
+            callback()
+      , 50
 
   endBottom: () ->
     Pinkman._bottomTriggered = false
  
   scrolling: (callback) -> 
-    $(window).scroll ->
-      unless Pinkman._stopScroll
-        Pinkman._stopScroll = yes
-        callback(window.scrollY) 
+    if $("##{@id}").length
+      $(window).scroll ->
+        unless Pinkman._stopScroll
+          Pinkman._stopScroll = yes
+          callback(window.scrollY) 
 
   endScroll: ->
     Pinkman._stopScroll = no
@@ -134,7 +137,7 @@ class window.PinkmanAction extends window.PinkmanObject
 
   # Desc: attaches one single event
   attach: (eventName) ->
-    if Pinkman.isString(eventName)
+    if Pinkman.isString(eventName) and $("##{@controller.id}").length
       action = this
       $('body').on eventName, action.selector, (ev) ->
         ev.preventDefault() unless eventName == 'keypress'
@@ -164,7 +167,7 @@ Pinkman.controllers.isActive = (id) ->
 
 Pinkman.controllers.def = (id,builder) ->
   $(document).ready ->
-    if id? and builder? and ($('#'+id).length > 0)
+    if id? and builder?
       c = new PinkmanController(id: id, builder: builder)
       Pinkman.controllers.push(c)
       return(c.build())
