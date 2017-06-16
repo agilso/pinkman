@@ -44,9 +44,14 @@ class window.PinkmanCommon
   set: (attr,value, callback = "" ) ->
     if attr? and value?
       this[attr] = value
-      callback(this) if typeof callback == "function"
+      callback(this) if typeof callback == 'function'
       @reRender() if @_watching
       return this
+
+  # Desc: sets the attribute as undefined (destroy attribute)
+  unset: (attr,callback) ->
+    this[attr] = null
+    callback(this) if typeof callback == 'function'
 
   # --- Render related --- #
 

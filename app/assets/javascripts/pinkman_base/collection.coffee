@@ -188,20 +188,22 @@ class window.PinkmanCollection extends window.PinkmanCommon
       @count() > 0
 
   # Desc: return the first object that matches
-  getBy: (attribute, value) ->
+  getBy: (attribute, value,callback) ->
     if attribute? and value?
       object = new Object
       object[attribute] = value
-      return(@getByAttributes(object))
+      return(@getByAttributes(object,callback))
 
   # Desc: return the first that matches
-  getByAttributes: (object) ->
+  getByAttributes: (object,callback) ->
     if object? and typeof object == 'object' and @any()
       for member in @collection
         match = true
         for key,value of object
           match = false if member[key]!=value 
-        return(member) if match
+        if match
+          callback(member) if typeof callback == 'function'
+          return(member) 
     else
       return null
 
@@ -220,9 +222,9 @@ class window.PinkmanCollection extends window.PinkmanCommon
         @getByAttributes(args[0])
   
   # Desc: find by id
-  find: (id) ->
+  find: (id,callback) ->
     if id?
-      object = @getBy('id',id)
+      object = @getBy('id',id,callback)
       return(object)
 
   # Desc: return the next (after) object

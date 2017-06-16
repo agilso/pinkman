@@ -108,7 +108,8 @@ class window.PinkmanController extends window.PinkmanObject
       options.files(obj,ev.originalEvent.dataTransfer.files) if options.files? and typeof options.files == 'function'
 
 
-
+  isActive: () ->
+    $("##{@id}").length > 0
 
 # --- controller collection
 class window.PinkmanControllers extends window.PinkmanCollection
