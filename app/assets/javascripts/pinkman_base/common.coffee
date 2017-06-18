@@ -50,7 +50,7 @@ class window.PinkmanCommon
 
   # Desc: sets the attribute as undefined (destroy attribute)
   unset: (attr,callback) ->
-    this[attr] = null
+    delete this[attr]
     callback(this) if typeof callback == 'function'
 
   # --- Render related --- #

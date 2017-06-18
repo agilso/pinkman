@@ -33,7 +33,7 @@ class window.PinkmanObject extends window.PinkmanCommon
     a = new Object
     for k,v of this
       if PinkmanObject.privateAttributes.indexOf(k) == -1 and typeof v != 'function'
-        if v.isPink
+        if (v? and typeof v == 'object' and v.isPink)
           a[k] = v.attributes()
         else
           a[k] = v
@@ -45,7 +45,7 @@ class window.PinkmanObject extends window.PinkmanCommon
     a = new Object
     for k,v of this
       if PinkmanObject.privateAttributes.indexOf(k) == -1 and typeof v != 'function'
-        a[k] = if v.isPink then v.json() else v
+        a[k] = if (v? and typeof v == 'object' and v.isPink) then v.json() else v
     return a
   
   # Desc: returns a array of attributes keys
