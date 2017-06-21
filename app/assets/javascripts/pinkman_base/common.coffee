@@ -35,7 +35,10 @@ class window.PinkmanCommon
   # Desc: returns the class name (constructor name)
   # Usage: a.className()  #=> a.constructor.name
   className: ->
-    @constructor.name
+    if @config? and @config.className?
+      @config.className
+    else
+      @constructor.name
   
   # Desc: set a pair of key/value for this object. Triggers reRender if watch is active.
   # Usage:

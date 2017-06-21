@@ -1,5 +1,6 @@
 class window.<%= collection_class_name %> extends <%= app_collection_name %>
   config:
     api: '<%= guess_api_url %>' # you should confirm this
+    className: '<%= collection_class_name %>'
     memberClass: ->
       return (new <%= object_class_name %>)
