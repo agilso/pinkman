@@ -305,6 +305,21 @@ class window.PinkmanCollection extends window.PinkmanCommon
     else
       return false
 
+  # Desc: sort by a given key and order
+  sortBy: (key,order = "asc") ->
+    array = @collection.sort (a,b) -> 
+      if typeof a[key] == "string" and typeof b[key] == "string" 
+        if a[key].toLowerCase() >= b[key].toLowerCase() 
+          return 1
+        else
+          return -1
+      else
+        if a[key] >= b[key] 
+          return 1 
+        else 
+          return -1
+    @collection = if order.toLowerCase()=="asc" then array else array.reverse()
+
   # Desc: exactly what it suggests
   shuffle: () ->
     if @any?
