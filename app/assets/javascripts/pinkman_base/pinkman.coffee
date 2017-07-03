@@ -58,6 +58,14 @@ class window.Pinkman
     else
       ''
 
+  @objToArray: (obj) ->
+    i = 0
+    a = []
+    for k,v of obj
+      a.push {index: i, key: k, value: v}
+      i = i+1
+    a
+
 
   @calledFunctions = []
 

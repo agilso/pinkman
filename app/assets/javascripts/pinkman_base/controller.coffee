@@ -149,7 +149,6 @@ class window.PinkmanAction extends window.PinkmanObject
     else if Pinkman.isArray(@eventName)
       @attach(ev) for ev in @eventName
        
-
 # --- action collection
 class window.PinkmanActions extends window.PinkmanCollection
   call: (args...) ->
