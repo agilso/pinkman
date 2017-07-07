@@ -14,12 +14,10 @@ class window.PinkmanCommon
   @isInstance: (object) ->
     object.constructor is this
 
-
   initialize: (attributesObject) ->
     if typeof attributesObject == 'object'
       for key, value of attributesObject
         @set(key,value) if PinkmanObject.privateAttributes.indexOf(key) is -1
-
 
   # Desc: return api url path
   api: () ->
@@ -103,3 +101,21 @@ class window.PinkmanCommon
     options.id = options.template
     @renderQueue = new PinkmanCollection unless @renderQueue?
     @renderQueue.directPush(options)
+
+  hasErrorOn: (attr) ->
+    if attr? and (Pinkman.isArray(attr) or Pinkman.isString(attr))
+      array = if Pinkman.isArray(attr) then attr else [attr]
+      valid = true
+      if @errors?
+        for a in array
+          valid = false if @errors[a]?
+      !valid
+
+  hasErrorsOn: (args...) ->
+    @hasErrorOn(args...)
+
+  anyErrorOn: (args...) ->
+    @hasErrorOn(args...)
+
+  anyErrorsOn: (args...) ->
+    @hasErrorOn(args...)

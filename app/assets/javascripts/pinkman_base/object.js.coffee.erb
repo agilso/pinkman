@@ -45,7 +45,11 @@ class window.PinkmanObject extends window.PinkmanCommon
     a = new Object
     for k,v of this
       if PinkmanObject.privateAttributes.indexOf(k) == -1 and typeof v != 'function'
-        a[k] = if (v? and typeof v == 'object' and v.isPink) then v.json() else v
+        if (v? and typeof v == 'object' and v.isPink)
+          # do not include collections in json format since they are supposed to have their own model/api
+          a[k] = v.json() unless v.isCollection
+        else
+          a[k] = v
     return a
   
   # Desc: returns a array of attributes keys
@@ -175,11 +179,9 @@ class window.PinkmanObject extends window.PinkmanCommon
     else
       return false
 
-
   save: (callback='') ->
     if @id? and @id!='' then @update(callback) else @create(callback)
         
-  
   destroy: (callback='') ->
     if @id?
       @removeFromAllCollections()
