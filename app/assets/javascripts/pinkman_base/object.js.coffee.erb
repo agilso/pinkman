@@ -22,7 +22,7 @@ class window.PinkmanObject extends window.PinkmanCommon
         if typeof v == 'object' and v? and this[k]? and this[k].isPink and not v.isPink
           this[k].assign(v)
         else
-          this.set(k,v) 
+          this.set(k,v)
       return true
     else
       return false
@@ -51,7 +51,7 @@ class window.PinkmanObject extends window.PinkmanCommon
         else
           a[k] = v
     return a
-  
+
   # Desc: returns a array of attributes keys
   # Usage:
   # a.set('a','b'); a.set('x',value)
@@ -70,7 +70,7 @@ class window.PinkmanObject extends window.PinkmanCommon
       array.push "#{a}: #{this[a]};"
     array.join(" ")
 
-  # --- Collection related functions --- # 
+  # --- Collection related functions --- #
 
   # Desc: return the next obj (after this) in a collection
   # Try to guess the collection if not provided
@@ -125,22 +125,22 @@ class window.PinkmanObject extends window.PinkmanCommon
     params = new Object
     params.scope = Pinkman.scope(this)
 
-    Pinkman.ajax.get 
+    Pinkman.ajax.get
       url: Pinkman.json2url(obj.api() + id,params)
       complete: (response) ->
         obj.assign(response)
-        if obj.error? or obj.errors? 
+        if obj.error? or obj.errors?
           throw new Error(obj.firstError())
           return false
         else
           callback(obj) if callback? and typeof callback == 'function'
     return(obj)
-  
+
   create: (callback='') ->
     unless @id?
       Pinkman.ajax.post
         url: @api()
-        data: { pink_obj: @json(), scope: Pinkman.scope(this) }
+        data: @_data()
         complete: (response) =>
           @assign(response)
           delete @errors unless response.errors?
@@ -151,7 +151,7 @@ class window.PinkmanObject extends window.PinkmanCommon
     if @id?
       Pinkman.ajax.patch
         url: @api() + @id
-        data: { pink_obj: @json(), scope: Pinkman.scope(this) }
+        data: @_data()
         complete: (response) =>
           @assign(response)
           delete @errors unless response.errors?
@@ -161,17 +161,17 @@ class window.PinkmanObject extends window.PinkmanCommon
   reload: (callback) ->
     params = new Object
     params.scope = Pinkman.scope(this)
-    Pinkman.ajax.get 
+    Pinkman.ajax.get
       url: Pinkman.json2url(@api() + @id,params)
       complete: (response) =>
         @assign(response)
-        if @error? or @errors? 
+        if @error? or @errors?
           throw new Error(@firstError())
           return false
         else
           callback(this) if callback? and typeof callback == 'function'
     return(this)
-  
+
   updateAttributes: (obj) ->
     if this.assign(obj)
       this.save (obj) ->
@@ -181,7 +181,7 @@ class window.PinkmanObject extends window.PinkmanCommon
 
   save: (callback='') ->
     if @id? and @id!='' then @update(callback) else @create(callback)
-        
+
   destroy: (callback='') ->
     if @id?
       @removeFromAllCollections()

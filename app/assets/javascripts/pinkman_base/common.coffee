@@ -4,7 +4,7 @@ class window.PinkmanCommon
     @initialize(attributesObject) if attributesObject?
 
   @privateAttributes = ['isPink','isObject','isCollection','pinkey','config','pinkmanType','collections','renderQueue']
-  
+
   @mixin: (args...) ->
     Pinkman.mixin(args...)
 
@@ -23,10 +23,10 @@ class window.PinkmanCommon
   api: () ->
     if @config? and @config.api?
       if @config.api.charAt(0) == '/'
-        @config.api + '/' 
+        @config.api + '/'
       else
-        '/' + @config.api + '/' 
-  
+        '/' + @config.api + '/'
+
   isInstanceOf: (prot) ->
     this.constructor is prot
 
@@ -37,7 +37,7 @@ class window.PinkmanCommon
       @config.className
     else
       @constructor.name
-  
+
   # Desc: set a pair of key/value for this object. Triggers reRender if watch is active.
   # Usage:
   # a.set 'a', 'b', (a) ->
@@ -68,7 +68,7 @@ class window.PinkmanCommon
       @reRender()
 
   reRender: (callback='') ->
-    Pinkman.reRender(this)    
+    Pinkman.reRender(this)
     callback(this) if typeof callback == 'function'
     return this
 
@@ -119,3 +119,7 @@ class window.PinkmanCommon
 
   anyErrorsOn: (args...) ->
     @hasErrorOn(args...)
+
+
+  _data: ->
+    { pink_obj: @json(), scope: Pinkman.scope(this) }
