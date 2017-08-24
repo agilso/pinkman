@@ -86,6 +86,11 @@ module Pinkman
           hash
         end
       end
+    
+      def to_h
+        JSON.parse(to_json)
+      end
+      
     end
   end
 end

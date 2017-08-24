@@ -93,6 +93,10 @@ class window.PinkmanCommon
           $('#'+target).append(content)
         options.callback(object,content) if options.callback? and typeof options.callback == 'function'
       Pinkman.render(newOptions)
+    else if options? and Pinkman.isString(options)
+      @append
+        template: options + '-template'
+        target: options
 
   watch: () ->
     @_watching = yes
@@ -119,7 +123,6 @@ class window.PinkmanCommon
 
   anyErrorsOn: (args...) ->
     @hasErrorOn(args...)
-
 
   _data: ->
     { pink_obj: @json(), scope: Pinkman.scope(this) }

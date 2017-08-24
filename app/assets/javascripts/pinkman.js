@@ -7,3 +7,4 @@
 //= require pinkman_base/render
 //= require pinkman_base/controller
 //= require pinkman_base/css
+// = require pinkman_base/cable

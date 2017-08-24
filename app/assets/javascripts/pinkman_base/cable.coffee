@@ -1,0 +1,1 @@
+Pinkman.cable = ActionCable.createConsumer() if ActionCable?

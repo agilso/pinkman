@@ -73,6 +73,18 @@ class window.PinkmanController extends window.PinkmanObject
   endBottom: () ->
     Pinkman._bottomTriggered = false
  
+ 
+  subscribe: (channel,opt) ->
+    throw 'ActionCable not found.' unless Pinkman.cable?
+    throw 'Channel not specificied.'  unless channel? and channel != ''
+    try
+      callback = if typeof opt == 'function' then opt else opt['callback']
+    catch
+      throw 'Callback not found.'
+    params = if (typeof opt == 'object' and opt['params']?) then opts['params'] else new Object
+    params.channel = channel
+    Pinkman.cable.subscriptions.create params, received: callback
+    
   scrolling: (callback) -> 
     if $("##{@id}").length
       $(window).scroll ->
