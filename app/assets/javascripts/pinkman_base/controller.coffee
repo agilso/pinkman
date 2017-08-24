@@ -81,7 +81,7 @@ class window.PinkmanController extends window.PinkmanObject
       callback = if typeof opt == 'function' then opt else opt['callback']
     catch
       throw 'Callback not found.'
-    params = if (typeof opt == 'object' and opt['params']?) then opts['params'] else new Object
+    params = if (typeof opt == 'object' and opt['params']?) then opt['params'] else new Object
     params.channel = channel
     Pinkman.cable.subscriptions.create params, received: callback
     
