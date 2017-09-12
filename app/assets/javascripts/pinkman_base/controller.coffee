@@ -114,10 +114,17 @@ class window.PinkmanController extends window.PinkmanObject
     @action action, 'dragleave', (obj,j,ev) ->
       options.leave(obj,j,ev if options.leave? and typeof options.leave == 'function')
     @action action, 'drop', (obj,j,ev) ->
-      options.drop(obj,j,ev) if options.drop? and typeof options.drop == 'function'
+      if Pinkman.dragged?
+        options.drop(obj, j,Pinkman.dragged.obj, Pinkman.dragged.j,ev) if options.drop? and typeof options.drop == 'function'
+      else
+        options.drop(obj,j,ev) if options.drop? and typeof options.drop == 'function'
       options.files(obj,ev.originalEvent.dataTransfer.files,j) if options.files? and typeof options.files == 'function'
 
-
+  drag: (action,options) ->
+    @action action, 'mousedown', (obj,j,ev) ->
+      j.attr('draggable','true')
+      Pinkman.dragged = new Pinkman.object(obj: obj, j: j, ev: ev)
+        
   isActive: () ->
     $("##{@id}").length > 0
 
@@ -150,7 +157,7 @@ class window.PinkmanAction extends window.PinkmanObject
     if Pinkman.isString(eventName) and $("##{@controller.id}").length
       action = this
       $('body').on eventName, action.selector, (ev) ->
-        ev.preventDefault() unless eventName == 'keypress'
+        ev.preventDefault() if eventName != 'keypress' and eventName != 'mousedown'
         obj = window.Pinkman.closest($(this))
         action.call(obj,$(this),ev)
 
