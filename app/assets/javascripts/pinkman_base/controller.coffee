@@ -115,7 +115,7 @@ class window.PinkmanController extends window.PinkmanObject
       options.leave(obj,j,ev if options.leave? and typeof options.leave == 'function')
     @action action, 'drop', (obj,j,ev) ->
       options.drop(obj,j,ev) if options.drop? and typeof options.drop == 'function'
-      options.files(obj,ev.originalEvent.dataTransfer.files) if options.files? and typeof options.files == 'function'
+      options.files(obj,ev.originalEvent.dataTransfer.files,j) if options.files? and typeof options.files == 'function'
 
 
   isActive: () ->
