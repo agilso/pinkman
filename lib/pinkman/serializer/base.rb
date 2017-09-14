@@ -80,8 +80,8 @@ module Pinkman
           include_all = pinkmanscope.read.include?(:all)
           model = self.class.model
           model.column_names.each {|attribute| hash[attribute] = object.send(attribute) } if include_all && model && model.methods.include?(:column_names)
-          pinkmanscope.read.each {|attribute| hash[attribute] = object.send(attribute) if object.methods.include?(attribute)}
           pinkmanscope.read.each {|attribute| hash[attribute] = send(attribute) if self.methods.include?(attribute)}
+          pinkmanscope.read.each {|attribute| hash[attribute] ||= object.send(attribute) if object.methods.include?(attribute)}
           hash[:errors] = self.class.format_errors(errors) if errors.present? and errors.any?
           hash
         end

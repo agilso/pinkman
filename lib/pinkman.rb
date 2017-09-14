@@ -70,7 +70,8 @@ module Pinkman
         end
 
         def json_for scope_name, params_hash={}
-          serialize_for(scope_name,params_hash).to_json
+          eval "@_json_for_#{scope_name.to_s} = serialize_for(scope_name,params_hash).to_json if not @_json_for_#{scope_name.to_s} or changed?"
+          eval "@_json_for_#{scope_name.to_s}"
         end
 
       end
