@@ -19,13 +19,17 @@ module Pinkman
 
       self.root = false
 
-      def self.scope name=:all, &block
+      def self.scope name=:public, &block
         @scopes ||= {}
         if block_given?
           @scopes[name.to_sym] = Pinkman::Serializer::Scope.new(serializer: self)
           yield(@scopes[name.to_sym]) 
         else
-          @scopes[name.to_sym]
+          if @scopes[name.to_sym]
+            @scopes[name.to_sym]
+          else
+            raise ArgumentError.new("Scope '#{name}' not found/defined for #{self.to_s}.")
+          end
         end
       end
 
