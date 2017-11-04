@@ -20,6 +20,9 @@ class window.PinkmanController extends window.PinkmanObject
   constructor: (args...) ->
     @actions = new PinkmanActions
     super(args...)
+    
+  selector: ->
+    '#' + @id
 
   # build a controller from user definition
   build: ->
@@ -41,6 +44,17 @@ class window.PinkmanController extends window.PinkmanObject
       @actions.push(a)
       a.listen() if a.call? and typeof a.call == 'function'
       return(a)
+      
+      
+  esc: (callback) ->
+    a = new PinkmanAction(name: 'esc', eventName: 'keyup', controller: this)
+    a.call = (obj, j, ev) ->
+      callback() if ev.keyCode == 27
+    Pinkman.actions.push(a)
+    @actions.push(a)
+    a.listen()
+    return(a)
+    
 
   bind: (attribute,callback='') ->
     if Pinkman.isArray(attribute)

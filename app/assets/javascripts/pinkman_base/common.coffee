@@ -13,7 +13,7 @@ class window.PinkmanCommon
 
   @isInstance: (object) ->
     object.constructor is this
-
+    
   initialize: (attributesObject) ->
     if typeof attributesObject == 'object'
       for key, value of attributesObject
