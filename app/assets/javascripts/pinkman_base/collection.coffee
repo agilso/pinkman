@@ -70,8 +70,11 @@ class window.PinkmanCollection extends window.PinkmanCommon
       @each (object) ->
         value = true
         (value = false if object[k] != v) for k,v of criteria
-        selection.push(object) if value
-
+        if value
+          if PinkmanController.isInstance(object) or PinkmanAction.isInstance(object)
+            selection.forcePush(object) 
+          else
+            selection.push(object)
     callback(selection) if typeof callback == 'function'
     return(selection)
 

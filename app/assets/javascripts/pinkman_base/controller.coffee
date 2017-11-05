@@ -205,7 +205,7 @@ Pinkman.controllers.def = (id,builder) ->
   $(document).ready ->
     if id? and builder?
       c = new PinkmanController(id: id, builder: builder)
-      Pinkman.controllers.push(c)
+      Pinkman.controllers.forcePush(c)
       return(c.build())
     else
       return false
