@@ -136,7 +136,11 @@ class window.PinkmanCollection extends window.PinkmanCommon
 
   # Desc: remove a object from the collection
   remove: (object) ->
-    if object?
+    if typeof object == 'object' and object.id? and (a = @find(object.id))?
+      i = @collection.indexOf a
+      @collection.splice(i,1)
+      return a
+    else
       i = @collection.indexOf object
       @collection.splice(i,1)
       return object
@@ -155,7 +159,7 @@ class window.PinkmanCollection extends window.PinkmanCommon
       return(true)
 
   # Desc: return true if object is in this collection and false if anything else.
-  # Also accepts an array as argument. Return true if 
+  # Also accepts an array as argument. Return true if every element is in the collection
   include: (args) ->
     if args? and Pinkman.isArray(args)
       value = true
