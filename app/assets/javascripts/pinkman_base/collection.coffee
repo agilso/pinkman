@@ -50,9 +50,10 @@ class window.PinkmanCollection extends window.PinkmanCommon
   # rails/ruby equivalent: each
   # Desc: receive a function and apply it to all members
   # tip: you can chain functions. Example: collection.each(transform).first()
-  each: (transformation='') ->
+  each: (transformation='',callback) ->
     if transformation? and typeof transformation=='function' 
       transformation(o) for o in @collection
+    callback(this) if typeof callback == 'function'
     return this
 
   # rails/ruby equivalent: where/select
@@ -344,6 +345,7 @@ class window.PinkmanCollection extends window.PinkmanCommon
         else 
           return -1
     @collection = if order.toLowerCase()=="asc" then array else array.reverse()
+    return(this)
 
   # Desc: exactly what it suggests
   shuffle: () ->

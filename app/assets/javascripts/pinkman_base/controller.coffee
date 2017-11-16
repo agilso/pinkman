@@ -16,6 +16,11 @@ Pinkman.closest = (jquery,level=0) ->
 
 # --- controller object
 class window.PinkmanController extends window.PinkmanObject
+  
+  clear: ->
+    @actions.each (a) ->
+      a.clear()
+    
 
   constructor: (args...) ->
     @actions = new PinkmanActions
@@ -158,10 +163,23 @@ class window.PinkmanController extends window.PinkmanObject
 
 # --- controller collection
 class window.PinkmanControllers extends window.PinkmanCollection
-
+  
+  clear: (callback) ->
+    @unbindScrolling() if @pinkey == Pinkman.controllers.pinkey
+    @each (c) ->
+      c.clear()
+    , callback
+    
+  unbindScrolling: ->
+    $(window).off('scroll')
+      
 # --- actions object
 class window.PinkmanAction extends window.PinkmanObject
-
+  
+  constructor: (args...) ->
+    super(args...)
+    @events = []
+    
   # Desc: mirrors/redirects a action to another already defined
   mirror: (controllerID,actionName) ->
     # gets all actions named 'action' in all controllers with 'controller' id
@@ -180,10 +198,16 @@ class window.PinkmanAction extends window.PinkmanObject
   redirectTo: (args...) ->
     @mirror(args...)
 
+  # Desc: removes event
+  clear: ->
+    for ev in @events
+      $('body').off ev, @selector
+    
   # Desc: attaches one single event
   attach: (eventName) ->
     if Pinkman.isString(eventName) and $("##{@controller.id}").length
       action = this
+      @events.push(eventName)
       $('body').on eventName, action.selector, (ev) ->
         ev.preventDefault() if eventName != 'keypress' and eventName != 'mousedown'
         obj = window.Pinkman.closest($(this))

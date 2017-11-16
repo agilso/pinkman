@@ -12,20 +12,26 @@ class window.PinkmanPath extends Pinkman.object
       a.shift() if a[0] == ''
       a.pop() if a[a.length-1] == ''
       i = 0
+      s = 0
+      d = 0
       for l in a
         i = i + 1
         obj = new Pinkman.object({entry: l, index: i})
         if /:/.test(l[0])
+          d = d + 1
           obj.set('dynamic',yes)
           obj.set('static',no)
           @dynamic.push(obj)
         else
+          s = s + 1
           obj.set('dynamic',no)
           obj.set('static',yes)
           @static.push(obj)
         @levels.push(obj)
-        
+      
       @set('depth',i)
+      @set('staticDepth',s)
+      @set('dynamicDepth',d)
       
   
   @isExternal: (url) ->
@@ -58,7 +64,10 @@ class window.PinkmanRouteMatcher extends Pinkman.object
   
   initialize: ->
     if @controllers.any()?
+      Pinkman.controllers.unbindScrolling()
+      # console.log 'clear dos Pinkman.controllers'
       @controllers.each (c) =>
+        # console.log 'dentro dos controllers desse router'
         c.setParams(@params())
         c.build(yes)
     else
@@ -70,8 +79,7 @@ class window.PinkmanRouteMatcher extends Pinkman.object
       candidates = Pinkman.routes.select(depth: path.depth)
       routes = candidates.select (candidate) ->
         candidate.path.match(path)
-      route = routes.first()
-      
+      route = routes.sortBy('staticDepth','desc').first()
       if route?
         @set('url',url)
         @set('path',path)
@@ -139,6 +147,7 @@ class window.PinkmanRouter
       yieldIn = r.route.yieldIn() || @_config.yield 
       $(yieldIn).html("<div class='pink-yield' id='#{r.controller}'></div>") if r.route.blank
       r.initialize()
+      window.scrollTo(0,0) unless Pinkman.router._config.freeze
       callback() if typeof callback == 'function'
       true
     else
@@ -181,7 +190,7 @@ class window.PinkmanRouter
       route = new PinkmanRoute
       route.set('id',path)
       route.set('url',path)
-      route.set('path',p).set('depth',p.depth)
+      route.set('path',p).set('depth',p.depth).set('staticDepth',p.staticDepth).set('dynamicDepth',p.dynamicDepth)
       route.set('blank',yes)
       route.set('controller', if object? and object.controller? then object.controller else p.level(1).entry)
       if object? and typeof object == 'object' 
