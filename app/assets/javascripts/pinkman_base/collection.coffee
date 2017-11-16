@@ -175,6 +175,20 @@ class window.PinkmanCollection extends window.PinkmanCommon
     else
       false
 
+
+  firstOrInitialize: (args...) ->
+    collection = @select(args...)
+    if collection.any()
+      collection.first()
+    else
+      @forceNew(args...)
+    
+  forceNew: (args...)->
+    obj = new (@config.memberClass)
+    obj.initialize(args...)
+    @push(obj)
+    obj
+    
   first: (n=1) ->
     if n==1 
       return @collection[0]
@@ -193,6 +207,10 @@ class window.PinkmanCollection extends window.PinkmanCommon
       @select(criteria).count() > 0
     else
       @count() > 0
+  
+  # Desc: exact opposite of any. Return trues if not a single members is found.
+  empty: (args...) ->
+    !@any(args...)
 
   # Desc: return the first object that matches
   getBy: (attribute, value,callback) ->

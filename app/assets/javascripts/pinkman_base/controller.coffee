@@ -24,11 +24,25 @@ class window.PinkmanController extends window.PinkmanObject
   selector: ->
     '#' + @id
 
+  setParams: (params) ->
+    query = location.search.substring(1);
+    if query? and query!=''
+      @params = JSON.parse('{"' + decodeURI(query).replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g,'":"') + '"}')
+    else
+      @params = new Object
+      
+    (@params[k] = v) for k,v of params if params? and typeof params == 'object'
+    @params
+  
+  title: (title) ->
+    $('title').html(title) if Pinkman.isString(title)
+    
   # build a controller from user definition
-  build: ->
+  # main: boolean argument that forces main function be executed
+  build: (main) ->
     if @builder? and typeof @builder == 'function'
       @builder(this)
-      @main() if @main? and $("##{@id}").length and typeof @main == 'function'
+      @main() if @main? and (main or ($("##{@id}").length and typeof @main == 'function'))
       return(true)
     else
       return(false)

@@ -123,8 +123,11 @@ class window.Pinkman
       AppCollection.scope
     else if typeof obj == 'object' and obj.pinkmanType == 'object' and AppObject? and AppObject.scope?
       AppObject.scope
-
-
+  
+  # ready: same as jquery document ready
+  @ready: (callback) ->
+    $(document).ready(callback)
+    
   # --- Ajax
 
   @ajax: 
@@ -203,7 +206,7 @@ class window.Pinkman
     upload: (options...) ->
       @file(options...)
 
-$(document).ready ->
+Pinkman.ready ->
   unless Pinkman.pathname?
     Pinkman.pathname = window.location.pathname
     Pinkman.pathname = Pinkman.pathname + '/' if Pinkman.pathname.charAt([Pinkman.pathname.length] - 1) != "/"
