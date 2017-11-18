@@ -13,8 +13,28 @@ module PinkmanHelper
     end
   end
   
-  def template path
-    render partial: "pinkman/#{path}"
+  def template path, &block
+    # definition mode
+    if block_given?
+      name = path.to_s
+      id = (/(?:-template)$/ =~ name) ? name : (name +'-template')
+      content_tag('script',{id: id, type: 'text/p-template'}, &block)
+    # rendering template partial mode
+    else
+      render partial: "pinkman/#{path}"
+    end
+  end
+  
+  def load_templates
+    if Rails
+      dir = Rails.root.join('app','views','pinkman')
+      files = Dir.glob(dir.join('**/_*')).map do |f|    
+        f.sub(Regexp.new("#{dir.to_s}(?:[\\\/])"),'').sub(/_/,'')
+      end
+      raw(files.map{|f| template(f)}.join("\n"))
+    else
+      raise 'Rails application not found.'
+    end
   end
 
   def wrap_in tag, &block
