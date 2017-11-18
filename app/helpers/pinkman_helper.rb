@@ -9,7 +9,7 @@ module PinkmanHelper
   def textarea hash, *args
     name = hash[:name]
     content_tag('textarea',hash.merge(data: {pinkey: pinkey, action: name}, value: write(name)), *args) do 
-      raw(write(name))
+      write_and_escape_sync('name')
     end
   end
   
@@ -32,10 +32,14 @@ module PinkmanHelper
   def write string
     raw("{{#{string}}}")
   end
-
-  def w *args
-    write(*args)
+  alias w write
+  
+  
+  
+  def write_and_escape_sync string
+    raw("{{.#{string}}}")
   end
+  alias _w write_and_escape_sync
 
   def pinkey 
     w('pinkey')

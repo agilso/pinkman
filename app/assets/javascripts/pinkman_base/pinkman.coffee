@@ -22,6 +22,9 @@ class window.Pinkman
 
   @isString: (str) ->
     str? and typeof str == 'string'
+  
+  @isPrintable: (value) ->
+    @isString(value) or @isNumber(value)
 
   # --- tools and facilities
 

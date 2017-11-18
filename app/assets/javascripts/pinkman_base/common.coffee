@@ -1,9 +1,10 @@
 class window.PinkmanCommon
 
   constructor: (attributesObject) ->
+    @_listening = true
     @initialize(attributesObject) if attributesObject?
 
-  @privateAttributes = ['isPink','isObject','isCollection','pinkey','config','pinkmanType','collections','renderQueue']
+  @privateAttributes = ['isPink','isObject','isCollection','pinkey','config','pinkmanType','collections','renderQueue','_listening']
 
   @mixin: (args...) ->
     Pinkman.mixin(args...)
@@ -46,8 +47,18 @@ class window.PinkmanCommon
     if attr? and value?
       this[attr] = value
       callback(this) if typeof callback == 'function'
-      @reRender() if @_watching
+      @sync(attr) if @_listening
       return this
+      
+  sync: (attribute) ->
+    if attribute? and attribute!=''
+      Pinkman.sync(this, attribute, this[attribute])
+    else
+      Pinkman.sync(this, k, v) for k, v of @attributes()
+    true
+    
+  stop: ->
+    @_listening = no
 
   # Desc: sets the attribute as undefined (destroy attribute)
   unset: (attr,callback) ->
@@ -97,9 +108,6 @@ class window.PinkmanCommon
       @append
         template: options + '-template'
         target: options
-
-  watch: () ->
-    @_watching = yes
 
   queue: (options) ->
     options.id = options.template

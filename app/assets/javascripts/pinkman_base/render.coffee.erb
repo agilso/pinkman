@@ -33,9 +33,32 @@ Pinkman.template_engines =
       template = Pinkman.templates.get(template: options.template, engine: options.engine)
     else
       template = new Pinkman.object(template: options.template, engine: options.engine)
-      @compile(options.engine, template, $('#' + options.template).html())
+      @compile(options.engine, template, @templateAdapter($('#' + options.template).html()))
       Pinkman.templates.push(template)
     return(template)
+    
+  
+  # attrAdapterHelper: helper for templateAdapter
+  # Helps formating the pink tag.
+  # The pink tag is a custom html tag. Pinkman uses it for binding an object and for updating the rendered html automatically everytime that attribute is changed.
+  # Used in the replace function below. Take a look.
+  attrAdapterHelper: (match,$1,$2,$3) ->
+    # console.log 'lol'
+    array = $2.split('.')
+    attr = array.pop()
+    array.push('pinkey')
+    pinkey = array.join('.')
+    "#{$1}<pink data-pinkey=\"{{ #{pinkey} }}\" data-attribute=\"#{attr}\">{{ #{$2} }}</pink>#{$3}"
+    
+  # changes templates html to insert binders so pinkman can make realtime updates
+  templateAdapter: (templateBody) ->
+    if templateBody? and templateBody != ''
+      syncRegex = /([^'"]){{(?!\.)(?:\s)*([\w\d.]+)(?:\s)*}}([^'"])/gm
+      content = templateBody.replace(syncRegex,@attrAdapterHelper)
+      escapeSyncingRegex = /{{\./gm
+      content.replace(escapeSyncingRegex,'{{')
+    else
+      ''
 
   context: (options) ->
     options.object = options.context if options.context?
@@ -80,6 +103,23 @@ Pinkman.template_engines =
       # 6 callback function
       options.callback(options.object,content) if options.callback? and typeof options.callback == 'function'
       return(content)
+
+# Pinkman sync:
+
+# what it does: finds every ocorrence of a given attribute 
+# of an object in the html rendered and updates its value.
+
+# input: obj, attribute, value(opcional)
+# output: updates html
+Pinkman.__syncing = new Object
+
+Pinkman.sync = (obj,attribute,value) ->
+  if typeof obj == 'object' and obj.pinkey? and obj[attribute]? and Pinkman.isPrintable(obj[attribute])
+    # clearTimeout(Pinkman.__syncing[attribute]) if Pinkman.__syncing[attribute]?
+    # Pinkman.__syncing[attribute] = sleep 0.5, ->
+    value = obj[attribute] unless value? and value != ''
+    $("pink[data-pinkey='#{obj.pinkey}'][data-attribute='#{attribute}']").html(value)
+
 
 Pinkman.render = (options) ->
   options.reRender = true unless options.reRender? and options.reRender == false
