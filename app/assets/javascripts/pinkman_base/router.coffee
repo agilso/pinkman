@@ -139,17 +139,24 @@ class window.PinkmanRouter
     return(router)
   
  
+  @render: (r, callback) ->
+    Pinkman.state.initialize()
+    yieldIn = r.route.yieldIn() || @_config.yield 
+    $(yieldIn).html("<div class='pink-yield' id='#{r.controller}'></div>") if r.route.blank
+    r.initialize()
+    window.scrollTo(0,0) unless Pinkman.router._config.freeze
+    callback() if typeof callback == 'function'
+    true
+    
   # Search path throughout routes. On match, activate respective controllers: clears template and execute main(s) function(s)
   @activate: (path,callback) ->
     r = Pinkman.routes.match(path)
     if r? and r
-      Pinkman.state.initialize()
-      yieldIn = r.route.yieldIn() || @_config.yield 
-      $(yieldIn).html("<div class='pink-yield' id='#{r.controller}'></div>") if r.route.blank
-      r.initialize()
-      window.scrollTo(0,0) unless Pinkman.router._config.freeze
-      callback() if typeof callback == 'function'
-      true
+      if @_config.transition? and typeof @_config.transition == 'function'
+        @_config.transition =>
+          @render(r,callback)
+      else
+        @render(r,callback)
     else
       false
     
