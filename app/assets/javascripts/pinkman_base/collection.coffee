@@ -52,8 +52,11 @@ class window.PinkmanCollection extends window.PinkmanCommon
   # tip: you can chain functions. Example: collection.each(transform).first()
   each: (transformation='',callback) ->
     if transformation? and typeof transformation=='function' 
-      transformation(o) for o in @collection
-    callback(this) if typeof callback == 'function'
+      i = 0
+      for o in @collection
+        i = i+1
+        transformation(o)
+        callback(this) if (i == @count()) and typeof callback == 'function'
     return this
 
   # rails/ruby equivalent: where/select
@@ -79,6 +82,23 @@ class window.PinkmanCollection extends window.PinkmanCommon
     callback(selection) if typeof callback == 'function'
     return(selection)
 
+  # every element of this collection will be substituted by the element of the collection passed
+  absorb: (collection, callback) ->
+    if typeof collection == 'object' and collection.isPink and collection.isCollection
+      @each (obj) =>
+        o = collection.find(obj.id)
+        if o?
+          @remove obj, =>
+            @forceUnshift(o)
+      , callback
+    
+  # substitute element a by element b
+  substitute: (a,b,callback) ->
+    if a? and b?
+      @remove(a)
+      @push(b)
+      callback() if typeof callback == 'function'
+    
   # Desc: insert in last position
   push: (arg) ->
     if Pinkman.isArray(arg)
@@ -109,6 +129,12 @@ class window.PinkmanCollection extends window.PinkmanCommon
 
   forcePush: (object) ->
     @collection.push(object)
+    
+  directUnshift: (object) ->
+    @collection.unshift(object) unless @include(object)
+
+  forceUnshift: (object) ->
+    @collection.unshift(object)
 
   unshiftIndividually: (object) ->
     if object? and typeof object == 'object' and not @include(object)
@@ -136,15 +162,17 @@ class window.PinkmanCollection extends window.PinkmanCommon
     @remove(@first())
 
   # Desc: remove a object from the collection
-  remove: (object) ->
+  remove: (object,callback) ->
     if typeof object == 'object' and object.id? and (a = @find(object.id))?
       i = @collection.indexOf a
       @collection.splice(i,1)
-      return a
+      value = a
     else
       i = @collection.indexOf object
       @collection.splice(i,1)
-      return object
+      value = object
+    callback(this) if typeof callback == 'function'
+    return(value)
 
   # Desc: remove the first object that matches
   removeBy: (attribute,value) ->
@@ -204,7 +232,7 @@ class window.PinkmanCollection extends window.PinkmanCommon
 
   # Desc: return trues if has at least one member. If a criteria is specificied, returns true if at least one member satisfies it.
   any: (criteria='') ->
-    if criteria? and typeof criteria == 'function'
+    if criteria? and (typeof criteria == 'function' or typeof criteria == 'object')
       @select(criteria).count() > 0
     else
       @count() > 0

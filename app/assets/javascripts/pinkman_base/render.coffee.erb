@@ -33,9 +33,17 @@ Pinkman.template_engines =
       template = Pinkman.templates.get(template: options.template, engine: options.engine)
     else
       template = new Pinkman.object(template: options.template, engine: options.engine)
-      @compile(options.engine, template, @templateAdapter($('#' + options.template).html()))
+      @compile(options.engine, template, @templateModifier($('#' + options.template).html()))
       Pinkman.templates.push(template)
     return(template)
+  
+  # templateModifier
+  # apply all pinkman modifiers to templates
+  templateModifier: (templateBody) ->
+    # content = templateBody
+    # content = @partialAdapter(templateBody)
+    # content = @templateAdapter(templateBody)
+    Pinkman.unescape(@templateAdapter(@partialAdapter(templateBody)))
     
   
   # attrAdapterHelper: helper for templateAdapter
@@ -49,7 +57,7 @@ Pinkman.template_engines =
     array.push('pinkey')
     pinkey = array.join('.')
     "#{$1}<pink data-pinkey=\"{{ #{pinkey} }}\" data-attribute=\"#{attr}\">{{ #{$2} }}</pink>#{$3}"
-    
+        
   # changes templates html to insert binders so pinkman can make realtime updates
   templateAdapter: (templateBody) ->
     if templateBody? and templateBody != ''
@@ -59,6 +67,21 @@ Pinkman.template_engines =
       content.replace(escapeSyncingRegex,'{{')
     else
       ''
+  
+  # modifies templates inserting partials before sending them to rendering the engines
+  partialAdapter: (templateBody) ->
+    if templateBody? and templateBody != ''
+      partialRegex = /{{(?:\s)*partial\((?:\s)*(.*)(?:\s)*\)(?:\s)*}}/gm
+      templateBody.replace(partialRegex,@partialInception)
+    else
+      ''
+  
+  partialInception: (match,id) ->
+    p = $("template##{id}.p")
+    if p.length
+      p.html()
+    else
+      match
 
   context: (options) ->
     options.object = options.context if options.context?
@@ -128,8 +151,9 @@ Pinkman.render = (options) ->
   Pinkman.template_engines.render(options) 
   options.object.queue(options) if options.reRender and options.object? and options.object.isPink
 
+Pinkman.scrolling = new PinkmanCollection unless Pinkman.scrolling?
+
 Pinkman.saveElementScrollPosition = (id) ->
-  Pinkman.scrolling = new PinkmanCollection unless Pinkman.scrolling?
   a = Pinkman.scrolling.find(id)
   a = new Pinkman.object unless a?
   a.set('id',id)

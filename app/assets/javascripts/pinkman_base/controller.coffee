@@ -57,11 +57,11 @@ class window.PinkmanController extends window.PinkmanObject
       @actions.getBy('name',args[0])
     else
       [name, eventName,callback,unknown...] = args
-      a = new PinkmanAction(name: name, eventName: eventName, call: callback, controller: this)
+      id = "#{@pinkey}-#{name}-#{eventName}"
+      a = new PinkmanAction(id: id, name: name, eventName: eventName, call: callback, controller: this)
       a.set('selector',"##{a.controller.id} [data-action='#{a.name}']")
       Pinkman.actions.push(a)
-      @actions.push(a)
-      a.listen() if a.call? and typeof a.call == 'function'
+      a.listen() if @actions.push(a) and a.call? and typeof a.call == 'function'
       return(a)
       
       
@@ -205,10 +205,12 @@ class window.PinkmanAction extends window.PinkmanObject
     
   # Desc: attaches one single event
   attach: (eventName) ->
-    if Pinkman.isString(eventName) and $("##{@controller.id}").length
+    if Pinkman.isString(eventName)
       action = this
       @events.push(eventName)
       $('body').on eventName, action.selector, (ev) ->
+        # debugger
+        # console.log "#{action.id}: called - #{action.name}"
         ev.preventDefault() if eventName != 'keypress' and eventName != 'mousedown'
         obj = window.Pinkman.closest($(this))
         action.call(obj,$(this),ev)

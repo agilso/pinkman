@@ -138,20 +138,38 @@ class window.PinkmanRouter
     routes(router) if typeof routes == 'function'
     return(router)
   
+  @scrolling = new PinkmanCollection
+  
+  @saveWindowScroll = (id) ->
+    @scrolling.firstOrInitialize(id: id).set('position', window.scrollY)
  
+  @restoreWindowScroll = (id) ->
+    o = @scrolling.firstOrInitialize(id: id)
+    # console.log o.position
+    o.position = 0 unless o.position?
+    window.scrollTo(0,o.position)
+    
   @render: (r, callback) ->
+    @saveWindowScroll(Pinkman.routes.current.controller) if Pinkman.routes.current?
     Pinkman.state.initialize()
     yieldIn = r.route.yieldIn() || @_config.yield 
     $(yieldIn).html("<div class='pink-yield' id='#{r.controller}'></div>") if r.route.blank
     r.initialize()
-    window.scrollTo(0,0) unless Pinkman.router._config.freeze
+    Pinkman.routes.set('current',r.route)
+    unless Pinkman.router._config.freeze or (r.options? and r.options.freeze)
+      # console.log 'topo'
+      window.scrollTo(0,0)
+    else
+      sleep 0.15, =>
+        @restoreWindowScroll(r.route.controller)
     callback() if typeof callback == 'function'
     true
     
   # Search path throughout routes. On match, activate respective controllers: clears template and execute main(s) function(s)
-  @activate: (path,callback) ->
+  @activate: (path,callback,options) ->
     r = Pinkman.routes.match(path)
     if r? and r
+      r.options = options
       if @_config.transition? and typeof @_config.transition == 'function'
         @_config.transition =>
           @render(r,callback)
@@ -164,12 +182,12 @@ class window.PinkmanRouter
   @visit: (path) ->
     @activate path, ->
       Pinkman.state.push(path)
-      
+  
   @force: (path) ->
     (window.location=path) unless @visit(path)
       
   @restore: (path) ->
-    (window.location=path) unless @activate(path)
+    (window.location=path) unless @activate(path,null,{freeze: yes})
   
   @redirect: (args...) ->
     @force(args...)
@@ -179,6 +197,12 @@ class window.PinkmanRouter
     
   @go: (args...) ->
     @force(args...)
+  
+  @forward: ->
+    window.history.forward() if window.history?
+  
+  @back: ->
+    window.history.back() if window.history?
     
   @start: ->
     Pinkman.ready =>

@@ -91,7 +91,19 @@ class window.Pinkman
       i = i+1
     a
 
-
+  # i hated that i had to do this
+  @unescape: (string) ->
+    if Pinkman.isString(string)
+      map = { '&amp;': '&', '&lt;': '<', '&gt;': '>', '&quot;': '"', '&#39;': "'", '&#x2F;': '/', '&#x60;': '`', '&#x3D;': '=' }
+      keys = []
+      keys.push("(?:#{k})") for k,v of map
+      window.regexp = new RegExp(keys.join('+|') + '+','gm')
+      string.replace regexp, (match) ->
+        map[match]
+    else
+      ''
+    
+  
   @calledFunctions = []
 
   # --- Scope
