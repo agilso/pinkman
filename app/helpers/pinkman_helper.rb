@@ -29,7 +29,7 @@ module PinkmanHelper
   def partial path, &block
     # definition mode
     name = path.to_s
-    id = (/(?:-partial)$/ =~ name) ? name : (name +'-partial')
+    id = (/(?:-template)$/ =~ name) ? name : (name +'-template')
     if block_given?
       content_tag('template',{id: id, type: 'text/p-partial', class: 'p'}, &block)
     # rendering template partial mode
