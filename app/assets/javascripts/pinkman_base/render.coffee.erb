@@ -71,12 +71,15 @@ Pinkman.template_engines =
   # modifies templates inserting partials before sending them to rendering the engines
   partialAdapter: (templateBody) ->
     if templateBody? and templateBody != ''
-      partialRegex = /{{(?:\s)*partial\((?:\s)*(.*)(?:\s)*\)(?:\s)*}}/gm
+      partialRegex = /{{(?:\s)*partial\((?:\s)*((?:\w|-)*)(?:\s)*\)(?:\s)*}}/gm
       templateBody.replace(partialRegex,@partialInception)
     else
       ''
   
   partialInception: (match,id) ->
+    # partialRegex = /{{(?:\s)*partial\((?:\s)*((?:\w|-)*)(?:\s)*\)(?:\s)*}}/gm
+    # id = id.replace(partialRegex,'$1')
+    # console.log id
     p = $("template##{id}.p")
     if p.length
       p.html()

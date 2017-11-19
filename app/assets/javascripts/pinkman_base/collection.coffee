@@ -377,7 +377,7 @@ class window.PinkmanCollection extends window.PinkmanCommon
 
   # Desc: exactly what it suggests
   shuffle: () ->
-    if @any?
+    if @any()
       currentIndex = @collection.length
 
       # // While there remain elements to shuffle...
@@ -391,6 +391,23 @@ class window.PinkmanCollection extends window.PinkmanCommon
         @collection[currentIndex] = @collection[randomIndex]
         @collection[randomIndex] = temporaryValue
 
+  rand: (n) ->
+    if @any()
+      rand = new @constructor
+      currentIndex = Math.min(n,@count())
+
+      # // While there remain elements to shuffle...
+      while (0 != currentIndex) 
+        # // Pick a remaining element...
+        randomIndex = Math.floor(Math.random() * @count())
+        currentIndex = currentIndex - 1
+        rand.forcePush(@collection[randomIndex])
+      
+      if rand.count() == 1
+        return(rand.first())
+      else
+        return(rand)
+    
   # Desc: filters collection whose attribute matches the query
   filter: (attribute,query,callback) ->
     if attribute? and query? and query!="" and (typeof(attribute) == "string")
