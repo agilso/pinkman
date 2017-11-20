@@ -61,7 +61,13 @@ class window.PinkmanController extends window.PinkmanObject
       a = new PinkmanAction(id: id, name: name, eventName: eventName, call: callback, controller: this)
       a.set('selector',"##{a.controller.id} [data-action='#{a.name}']")
       Pinkman.actions.push(a)
-      a.listen() if @actions.push(a) and a.call? and typeof a.call == 'function'
+      if @actions.push(a) and a.call? and typeof a.call == 'function'
+        a.listen()
+        # console.log "#{id}: listen"
+      else
+        console.log @pinkey
+        console.log a.pinkey
+        console.log "#{id}: nao listen"
       return(a)
       
       
@@ -186,9 +192,10 @@ class window.PinkmanAction extends window.PinkmanObject
     actions = new PinkmanActions
     Pinkman.controllers.select(id: controllerID).each (c) ->
       c.actions.select(name: actionName).each (a) ->
-        actions.push(a)
-    @controller.action @name, @eventName, (args...) ->
+        actions.forcePush(a)
+    @call = (args...) ->
       actions.call(args...)
+    @listen()
 
   # Desc: mirrors alias
   redirect: (args...) ->
