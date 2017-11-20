@@ -64,10 +64,10 @@ class window.PinkmanController extends window.PinkmanObject
       if @actions.push(a) and a.call? and typeof a.call == 'function'
         a.listen()
         # console.log "#{id}: listen"
-      else
-        console.log @pinkey
-        console.log a.pinkey
-        console.log "#{id}: nao listen"
+      # else
+      #   console.log @pinkey
+      #   console.log a.pinkey
+      #   console.log "#{id}: nao listen"
       return(a)
       
       
