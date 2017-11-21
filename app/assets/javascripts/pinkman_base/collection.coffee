@@ -30,6 +30,22 @@ class window.PinkmanCollection extends window.PinkmanCommon
       json.push(object.json()) if object.isPink and object.json? and typeof object.json == 'function'
     json
 
+  # Desc: sum a certain attribute of every element
+  sum: (attr,callback) ->
+    if attr?
+      v = 0
+      @each (obj) ->
+        if Pinkman.isNumber(obj[attr])
+          v = Number(obj[attr]) + v
+        else if obj[attr]?
+          v = obj[attr] + v
+      , =>
+        callback(this, v) if typeof callback == 'function'
+      return(v)
+    else
+      callback(this,0) if typeof callback == 'function'
+      return(0)
+
   # Desc: collection size
   count: (criteria='') ->
     if criteria? and typeof criteria  == 'function'

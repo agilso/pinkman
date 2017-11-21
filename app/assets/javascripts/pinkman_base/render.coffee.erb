@@ -83,7 +83,7 @@ Pinkman.template_engines =
     # partialRegex = /{{(?:\s)*partial\((?:\s)*((?:\w|-)*)(?:\s)*\)(?:\s)*}}/gm
     # id = id.replace(partialRegex,'$1')
     # console.log id
-    p = $("template##{id}.p")
+    p = $("script##{id}.p[type='text/p-partial']")
     if p.length
       p.html()
     else
@@ -143,7 +143,7 @@ Pinkman.template_engines =
 Pinkman.__syncing = new Object
 
 Pinkman.sync = (obj,attribute,value) ->
-  if typeof obj == 'object' and obj.pinkey? and obj[attribute]? and Pinkman.isPrintable(obj[attribute])
+  if typeof obj == 'object' and obj.pinkey? and obj[attribute]? and (value? or Pinkman.isPrintable(obj[attribute]))
     # clearTimeout(Pinkman.__syncing[attribute]) if Pinkman.__syncing[attribute]?
     # Pinkman.__syncing[attribute] = sleep 0.5, ->
     value = obj[attribute] unless value? and value != ''

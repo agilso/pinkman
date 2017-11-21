@@ -1,3 +1,3 @@
 module Pinkman
-  VERSION = "0.9.9.5.2"
+  VERSION = "0.9.9.6"
 end

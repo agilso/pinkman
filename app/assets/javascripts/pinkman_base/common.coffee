@@ -1,10 +1,10 @@
 class window.PinkmanCommon
-
+  
+  @privateAttributes = ['isPink','isObject','isCollection','pinkey','config','pinkmanType','collections','renderQueue','_listening']
+  
   constructor: (attributesObject) ->
     @_listening = true
     @initialize(attributesObject) if attributesObject?
-
-  @privateAttributes = ['isPink','isObject','isCollection','pinkey','config','pinkmanType','collections','renderQueue','_listening']
 
   @mixin: (args...) ->
     Pinkman.mixin(args...)
@@ -47,15 +47,29 @@ class window.PinkmanCommon
     if attr? and value?
       this[attr] = value
       callback(this) if typeof callback == 'function'
-      @sync(attr) if @_listening
+      if @pinkey? and @_listening
+        sId = "__pSync__#{@pinkey}__"
+        clearTimeout(window[sId]) if window[sId]?
+        window[sId] = sleep 0.005, =>
+          # console.log "syncing #{@pinkey}"
+          @sync(attr) if @_listening
       return this
       
-  sync: (attribute) ->
+  sync: (attribute) ->  
+    if @constructor.__computed?
+      for c in @constructor.__computed 
+        # console.log "computar: #{this.pinkey} #{this[c].call(this)}"
+        Pinkman.sync(this, c, this[c].call(this)) if this[c]? and typeof this[c] == 'function'
+        
     if attribute? and attribute!=''
       Pinkman.sync(this, attribute, this[attribute])
     else
       Pinkman.sync(this, k, v) for k, v of @attributes()
     true
+  
+  lazySync: (args...)->
+    sleep 0.25, =>
+      @sync(args...)
     
   stop: ->
     @_listening = no
@@ -134,3 +148,14 @@ class window.PinkmanCommon
 
   _data: ->
     { pink_obj: @json(), scope: Pinkman.scope(this) }
+  
+  # computed Functions
+  # computed functions cant have arguments
+  @compute: (f) ->
+    @__computed ||= []
+    if @__computed.indexOf(f) != -1 
+      # console.log "colocou f"
+      @__computed.push(f) 
+    else
+      # console.log "não colocou f"
+      @__computed.push(f) 

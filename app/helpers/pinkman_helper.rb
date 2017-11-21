@@ -19,7 +19,7 @@ module PinkmanHelper
     if block_given?
       name = path.to_s
       id = (/(?:-template)$/ =~ name) ? name : (name +'-template')
-      content_tag('template',{id: id, type: 'text/p-template'}, &block)
+      content_tag('script',{id: id, type: 'text/p-template'}, &block)
     # rendering template partial mode
     else
       render partial: "pinkman/#{path}"
@@ -31,7 +31,7 @@ module PinkmanHelper
     name = path.to_s
     id = (/(?:-template)$/ =~ name) ? name : (name +'-template')
     if block_given?
-      content_tag('template',{id: id, type: 'text/p-partial', class: 'p'}, &block)
+      content_tag('script',{id: id, type: 'text/p-partial', class: 'p'}, &block)
     # rendering template partial mode
     else
       raw("{{ partial(#{id}) }}")
