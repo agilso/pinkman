@@ -62,7 +62,7 @@ class window.PinkmanPath extends Pinkman.object
 # receives a string and matches it through the defined routes
 class window.PinkmanRouteMatcher extends Pinkman.object
   
-  initialize: ->
+  initialize: (callback) ->
     if @controllers.any()?
       Pinkman.controllers.unbindScrolling()
       # console.log 'clear dos Pinkman.controllers'
@@ -70,6 +70,8 @@ class window.PinkmanRouteMatcher extends Pinkman.object
         # console.log 'dentro dos controllers desse router'
         c.setParams(@params())
         c.build(yes)
+      , =>
+        callback(this.route, this.url) if typeof callback == 'function'
     else
       false
     
@@ -154,7 +156,9 @@ class window.PinkmanRouter
     Pinkman.state.initialize()
     yieldIn = r.route.yieldIn() || @_config.yield 
     $(yieldIn).html("<div class='pink-yield' id='#{r.controller}'></div>") if r.route.blank
-    r.initialize()
+    r.initialize (args...) =>
+      callback() if typeof callback == 'function'
+      @_config.callback(args...) if typeof @_config.callback == 'function'
     Pinkman.routes.set('current',r.route)
     unless Pinkman.router._config.freeze or (r.options? and r.options.freeze)
       # console.log 'topo'
@@ -162,7 +166,6 @@ class window.PinkmanRouter
     else
       sleep 0.15, =>
         @restoreWindowScroll(r.route.controller)
-    callback() if typeof callback == 'function'
     true
     
   # Search path throughout routes. On match, activate respective controllers: clears template and execute main(s) function(s)
