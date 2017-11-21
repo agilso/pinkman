@@ -150,13 +150,34 @@ class window.PinkmanRouter
     # console.log o.position
     o.position = 0 unless o.position?
     window.scrollTo(0,o.position)
+  
+  @analytics: 
+    create: (id) ->
+      console.log 'chamou'
+      console.log id
+      ga('create', id, 'auto');
+      ga('send', 'pageview');
+      
+    send: (route,path) ->
+      unless @created? and @created
+        console.log this
+        @create(Pinkman.router._config.analytics)
+        @created = true
+      else
+        host = new RegExp(window.location.origin)
+        path = if host.test(path) then path.replace(host,'') else path
+        ga('set', 'page', path)
+        ga('send', 'pageview', path)
     
+  
+
   @render: (r, callback) ->
     @saveWindowScroll(Pinkman.routes.current.controller) if Pinkman.routes.current?
     Pinkman.state.initialize()
     yieldIn = r.route.yieldIn() || @_config.yield 
     $(yieldIn).html("<div class='pink-yield' id='#{r.controller}'></div>") if r.route.blank
     r.initialize (args...) =>
+      @analytics.send(args...) if @_config.analytics?
       callback() if typeof callback == 'function'
       @_config.callback(args...) if typeof @_config.callback == 'function'
     Pinkman.routes.set('current',r.route)
