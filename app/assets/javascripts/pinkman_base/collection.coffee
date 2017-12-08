@@ -5,17 +5,12 @@ class window.PinkmanCollection extends window.PinkmanCommon
   config:
     memberClass: PinkmanObject
 
-  constructor: () ->
-
-    @isPink = true
+  constructor: (args...) ->
+    super(args...)
     @isCollection = true
     @pinkmanType = 'collection'
-    
     @collection = []
-    @pinkey = Pinkman.all.length
-
     Pinkman.collections.push(this)
-    Pinkman.all.push(this)
 
   # Desc: return an array of all members
   # this behaviour makes life easier... trust me

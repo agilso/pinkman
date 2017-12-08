@@ -4,15 +4,10 @@ class window.PinkmanObject extends window.PinkmanCommon
 
   constructor: (args...) ->
     super(args...)
-    @isPink = true
     @isObject = true
     @pinkmanType = 'object'
-
     @collections = new PinkmanCollection
-    @pinkey = Pinkman.all.length
-
     Pinkman.objects.push(this)
-    Pinkman.all.push(this)
 
   # Desc: assign attributes from a pure javascript object
   # Usage: a.assign( {attribute: value} )

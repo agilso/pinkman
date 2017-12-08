@@ -4,7 +4,7 @@ window.Pinkman.mixin = (name,mix) ->
     mixin = new Pinkman.object
     mixin.set 'mix', mix
     mixin.set 'name',name
-    Pinkman.mixins.push mixin
+    Pinkman.mixins.forcePush mixin
 
 window.Pinkman.mixit = (c,name) ->
   mixin = Pinkman.mixins.getBy('name',name)

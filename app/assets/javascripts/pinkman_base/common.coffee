@@ -4,6 +4,9 @@ class window.PinkmanCommon
   
   constructor: (attributesObject) ->
     @_listening = true
+    @isPink = true
+    @pinkey = Pinkman.all.length
+    Pinkman.all.push(this)
     @initialize(attributesObject) if attributesObject?
 
   @mixin: (args...) ->
@@ -72,12 +75,20 @@ class window.PinkmanCommon
       @sync(args...)
     
   stop: ->
+    console.log '[deprecated] stop function deprecated. Use unwatch instead.'
     @_listening = no
-
+  
+  watch: ->
+    @_listening = yes
+  
+  unwatch: ->
+    @_listening = no
+    
   # Desc: sets the attribute as undefined (destroy attribute)
   unset: (attr,callback) ->
     delete this[attr]
     callback(this) if typeof callback == 'function'
+    this
 
   # --- Render related --- #
 
@@ -96,7 +107,10 @@ class window.PinkmanCommon
     Pinkman.reRender(this)
     callback(this) if typeof callback == 'function'
     return this
-
+  
+  renderFirst: () ->
+    Pinkman.render @renderQueue.first()
+    
   renderLast: () ->
     Pinkman.render @renderQueue.last()
 
