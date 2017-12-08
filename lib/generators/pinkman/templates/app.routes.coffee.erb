@@ -1,0 +1,45 @@
+AppRouter.config
+
+  # yield
+  # Where Pinkman should yield content? Inform a valid css selector.
+  yield: '#content'
+  
+  # analytics
+  # Google Analytics? Just insert your ID here
+  # analytics: 'UA-YOURNUMBER'
+    
+    
+  # transition
+  # Run animation before rendering a page. 
+  # Animation must be a function with a callback. 
+  # Ideally the callback should be called before the animation end.
+  # transition: (callback) ->
+    # -- do something -- #
+    # callback()
+    # -- end animation -- #
+        
+AppRouter.define (routes) ->
+  
+  # get '/pinkman'
+  # routes.get '/pinkman', controller: 'pinkman', yield: 'body'
+  
+  # Usage:
+  # get '/'
+  # routes.root 'controller'
+  
+  # routes.get 'url'
+  # Define a route to '/url' and match it with the 'url' controller.
+  
+  # routes.get 'url', controller: 'abc'
+  # You can pass an options object specifiying a custom controller.
+  
+  # namespace
+  # Use namespace to group routes
+  # namespace 'anything', (routes) ->
+    # root 
+    # routes.root 'controller'
+    # routes.get 'page-a'
+
+
+# Start the router.
+AppRouter.start()

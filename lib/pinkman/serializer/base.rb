@@ -16,7 +16,6 @@ module Pinkman
         self
       end
 
-
       self.root = false
 
       def self.scope name=:public, &block
