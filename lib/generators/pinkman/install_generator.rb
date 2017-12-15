@@ -25,7 +25,7 @@ module Pinkman
     
     def modify_application_js
       append_to_file Rails.root.join('app','assets','javascripts','application.js') do
-        '//= require my.pinkman.app'
+        "\n//= require my.pinkman.app"
       end
     end
     
