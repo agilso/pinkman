@@ -6,18 +6,30 @@ module Pinkman
     source_root File.expand_path('../templates', __FILE__)
 
     def generate_files
-      template 'app_collection.coffee.erb', "app/assets/javascripts/pinkman/#{collection_filename}"
-      template 'app_object.coffee.erb', "app/assets/javascripts/pinkman/#{object_filename}"
+      template 'app_app.coffee.erb', "app/assets/javascripts/pinkman/base/#{app_filename}"
+      template 'app_router.coffee.erb', "app/assets/javascripts/pinkman/base/#{router_filename}"
+      template 'app_collection.coffee.erb', "app/assets/javascripts/pinkman/base/#{collection_filename}"
+      template 'app_object.coffee.erb', "app/assets/javascripts/pinkman/base/#{object_filename}"
+      template 'app_routes.coffee.erb', "app/assets/javascripts/pinkman/config/routes.coffee"
     end
     
     private
 
+
+    def app_filename
+      'app.coffee'
+    end
+    
+    def router_filename
+      'router.coffee'
+    end
+    
     def object_filename
-      'app_object.coffee'
+      'object.coffee'
     end
 
     def collection_filename
-      'app_collection.coffee'
+      'collection.coffee'
     end
 
     def app_name

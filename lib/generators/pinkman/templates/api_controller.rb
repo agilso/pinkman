@@ -6,14 +6,25 @@ class ApiController < ApplicationController
     params[:limit] = 20 if params[:limit].blank?
     params[:offset] = 0 if params[:offset].blank?
   end
-
+  
   # TO DO: rewrite the current_scope method the way you want.
+  def current_scope
+    :public
+  end
 
   # You can define it according to the current user and his permissions
   # or through params[:scope] or any other way you want.
   # It's your choice.
   
-  # See some common examples and important securities notes below.
+  # ***** IMPORTANT *************************************************************************
+  # *                                                                                       *
+  # *     Never pass params[:scope] directly to serializers.                                *
+  # *     params[:scope] must to be whitelisted if you are going to allow/use it.           *
+  # *     See examples bellow.                                                              *
+  # *                                                                                       *
+  #******************************************************************************************
+  
+  # --- Examples
   
   # Example 1:
   # def current_scope
@@ -22,35 +33,28 @@ class ApiController < ApplicationController
 
   # Example 2:
   # def current_scope
-  #   params[:scope] == 'public' ? :public : (current_user.admin? ? :admin : :public)
+  #   params[:scope].in?(['public','user_allowed','vip']) ? params[:scope].to_sym : :public
   # end
 
   # Example 3:
   # def current_scope
-  #  your_scope_verification_method?(params[:scope]) ? params[:scope].to_sym : :public
+  #  your_custom_scope_verification_method?(params[:scope]) ? params[:scope].to_sym : :public
   # end
   
-  # ***** IMPORTANT **********************************************************************************
-  # *                                                                                                *
-  # *     params[:scope] must to be whitelisted if you are going to allow/use it.                    *
-  # *                                                                                                *
-  # **************************************************************************************************
+  # --- Settings scope in client
   
-  # You can set params[:scope] value in the client (js/coffee). 
+  # You can set params[:scope] value directly in the client (js/coffee). 
+  # By default, every pinkman requests is made with the 'public' scope. See bellow how to change this behaviour.
 
   # 1. In a single object/collection
-  # obj = new Pinkman.object; obj.set('scope','public')
+  # obj = new Pinkman.object; obj.set('scope','your_scope')
 
   # 2. In all instances of a given model (object or collection)
   # class YourModel extends Pinkman.object
-  # YourModel.scope = 'public'
+  # YourModel.scope = 'your_scope'
 
   # 3. In all instances through AppObject and AppCollection
-  # AppObject.scope = 'public'
-  # AppCollection.scope = 'public'
-
-  def current_scope
-    :public
-  end
+  # AppObject.scope = 'your_scope'
+  # AppCollection.scope = 'your_scope'
   
 end

@@ -1,6 +1,6 @@
-window.sleep = (s,callback) -> 
-  ms = s*1000
-  window['_sleeping'] = setTimeout(callback,ms)
+window.sleep = (args...) -> 
+  console.log '[DEPRECATED] Use $p.sleep instead of window.sleep'
+  $p.sleep args...
 
 Number.prototype.print = (precision, delimiter, separator) ->
   n = this

@@ -16,5 +16,9 @@ Install:
   Setup pinkman. This creates common pinkman directories, defines a api namespace in routes.rb, etc.
 
 Resource:
-  rails  generate pinkman:resource model
+  rails generate pinkman:resource model
     Creates all coffeescripts and api resources to interact with a Rails Model named model.
+    
+Controller:
+  rails generate pinkman:controller path/to/controller-name
+    Create a Pinkman Controller named 'controller-name' in pinkman/app/controllers/path/to/controller_name.coffee

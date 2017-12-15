@@ -266,7 +266,7 @@ Pinkman.controller = (args...) ->
 Pinkman.actions = new PinkmanActions
 
 $(document).ready ->
-  sleep 0.1, ->
+  $p.sleep 0.1, ->
     array = []
     Pinkman.actions.each (a) -> 
       array.push(a.selector) if (a.eventName == 'click') or (Pinkman.isArray(a.eventName) and a.eventName.indexOf('click') !=-1)

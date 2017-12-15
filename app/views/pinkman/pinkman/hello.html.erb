@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Pinkman.js</title>
+    <%= javascript_include_tag 'application' %>
+  </head>
+  <body>
+    <%= template 'pinkman-hello' do %>
+      <div style='background-color: #352946; width: 100%; height: 100%; position: fixed; top: 0; left: 0; overflow: hidden; z-index: 999999; padding: 15% 0; text-align: center;'>
+        <div style="color: white; text-align: center; font-family: Arial, sans; font-size: 64px;">
+          <b style='color: #EC3680;'>Pink</b>man
+        </div>
+        <div style="color: white; text-align: center; font-family: Arial, sans; font-size: 12px;">
+          JS/Rails Framework <br/>Version: <b style='font-weight: bold;'><%= Pinkman::VERSION %></b>
+        </div>
+        <div style="color: white; text-align: center; font-family: Arial, sans; margin: 15px auto; font-size: 24px;">
+          {{ title }}
+        </div>
+        <div style="color: white; text-align: center; font-family: Arial, sans; display: inline-block; padding: 15px; border-radius: 5px; background-color: #EC3680; margin: 30px auto;" data-action='you-are-over-me'>
+          Come here
+        </div>
+
+        <div style="color: white; text-align: center; font-family: Arial, sans; font-size: 12px; padding: 15px; background-color: #483a5a; margin: 30px auto;">
+          <b>assets/javascripts/pinkman/app/controllers/hello.coffee</b>
+        </div>
+      </div>
+    <% end %>
+    <div id='pinkman-hello'>
+      <h1>Ops...</h1>
+      <h4>Pinkman.js files could not be loaded.</h4>
+      <p>
+        It seems that Pinkman.js could not be loaded from <b>application.js.</b>
+        <br /><br /> Maybe Jquery is missing. Pinkman depends on Jquery.
+      </p>
+      <p>
+        Check out console (F12 on Chrome.) It may give you a clue of what is wrong.
+      </p>
+      <p>
+        This small test expects that:
+      </p>
+      <ol>
+        <li>You run <b>rails g pinkman:install</b></li>
+        <li>You are using <b>Asset Pipeline.</b></li>
+        <li><b>application.js</b> exists</li>
+        <li>application.js loads <b>jquery</b> before pinkman</li>
+        <li>application.js loads <b>my.pinkman.app.js</b></li>
+      </ol>
+      <p>Otherwise it won't work.</p>
+    </div>
+  </body>
+
+</html>

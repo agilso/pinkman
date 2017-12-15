@@ -185,7 +185,7 @@ class window.PinkmanRouter
       # console.log 'topo'
       window.scrollTo(0,0)
     else
-      sleep 0.15, =>
+      $p.sleep 0.15, =>
         @restoreWindowScroll(r.route.controller)
     true
     
@@ -230,7 +230,7 @@ class window.PinkmanRouter
     
   @start: ->
     Pinkman.ready =>
-      Pinkman.router = this
+      # Pinkman.router = this
       @activate(window.location.pathname)
       $('body').on 'click', 'a', (ev) =>
         ev.preventDefault()
@@ -238,8 +238,7 @@ class window.PinkmanRouter
         (window.location = path) unless path? and @visit(path)
   
   # namespace: (path, rules) ->
-      
-  get: (path, object) ->
+  match: (path, object) ->
     if Pinkman.isString(path)
       p = new PinkmanPath(path)
       route = new PinkmanRoute
@@ -253,36 +252,13 @@ class window.PinkmanRouter
         route.set('yield',object.container|| object.yield )
       Pinkman.routes.push(route)
       return(route)
+      
+  get: (args...) ->
+    console.log 'Routes: "get" function deprecated. Use match instead.'
+    match(args...)
+    
     
   root: (controller) ->
     @get('/',controller: controller)
   
-# motivation
-# class window.AppRouter extends PinkmanRouter
-#   
-# AppRouter.config yield: 'body'
-# 
-# AppRouter.define (r) ->
-#   
-#   # @namespace 'lol', =>
-#   #   @get 'test'
-#   #   # define /lol/test
-#   # 
-#   # 
-#   # @get 'produto/:id',
-#   #   controller: 'produto'
-#   # #define /produto/qualquer-coisa
-#   # # controler.param.id = 'qualquer-coisa'
-#   #   
-#     
-#     
-#   @get 'test',
-#     controller: 'test'
-#     
-#     ->
-#       header
-#         title Lol
-#       body#test
-#         execute 'controller.test.main'
-# 
-# AppRouter.visit 'test'
+Pinkman.router = PinkmanRouter

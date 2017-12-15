@@ -7,8 +7,8 @@ module Pinkman
     argument :class_name, type: :string, default: "nameHere"
 
     def generate_files
-      template "object.coffee.erb", "app/assets/javascripts/pinkman/models/#{directory_name}/#{object_file_name}"
-      template "collection.coffee.erb", "app/assets/javascripts/pinkman/models/#{directory_name}/#{collection_file_name}"
+      template "object.coffee.erb", "app/assets/javascripts/pinkman/app/models/#{directory_name}/#{object_file_name}"
+      template "collection.coffee.erb", "app/assets/javascripts/pinkman/app/models/#{directory_name}/#{collection_file_name}"
     end
 
     private

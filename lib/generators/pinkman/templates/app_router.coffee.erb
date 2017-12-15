@@ -1,0 +1,1 @@
+class window.AppRouter extends App.router

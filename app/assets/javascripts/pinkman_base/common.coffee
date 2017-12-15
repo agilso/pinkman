@@ -12,8 +12,12 @@ class window.PinkmanCommon
   @mixin: (args...) ->
     Pinkman.mixin(args...)
 
+  # DEPRECATED in favor of mix (bellow)
   @mixit: (args...) ->
     Pinkman.mixit(this,args...)
+  
+  @mix: (args...) ->
+    Pinkman.mix(this,args...)
 
   @isInstance: (object) ->
     object.constructor is this
@@ -53,7 +57,7 @@ class window.PinkmanCommon
       if @pinkey? and @_listening
         sId = "__pSync__#{@pinkey}__"
         clearTimeout(window[sId]) if window[sId]?
-        window[sId] = sleep 0.005, =>
+        window[sId] = $p.sleep 0.005, =>
           # console.log "syncing #{@pinkey}"
           @sync(attr) if @_listening
       return this
@@ -71,7 +75,7 @@ class window.PinkmanCommon
     true
   
   lazySync: (args...)->
-    sleep 0.25, =>
+    $p.sleep 0.25, =>
       @sync(args...)
     
   stop: ->

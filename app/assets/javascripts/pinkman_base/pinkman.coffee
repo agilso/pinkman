@@ -25,6 +25,11 @@ class window.Pinkman
   
   @isPrintable: (value) ->
     @isString(value) or @isNumber(value)
+    
+  @sleep = (s,callback) -> 
+    ms = s*1000
+    window['_sleeping'] = setTimeout(callback,ms)
+
 
   # --- tools and facilities
 
@@ -220,6 +225,8 @@ class window.Pinkman
 
     upload: (options...) ->
       @file(options...)
+
+window.$p = Pinkman
 
 Pinkman.ready ->
   unless Pinkman.pathname?

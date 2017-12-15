@@ -6,7 +6,7 @@ window.Pinkman.mixin = (name,mix) ->
     mixin.set 'name',name
     Pinkman.mixins.forcePush mixin
 
-window.Pinkman.mixit = (c,name) ->
+window.Pinkman.mix = (c,name) ->
   mixin = Pinkman.mixins.getBy('name',name)
   if mixin?
     for n, method of mixin.mix
@@ -15,6 +15,10 @@ window.Pinkman.mixit = (c,name) ->
     return(true)
   else
     false
+    
+window.Pinkman.mixit = (args...) ->
+  console.log '[DEPRECATED]: Use mix instead of mixin.'
+  Pinkman.mix(args...)
 
 
 # --- Mixins - Usage --- #
@@ -25,10 +29,10 @@ window.Pinkman.mixit = (c,name) ->
 
 
 # class window.Foo
-#   Pinkman.mixit this, 'shitty'
+#   Pinkman.mix this, 'shitty'
 
 # class window.Bar extends Pinkman.object
-#   @mixit 'shitty'
+#   @mix 'shitty'
 
 # a = new Foo
 # a.shit(abc) -> 'abc is shit'

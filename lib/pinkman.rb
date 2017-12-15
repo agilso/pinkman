@@ -22,6 +22,14 @@ module Pinkman
   
   class Engine < ::Rails::Engine
     config.after_initialize do
+      Rails.application.routes.append do
+        mount Pinkman::Engine => '/'
+      end
+      
+      module ApplicationHelper
+        extend PinkmanHelper
+      end
+      
       if defined? Slim
         Slim::Engine.set_options attr_list_delims: {'(' => ')', '[' => ']'}
       end
