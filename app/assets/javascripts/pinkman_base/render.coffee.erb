@@ -110,6 +110,8 @@ Pinkman.template_engines =
         $(el).find("option[value='#{obj[$(el).attr('name')]}']").attr('selected','selected')
 
   render: (options) ->
+    options = {template: (options+'-template'), target: options} if $p.isString(options)
+      
     # 1 check if template exists
     if options? and options.template? and $('#' + options.template).length
 
@@ -132,6 +134,8 @@ Pinkman.template_engines =
       # 6 callback function
       options.callback(options.object,content) if options.callback? and typeof options.callback == 'function'
       return(content)
+    else
+      throw "Pinkman: #{options.template} not found."
 
 # Pinkman sync:
 

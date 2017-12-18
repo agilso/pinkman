@@ -39,13 +39,14 @@ module Pinkman
         end
       end
       
-      define_helper :load_templates do
+      define_helper :load_templates do |dir_path=nil|
         if Rails
           dir = Rails.root.join('app','views','pinkman')
+          dir.join(dir_path.to_s) if dir_path.class.in?([String,Symbol])
           files = Dir.glob(dir.join('**/_*')).map do |f|    
             f.sub(Regexp.new("#{dir.to_s}(?:[\\\/])"),'').sub(/_/,'')
           end
-          raw(files.map{|f| template(f)}.join("\n"))
+          raw(files.map{|f| p.template(f)}.join("\n"))
         else
           raise 'Rails application not found.'
         end

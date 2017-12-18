@@ -230,7 +230,8 @@ class window.PinkmanRouter
     
   @start: ->
     Pinkman.ready =>
-      # Pinkman.router = this
+      Pinkman.router = this
+      App.router = this
       @activate(window.location.pathname)
       $('body').on 'click', 'a', (ev) =>
         ev.preventDefault()
