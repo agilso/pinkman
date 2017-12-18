@@ -2,7 +2,7 @@ require 'rails'
 require 'pathname'
 require 'active_model_serializers'
 require 'pinkman/serializer'
-require 'pinkman/helper'
+require 'pinkman/views_helpers'
 require 'pinkman/version'
 
 module Pinkman
