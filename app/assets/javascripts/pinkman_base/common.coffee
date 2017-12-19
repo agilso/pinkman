@@ -97,14 +97,9 @@ class window.PinkmanCommon
   # --- Render related --- #
 
   render: (options) ->
-    if typeof options == 'object'
-      options.object = this
-      options.template = options.target + '-template' unless options.template? and options.template != ''
-      Pinkman.render options
-    else if typeof options == 'string'
-      opts = {object: this, target: options, template: options + '-template'}
-      Pinkman.render opts
-    else if not options?
+    if opts?
+      Pinkman.render(opts)
+    else
       @reRender()
 
   reRender: (callback='') ->

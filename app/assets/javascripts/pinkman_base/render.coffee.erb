@@ -11,6 +11,7 @@ Pinkman.template_engines =
         @handlebars(context)
       template
     else
+      throw 'Pinkman: handlebars not found.'
 
 
   hogan: (template,html) ->
@@ -20,6 +21,7 @@ Pinkman.template_engines =
         @hogan.render(context)
       template
     else
+      throw 'Pinkman: hogan not found.'
 
 
   markup: (template,html) ->
@@ -27,6 +29,7 @@ Pinkman.template_engines =
       template.render = (context) -> Mark.up(html,context)
       template
     else
+      throw 'Pinkman: markup not found.'
 
   template: (options) ->
     if Pinkman.templates.include(template: options.template, engine: options.engine)
@@ -95,6 +98,7 @@ Pinkman.template_engines =
     return(options.object)
 
   compile: (engine, template, html) ->
+    # console.log engine
     e = Pinkman.template_engines[engine]
     e(template,html)
     template
@@ -110,7 +114,6 @@ Pinkman.template_engines =
         $(el).find("option[value='#{obj[$(el).attr('name')]}']").attr('selected','selected')
 
   render: (options) ->
-    options = {template: (options+'-template'), target: options} if $p.isString(options)
       
     # 1 check if template exists
     if options? and options.template? and $('#' + options.template).length
@@ -155,11 +158,16 @@ Pinkman.sync = (obj,attribute,value) ->
 
 
 Pinkman.render = (options) ->
-  options.reRender = true unless options.reRender? and options.reRender == false
-  options.collectionReRender = true unless options.collectionReRender? and options.collectionReRender == false
-  options.engine = Pinkman.template_engine unless options.engine? and options.engine != ''
-  Pinkman.template_engines.render(options) 
-  options.object.queue(options) if options.reRender and options.object? and options.object.isPink
+  if $p.isObject(options) or $p.isString(options)
+    options = {template: (options + '-template'), target: options} if $p.isString(options)
+    options.template = options.template + '-template' unless /-template$/.test(options.template)
+    options.reRender = true unless options.reRender? and options.reRender == false
+    options.collectionReRender = true unless options.collectionReRender? and options.collectionReRender == false
+    options.engine = Pinkman.template_engine unless options.engine? and options.engine != ''
+    Pinkman.template_engines.render(options) 
+    options.object.queue(options) if options.reRender and options.object? and options.object.isPink
+  else
+    throw "Pinkman.render: options argument is neither an object nor a string."
 
 Pinkman.scrolling = new PinkmanCollection unless Pinkman.scrolling?
 

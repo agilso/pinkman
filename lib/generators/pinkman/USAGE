@@ -20,5 +20,13 @@ Resource:
     Creates all coffeescripts and api resources to interact with a Rails Model named model.
     
 Controller:
-  rails generate pinkman:controller path/to/controller-name
-    Create a Pinkman Controller named 'controller-name' in pinkman/app/controllers/path/to/controller_name.coffee
+  rails generate pinkman:controller level:sublevel:controller_name
+    Creates a controller, a template and a route.
+    
+View:
+  rails generate pinkman:view level:sublevel:view_name
+    Generates a view.
+
+Route:
+  rails generate pinkman:route level:sublevel:route
+    Generates a route to '/level/sublevel/route'

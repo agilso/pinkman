@@ -26,6 +26,9 @@ class window.Pinkman
   @isPrintable: (value) ->
     @isString(value) or @isNumber(value)
     
+  @isObject: (value) ->
+    typeof value == 'object'
+    
   @sleep = (s,callback) -> 
     ms = s*1000
     window['_sleeping'] = setTimeout(callback,ms)
