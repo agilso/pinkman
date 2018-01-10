@@ -20,7 +20,9 @@ class window.PinkmanController extends window.PinkmanObject
   clear: ->
     @actions.each (a) ->
       a.clear()
-    
+
+  render: (args...) ->
+    Pinkman.render(args...)
 
   constructor: (args...) ->
     @actions = new PinkmanActions
