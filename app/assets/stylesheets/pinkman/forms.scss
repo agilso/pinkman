@@ -1,0 +1,65 @@
+@import '../settings';
+@import '../colors';
+@import '../mixins';
+
+form.ui,.form{
+  
+}
+
+.form-field{
+  @include scrollbar_color($primary_color,$bg_light);  
+  margin: 10px auto 20px auto;
+  width: 90%;
+  max-width: 620px;
+  label, input, textarea {
+    @include box_sizing;
+    text-align: left;
+    display: block;
+    width: 100%;
+    margin: 0 auto;
+  }
+  label{
+    font-weight: bold;
+  }
+  input, textarea {
+    outline: none;
+    padding: 5px;
+    font-family: inherit;
+    background-color: transparent;
+    border: 1px solid $line_color;
+    border-radius: 3px;
+    &:focus{
+      color: $primary;
+      border: 1px solid $primary_color;
+    }
+  }
+  textarea{
+    resize: none;
+    min-height: 200px;
+    overflow: auto;
+  }
+  .info{
+    font-size: 0.9em;
+    font-weight: normal;
+    text-align: left;
+  }
+  
+  label, .info{
+    margin: 3px 0;
+  }
+  
+  .error{
+    font-size: 1em;
+    padding: 10px;
+    margin: 10px 0 0 0;
+    text-align: left;
+    color: white;
+    background-color: $error_color;
+  }
+}
+
+input.hidden{
+  position: fixed;
+  left: -10000px;
+  top: -10000px;
+}

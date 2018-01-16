@@ -1,0 +1,15 @@
+@import '../colors';
+@import '../mixins';
+
+button.ui, .button{
+  padding: 0.25em 0.5em;
+  margin: 5px;
+  border-radius: 3px;
+  border: none;
+  &:hover{
+    opacity: 0.9;
+  }
+  &:active{
+    opacity: 0.93;
+  }
+}

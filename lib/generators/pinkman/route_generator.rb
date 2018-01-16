@@ -11,7 +11,7 @@ module Pinkman
     end
 
     def generate_route
-      binding.pry
+      # binding.pry
       if File.file?(file_path)
         inject_into_file file_path, after: ".define (routes) ->" do
           %/

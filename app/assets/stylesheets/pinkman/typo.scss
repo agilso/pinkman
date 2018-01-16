@@ -1,0 +1,104 @@
+@import '../settings';
+@import '../colors';
+
+html, body{
+  font-size: $default_font_size;
+  font-family: 'Muli', sans-serif;
+}
+
+.centralized, .center{
+  &,* { text-align: center;}
+}
+
+h1,h2,h3,h4,h5,h6{
+  font-family: 'Oswald', sans-serif;
+  margin-bottom: 5px;
+}
+
+
+h1{
+  font-size: 3rem;
+}
+
+h2{
+  font-size: 2.5rem;
+}
+
+h3{
+  font-size: 2rem;
+}
+
+h4{
+  font-size: 1.8rem;
+}
+
+h5{
+  font-size: 1.5rem;
+}
+
+h6{
+  font-size: 1.2rem;
+}
+
+small{
+  font-size: 80%;
+}
+
+b,strong, .b{
+  font-weight: bold;
+}
+
+p{
+  font-size: 1em;
+  margin: 1.2em 0;
+}
+
+.extra-small, .xs{
+  font-size: 0.7rem;
+}
+
+.small, .sm{
+  font-size: 0.9rem;
+}
+
+.medium, .md{
+  font-size: 1.5rem;
+}
+
+.big, .lg{
+  font-size: 2rem;
+}
+
+.xl, .extra-large,.bigger, .larger{
+  font-size: 3rem;
+}
+
+.hg, .huge{
+  font-size: 4rem;
+}
+
+.xhg, .extra-huge{
+  font-size: 6rem;
+}
+
+.subline{
+  padding: 0 0 0.5em 0;
+  border-bottom-width: 1px;
+  border-bottom-style: solid;
+}
+
+.underline{
+  text-decoration: underline;
+}
+
+.line-through, .strike{
+  text-decoration: line-through;
+}
+
+.upcase{
+  text-transform: uppercase;
+}
+
+a{
+  text-decoration: none;
+}

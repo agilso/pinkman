@@ -1,0 +1,10 @@
+@import '../mixins';
+@import '../colors';
+
+.sector{
+  @include box_sizing;
+  overflow: hidden;
+  clear: both;
+  width: 100%;
+  height: auto;
+}

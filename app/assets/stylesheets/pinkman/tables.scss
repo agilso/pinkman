@@ -1,0 +1,62 @@
+@import '../settings';
+@import '../colors';
+
+table.ui{
+  width: 100%;
+  margin: 0;
+  border-collapse: separate;
+  border-spacing: 0;
+  border: 1px solid $line_color;
+  
+  &.borderless, &.bordless, &.light{
+    border: none;
+    thead,tbody{
+      tr{
+        th,td{
+          border: none;
+        }
+      }
+    }
+  }
+  
+  &.zebra{
+    tbody{
+      tr:nth-child(even){
+        background-color: $bg_light;
+      }
+    }
+  }
+  
+  thead, tbody{
+    tr{
+      td,th{
+        text-align: left;
+        border-bottom: 1px solid $line_color;
+        border-right: 1px solid $line_color;
+        padding: 10px;
+        &:last-child{
+          border-right: none;
+        }
+      }
+      &:last-child{
+        td{
+          border-bottom: none;
+        }
+      }
+    }
+  }
+  thead{
+    tr{
+      th{
+        font-weight: bold;
+      }
+    }
+  }
+  tbody{
+    tr{
+      td{
+        
+      }
+    }
+  }
+}

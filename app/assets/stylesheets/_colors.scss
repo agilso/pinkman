@@ -1,0 +1,45 @@
+@import 'custom_colors';
+
+$line_color_light: darken($bg_light,10%);
+$line_color_dark: lighten($bg_dark,10%);
+$line_color: $line_color_light;
+
+$error_color: #e23b42;
+
+// ----- Alias
+$primary: $primary_color;
+$secondary: $secondary_color;
+
+// _____________________________Alertas
+$sucess: #2ecc71;
+$warning: #f1c40f;
+$danger: #e74c3c;
+
+// _____________________________YURI
+// pateta de Cores novas
+$snow: #FCF7F8;
+$light_grey: #CED3DC;
+$medium_grey: #ABA9C3;
+$blue_site: #3191F7;
+$carbon: #414448;
+
+
+// New Colors
+$white: white;
+$navy: #001F3F;
+$blue: #0074D9;
+$aqua: #7FDBFF;
+$teal: #39CCCC;
+$olive: #3D9970;
+$green: #2ECC40;
+$lime: #01FF70;
+$yellow: #FFDC00;
+$orange: #FF851B;
+$red: #ea2739;
+$maroon: #85144b;
+$fuchsia: #F012BE;
+$purple: #B10DC9;
+$black: #111111;
+$gray: #AAAAAA;
+$grey: $gray;
+$silver: #DDDDDD;

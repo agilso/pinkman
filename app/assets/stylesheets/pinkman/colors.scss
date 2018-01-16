@@ -1,0 +1,99 @@
+@import '../settings';
+@import '../colors';
+
+// ------------ Layout
+
+html, body{
+  color: $text_color;
+  
+  .night, &.night{
+    background-color: $bg_dark;
+    color: $text_color_light;
+  }
+  
+}
+
+// ------------ Text
+
+.text-color{
+  color: $text_color;
+}
+.text-light { color: $text_color_light; }
+.text-dark { color: $text_color_dark;  }
+
+.primary {color: $primary_color; }
+.secondary {color: $secondary_color; }
+.navy { color: $navy; }
+.blue { color: $blue; }
+.aqua { color: $aqua; }
+.teal { color: $teal; }
+.olive { color: $olive; }
+.green { color: $green; }
+.lime { color: $lime; }
+.yellow { color: $yellow; }
+.orange { color: $orange; }
+.red { color: $red; }
+.maroon { color: $maroon; }
+.fuchsia { color: $fuchsia; }
+.purple { color: $purple; }
+.black { color: $black; }
+.gray { color: $gray; }
+.silver { color: $silver; }
+.white { color: $white; }
+
+// ------------ Backgrounds
+
+.bg-light { background-color: $bg_light; }
+.bg-dark { background-color: $bg_dark;  }
+
+.bg-text { background-color: $text_color; }
+.bg-text-light { background-color: $text_color_light; }
+.bg-text-dark { background-color: $text_color_dark;  }
+
+.bg-carbon { background-color: $carbon;  }
+
+.bg-primary { background-color: $primary_color; }
+.bg-secondary { background-color: $secondary_color; }
+.bg-navy { background-color: $navy; }
+.bg-blue { background-color: $blue; }
+.bg-aqua { background-color: $aqua; }
+.bg-teal { background-color: $teal; }
+.bg-olive { background-color: $olive; }
+.bg-green { background-color: $green; }
+.bg-lime { background-color: $lime; }
+.bg-yellow { background-color: $yellow; }
+.bg-orange { background-color: $orange; }
+.bg-red { background-color: $red; }
+.bg-maroon { background-color: $maroon; }
+.bg-fuchsia { background-color: $fuchsia; }
+.bg-purple { background-color: $purple; }
+.bg-black { background-color: $black; }
+.bg-gray { background-color: $gray; }
+.bg-silver { background-color: $silver; }
+.bg-white { background-color: $white; }
+
+// ------------ Lines && Borders
+
+.border-light { border-color: $line_color_light; }
+.border-dark { border-color: $line_color_dark;  }
+
+
+.border-primary {border-color: $primary_color !important; }
+.border-secondary {border-color: $secondary_color !important; }
+.border-navy { border-color: $navy !important; }
+.border-blue { border-color: $blue !important; }
+.border-aqua { border-color: $aqua !important; }
+.border-teal { border-color: $teal !important; }
+.border-olive { border-color: $olive !important; }
+.border-green { border-color: $green !important; }
+.border-lime { border-color: $lime !important; }
+.border-yellow { border-color: $yellow !important; }
+.border-orange { border-color: $orange !important; }
+.border-red { border-color: $red !important; }
+.border-maroon { border-color: $maroon !important; }
+.border-fuchsia { border-color: $fuchsia !important; }
+.border-purple { border-color: $purple !important; }
+.border-black { border-color: $black !important; }
+.border-gray { border-color: $gray !important; }
+.border-silver { border-color: $silver !important; }
+.border-white { border-color: $white !important; }

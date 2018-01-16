@@ -1,0 +1,120 @@
+.row{
+	position: relative;
+	display: block;
+	clear: both;
+	margin: 0;
+	padding: 0;
+}
+
+.column,.columns{
+	float: left;
+	text-align: left;
+	padding: 0 10px;
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
+	position: relative;
+  // &:first-of-type{
+  //     padding-left: 0;
+  // // }
+	// &:last-of-type, &:last-child{
+  //   // padding-right: 0;
+  // }
+
+}
+
+.row .row{
+	.column,.columns{
+		padding: 0;
+	}
+}
+
+.row{
+  .one{
+  	width: percentage(1/12);
+  }
+  .two{
+  	width: percentage(2/12);
+  }
+  .three{
+  	width: percentage(3/12);
+  }
+  .four{
+  	width: percentage(4/12);
+  }
+  .five{
+  	width: percentage(5/12);
+  }
+  .six{
+  	width: percentage(6/12);
+  }
+  .seven{
+  	width: percentage(7/12);
+  }
+  .eight{
+  	width: percentage(8/12);
+  }
+  .nine{
+  	width: percentage(9/12);
+  }
+  .ten{
+  	width: percentage(10/12);
+  }
+  .eleven{
+  	width: percentage(11/12);
+  }
+  .twelve{
+  	width: percentage(12/12);
+  }
+}
+
+@media only screen
+and (max-width : 480px) {
+  .row.xs{
+    .one.column, .one.columns, .two.columns, .three.columns, .four.columns, .five.columns, .six.columns, .seven.columns, .eight.columns, .nine.columns, .ten.columns, .eleven.columns, .twelve.columns{
+      width: 100%;
+      padding: 0;
+    }
+  }
+}
+
+
+@media only screen
+and (max-width : 600px) {
+  .row.sm{
+    .one.column, .one.columns, .two.columns, .three.columns, .four.columns, .five.columns, .six.columns, .seven.columns, .eight.columns, .nine.columns, .ten.columns, .eleven.columns, .twelve.columns{
+      width: 100%;
+      padding: 0;
+    }
+  }
+}
+
+@media only screen
+and (max-width : 840px) {
+  .row.md{
+    .one.column, .one.columns, .two.columns, .three.columns, .four.columns, .five.columns, .six.columns, .seven.columns, .eight.columns, .nine.columns, .ten.columns, .eleven.columns, .twelve.columns{
+      width: 100%;
+      padding: 0;
+    }
+  }
+}
+
+@media only screen
+and (max-width : 960px) {
+  .row.lg{
+    .one.column, .one.columns, .two.columns, .three.columns, .four.columns, .five.columns, .six.columns, .seven.columns, .eight.columns, .nine.columns, .ten.columns, .eleven.columns, .twelve.columns{
+      width: 100%;
+      padding: 0;
+    }
+  }
+}
+
+@media only screen
+and (max-width : 1280px) {
+  .row.xl{
+    .one.column, .one.columns, .two.columns, .three.columns, .four.columns, .five.columns, .six.columns, .seven.columns, .eight.columns, .nine.columns, .ten.columns, .eleven.columns, .twelve.columns{
+      width: 100%;
+      padding: 0;
+    }
+  }
+}

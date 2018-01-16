@@ -42,7 +42,8 @@ module Pinkman
       define_helper :load_templates do |dir_path=nil|
         if Rails
           pinkman_views_dir_path = Rails.root.join('app','views','pinkman')
-          selected_dir_path = pinkman_views_dir_path.join(dir_path.to_s) if dir_path.class.in?([String,Symbol])
+          selected_dir_path = pinkman_views_dir_path
+          selected_dir_path = selected_dir_path.join(dir_path.to_s) if dir_path.class.in?([String,Symbol])
           files = Dir.glob(selected_dir_path.join('**/_*')).map do |f|    
             f.sub(Regexp.new("#{pinkman_views_dir_path.to_s}(?:[\\\/])"),'').sub(/_/,'')
           end
