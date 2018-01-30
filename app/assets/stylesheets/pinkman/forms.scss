@@ -2,12 +2,35 @@
 @import '../colors';
 @import '../mixins';
 
-form.ui,.form{
-  
+form{
+  &.primary-option{
+
+    input{
+      padding: 10px 5px;
+      background-color: $bg_dark;
+      border: none;
+      border-radius: 0;
+
+    }
+  }
+  &.secondary-option{
+    input{
+      margin-bottom: 30px;
+      border: none;
+      border-bottom: solid 2px $bg_light;
+      border-radius: 0;
+      &:focus{
+        border: none;
+        border-bottom: solid 2px darken($bg_light,10%);
+        color: $bg_light;
+        border-radius: 0;
+      }
+    }
+  }
 }
 
 .form-field{
-  @include scrollbar_color($primary_color,$bg_light);  
+  @include scrollbar_color($primary_color,$bg_light);
   margin: 10px auto 20px auto;
   width: 90%;
   max-width: 620px;
@@ -20,6 +43,7 @@ form.ui,.form{
   }
   label{
     font-weight: bold;
+    color: $bg_light;
   }
   input, textarea {
     outline: none;
@@ -43,11 +67,11 @@ form.ui,.form{
     font-weight: normal;
     text-align: left;
   }
-  
+
   label, .info{
     margin: 3px 0;
   }
-  
+
   .error{
     font-size: 1em;
     padding: 10px;
