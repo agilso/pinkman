@@ -461,14 +461,13 @@ class window.PinkmanCollection extends window.PinkmanCommon
   # request:  get /api/API_URL/
   fetchFromUrl: (options) ->
     if options? and typeof options == 'object' and options.url?
-
       if Pinkman.hasScope(this)
         options.params = new Object unless options.params?
         options.params.scope = Pinkman.scope(this)
 
       @doneFetching = null
       @fetchingFrom = options.url
-
+      
       Pinkman.ajax.get
         url: Pinkman.json2url(options.url,options.params) 
         complete: (response) =>

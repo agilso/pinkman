@@ -46,10 +46,15 @@ module Pinkman
         end
       end
 
-      # Active Record Relation: json_for
+      # Active Record Relation: json
       ActiveRecord::Relation.class_eval do 
-        def json_for scope_name, params_hash = {}
+        def json scope_name, params_hash = {}
           serialize_for(scope_name,params_hash).to_json
+        end
+        
+        def json_for *args, &block
+          ActiveSupport::Deprecation.warn('"json_for" deprecated. Use "json" instead.')
+          json(*args,&block)
         end
         
         def serialize_for scope_name, params_hash = {}
@@ -60,8 +65,13 @@ module Pinkman
       end
 
       Array.class_eval do
-        def json_for scope_name, params_hash = {}
+        def json scope_name, params_hash = {}
           serialize_for(scope_name,params_hash).to_json
+        end
+        
+        def json_for *args, &block
+          ActiveSupport::Deprecation.warn('"json_for" deprecated. Use "json" instead.')
+          json(*args,&block)
         end
         
         def serialize_for scope_name, params_hash = {}
@@ -71,15 +81,20 @@ module Pinkman
         end
       end
 
-      # Instance method: json_for
+      # Instance method: json
       ActiveRecord::Base.class_eval do
         def serialize_for scope_name, params_hash = {}
           options = {scope: scope_name}.merge(params: params_hash)
           self.class.serializer.new(self,options)
         end
 
-        def json_for scope_name, params_hash={}
+        def json scope_name, params_hash={}
           serialize_for(scope_name,params_hash).to_json
+        end
+        
+        def json_for *args, &block
+          ActiveSupport::Deprecation.warn('"json_for" deprecated. Use "json" instead.')
+          json(*args,&block)
         end
 
       end

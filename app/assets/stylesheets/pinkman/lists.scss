@@ -1,6 +1,9 @@
 @import '../colors';
 @import '../mixins';
 
+li{
+  font-size: 1rem;
+}
 ol.ui, ul.ui,.ul,.ol{
   margin:  1.5em 1em;
   padding: 0 1em;

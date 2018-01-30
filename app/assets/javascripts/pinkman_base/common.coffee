@@ -28,12 +28,14 @@ class window.PinkmanCommon
         @set(key,value) if PinkmanObject.privateAttributes.indexOf(key) is -1
 
   # Desc: return api url path
-  api: () ->
+  api: (paths...) ->
     if @config? and @config.api?
       if @config.api.charAt(0) == '/'
-        @config.api + '/'
+        url = @config.api + '/'
       else
-        '/' + @config.api + '/'
+        url = '/' + @config.api + '/'
+    url = url + paths.join('/') if paths.length
+    return(url)
 
   isInstanceOf: (prot) ->
     this.constructor is prot
