@@ -67,5 +67,5 @@ end
 #   define_method :method_name do |one, two, block=nil|
 
 # DONT't use:
-#   define_method :method_name do |one, two, &block=nil| 
+#   define_method :method_name do |one, two, &block| 
 #   (this won't work)

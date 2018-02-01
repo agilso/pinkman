@@ -209,7 +209,10 @@ class window.PinkmanRouter
   
   @force: (path) ->
     (window.location=path) unless @visit(path)
-      
+  
+  @location: (path) ->
+    window.location = path
+  
   @restore: (path) ->
     (window.location=path) unless @activate(path,null,{freeze: yes})
   

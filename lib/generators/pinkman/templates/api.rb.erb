@@ -6,19 +6,19 @@ class Api::<%= controller_name %> < ApiController
   # get api/<%= api_name %>
   def index
     <%= collection_name %> = <%= active_record_model_name %>.limit(params[:limit]).offset(params[:offset])
-    render json: <%= collection_name %>.json_for(current_scope)
+    render json: <%= collection_name %>.json(current_scope)
   end
 
   # get api/<%= api_name %>/:id
   def show
-    render json: @<%= instance_name %>.json_for(current_scope)
+    render json: @<%= instance_name %>.json(current_scope)
   end
 
   # get api/<%= api_name %>/search/:query
   def search
     if params[:query].present?
       <%= collection_name %> = <%= active_record_model_name %>.search(params[:query]).limit(params[:limit]).offset(params[:offset])
-      render json: <%= collection_name %>.json_for(current_scope)
+      render json: <%= collection_name %>.json(current_scope)
     end
   end
 
@@ -26,19 +26,19 @@ class Api::<%= controller_name %> < ApiController
   def create
     @<%= instance_name %>.assign_attributes <%= params_method_name %>
     @<%= instance_name %>.save
-    render json: @<%= instance_name %>.json_for(current_scope)
+    render json: @<%= instance_name %>.json(current_scope)
   end
 
   # put/patch api/<%= api_name %>/:id
   def update
     @<%= instance_name %>.update <%= params_method_name %>
-    render json: @<%= instance_name %>.json_for(current_scope)
+    render json: @<%= instance_name %>.json(current_scope)
   end
 
   # delete api/<%= api_name %>/:id
   def destroy
     @<%= instance_name %>.destroy
-    render json: @<%= instance_name %>.json_for(current_scope)
+    render json: @<%= instance_name %>.json(current_scope)
   end
 
   protected

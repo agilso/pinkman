@@ -98,6 +98,10 @@ class window.PinkmanCommon
 
   # --- Render related --- #
 
+  # Desc: log attr value in the console
+  log: (attr) ->
+    console.log this[attr]
+    
   render: (options) ->
     if typeof options == 'object'
       options.object = this
