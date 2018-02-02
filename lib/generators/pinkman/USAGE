@@ -1,32 +1,66 @@
 Description:
-    Pinkman generators
-
+  Pinkman generators
+    
+Install:
+  Setup pinkman. This creates common pinkman directories, defines a api namespace in routes.rb, etc.
+  
+Resource:
+  rails generate pinkman:resource model
+  
+  Desc: Creates pinkman models (coffee) and rails api controllers to interact with a given Rails Model.
+  Files:
+    app/controllers/api/models_controller.rb
+    routes.rb
+    app/assets/.../pinkman/app/models/{object, collection}.coffee
+  
+Page:
+  rails generate pinkman:page page_name
+  
+  Desc: Creates a pinkman controller, its template and route.
+  Files:
+    app/assets/.../pinkman/app/controllers/page_name.coffee
+    app/views/pinkman/page_name.html.erb
+    app/assets/.../pinkman/config/routes.coffee (add content)
+    
+CRUD:
+  rails generate pinkman:crud model
+  
+  Desc: Creates CRUD routes, templates and controllers
+  Files:
+    app/assets/.../pinkman/app/controllers/model/{index,edit,new,show}.coffee
+    app/views/pinkman/model/{index,edit,new,show}.html.erb
+    app/assets/.../pinkman/config/routes.coffee (add content)
+  
 Api:
-    rails generate pinkman:api name
-
-    This will create an api controller and its routes.
-        app/controllers/api/pluralized_name_controller.rb
+  rails generate pinkman:api name
+  
+  Desc: This will create an api controller and its routes.
+  Files:
+    app/controllers/api/pluralized_name_controller.rb
 
 Model:
   rails generate pinkman:model name
-      Pinkman model: app/assets/javascripts/pinkman/models/name/name.js
-      Pinkman collection: app/assets/javascripts/pinkman/models/name/pluralized_name.js
-
-Install:
-  Setup pinkman. This creates common pinkman directories, defines a api namespace in routes.rb, etc.
-
-Resource:
-  rails generate pinkman:resource model
-    Creates all coffeescripts and api resources to interact with a Rails Model named model.
+  
+  Files:
+    app/assets/javascripts/pinkman/models/name/name.js
+    app/assets/javascripts/pinkman/models/name/pluralized_name.js
     
 Controller:
   rails generate pinkman:controller level:sublevel:controller_name
-    Creates a controller, a template and a route.
+  
+  Desc: Creates a controller, a template and a route.
+  Files:
+    app/assets/.../pinkman/app/controllers/level/sublevel/controller_name.coffee
     
-View:
-  rails generate pinkman:view level:sublevel:view_name
-    Generates a view.
+Template:
+  rails generate pinkman:template level:sublevel:template_name
+  
+  Desc: Generates a template.
+  Files:
+    app/views/pinkman/level/sublevel/_template_name.html.erb
 
 Route:
   rails generate pinkman:route level:sublevel:route
-    Generates a route to '/level/sublevel/route'
+  
+  Desc: Generates a route to '/level/sublevel/route'
+  Files: app/assets/.../pinkman/config/routes.coffee (add content)

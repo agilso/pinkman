@@ -17,8 +17,12 @@ module Pinkman
         end
       end
       
-      define_helper :form do |action_name,block|
-        content_tag('form',{action: '', data: {pinkey: p.pinkey, action: action_name}},&block)
+      define_helper :select do |attr_name,block|
+        content_tag('select',{name: attr_name, data: {pinkey: p.pinkey, action: attr_name}},&block)
+      end
+      
+      define_helper :form do |action_name, hash={}, block|
+        content_tag('form',hash.merge({action: '', data: {pinkey: p.pinkey, action: action_name}}),&block)
       end
       
       define_helper :submit do |val|

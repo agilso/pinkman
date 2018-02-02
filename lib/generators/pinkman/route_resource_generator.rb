@@ -1,7 +1,7 @@
 require 'rails/generators/base'
 
 module Pinkman
-  class RouteGenerator < ::Rails::Generators::Base
+  class RouteResourceGenerator < ::Rails::Generators::Base
     source_root File.expand_path('../templates', __FILE__)
 
     argument :route_arg, type: :string
@@ -16,7 +16,7 @@ module Pinkman
         inject_into_file file_path, after: ".define (routes) ->" do
           %/
   
-  routes.match '#{route_path}', controller: '#{controller_name}'/
+  routes.resources '#{route_path}'/
         end
       end
     end

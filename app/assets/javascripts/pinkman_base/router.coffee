@@ -44,6 +44,9 @@ class window.PinkmanPath extends Pinkman.object
           
   level: (index) ->
     @levels.getBy('index',index)
+    
+  lastLevel: ->
+    @levels.last()
   
   match: (path) ->
     path = new PinkmanPath(path) if Pinkman.isString(path)
@@ -153,14 +156,14 @@ class window.PinkmanRouter
   
   @analytics: 
     create: (id) ->
-      console.log 'chamou'
-      console.log id
+      # console.log 'chamou'
+      # console.log id
       ga('create', id, 'auto');
       ga('send', 'pageview');
       
     send: (route,path) ->
       unless @created? and @created
-        console.log this
+        # console.log this
         @create(Pinkman.router._config.analytics)
         @created = true
       else
@@ -241,16 +244,43 @@ class window.PinkmanRouter
         path = ev.currentTarget.href
         (window.location = path) unless path? and @visit(path)
   
-  # namespace: (path, rules) ->
+  namespace: (namespace, rules) ->
+    namespace = namespace.replace(/^\//,'')
+    namespaced = new @constructor()
+    namespaced._namespace = if @_namespace then ("#{@_namespace}/#{namespace}") else namespace
+    rules(namespaced) if typeof rules == 'function'
+    
+  resources: (resourceName) ->
+    
+    # controllerPrefix = if @_namespace then @_namespace.replace(/\//,'-') + '-' else ''
+    
+    resourceName = resourceName.replace(/\/$/,'')
+    controllerName = resourceName.replace(/\//g,'-').replace(/^-/,'')
+    
+    # index
+    @match resourceName, controller: controllerName + '-index'
+    # new
+    @match resourceName + '/new', controller: controllerName + '-new'
+    # edit
+    @match resourceName + '/:id/edit', controller: controllerName + '-edit'
+    # show
+    @match resourceName + '/:id', controller: controllerName + '-show'
+  
   match: (path, object) ->
     if Pinkman.isString(path)
+      path = path.replace(/^\//,'')
+      path = "/#{@_namespace}/" + path if @_namespace
       p = new PinkmanPath(path)
       route = new PinkmanRoute
       route.set('id',path)
       route.set('url',path)
       route.set('path',p).set('depth',p.depth).set('staticDepth',p.staticDepth).set('dynamicDepth',p.dynamicDepth)
-      route.set('blank',yes)
-      route.set('controller', if object? and object.controller? then object.controller else p.level(1).entry)
+      route.set('blank',yes) 
+      route.set('controller', if object? and object.controller? then object.controller else p.lastLevel().entry)
+      
+      # handle namespaced controller name (add namespace prefix)
+      route.set('controller', "#{@_namespace.replace(/\//g,'-')}-#{route.controller}") if @_namespace
+      
       if object? and typeof object == 'object' 
         route.set('blank',no) if (object.keep? and object.keep) or (object.blank? and not object.blank)
         route.set('yield',object.container|| object.yield )
@@ -263,6 +293,6 @@ class window.PinkmanRouter
     
     
   root: (controller) ->
-    @get('/',controller: controller)
+    @match('/',controller: controller)
   
 Pinkman.router = PinkmanRouter
