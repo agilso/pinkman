@@ -28,6 +28,12 @@ class window.Pinkman
     
   @isObject: (value) ->
     typeof value == 'object'
+  
+  @isFunction: (value) ->
+    typeof value == 'function'
+    
+  @hasAttribute: (obj,attr) ->
+    obj? and attr? and @isObject(obj) and obj[attr]? and obj[attr]
     
   @sleep = (s,callback) -> 
     ms = s*1000

@@ -59,30 +59,37 @@ class window.PinkmanController extends window.PinkmanObject
       @actions.getBy('name',args[0])
     else
       [name, eventName,callback,unknown...] = args
-      id = "#{@pinkey}-#{name}-#{eventName}"
-      a = new PinkmanAction(id: id, name: name, eventName: eventName, call: callback, controller: this)
-      a.set('selector',"##{a.controller.id} [data-action='#{a.name}']")
-      Pinkman.actions.push(a)
-      if @actions.push(a) and a.call? and typeof a.call == 'function'
-        a.listen()
-        # console.log "#{id}: listen"
-      # else
-      #   console.log @pinkey
-      #   console.log a.pinkey
-      #   console.log "#{id}: nao listen"
-      return(a)
+      PinkmanAction.define
+        id: "#{@pinkey}-#{name}-#{eventName}"
+        name: name
+        eventName: eventName
+        callback: callback
+        controller: this
+        selector: "##{this.id} [data-action='#{name}']"
       
-      
+  
+  # verificar - verify
+  # mudei recentemente, pode estar cagado
   esc: (callback) ->
-    a = new PinkmanAction(name: 'esc', eventName: 'keyup', controller: this)
-    a.call = (obj, j, ev) ->
-      callback() if ev.keyCode == 27
-    Pinkman.actions.push(a)
-    @actions.push(a)
-    a.listen()
-    return(a)
+    PinkmanAction.define
+      id: 'esc'
+      eventName: 'keyup'
+      controller: this
+      callback: (obj, j, ev) ->
+        callback() if ev.keyCode == 27
     
 
+  bindAll: (callback=null) ->
+    PinkmanAction.define
+      id: "#{@pinkey}-bindAll"
+      selector: "##{@id} form [data-action], ##{@id} .form [data-action]"
+      eventName: 'change, keyup'
+      controller: this
+      callback: (obj,$j) ->
+        obj.set($j.attr('name'),$j.val()) if obj[$j.attr('name')] != $j.val()
+        callback(obj,$j,$j.attr('name')) if typeof callback == 'function'
+        
+    
   bind: (attribute,callback='') ->
     if Pinkman.isArray(attribute)
       @bindIndividually(attr,callback) for attr in attribute
@@ -187,7 +194,30 @@ class window.PinkmanAction extends window.PinkmanObject
   constructor: (args...) ->
     super(args...)
     @events = []
-    
+  
+  # helper to define custom actions
+  @define: (options) ->
+    throw 'Pinkman - Define Action: argument must be a object' unless $p.isObject(options)
+    throw 'Pinkman - Define Action: missing id' unless $p.hasAttribute(options,'id')
+    throw 'Pinkman - Define Action: missing eventName' unless $p.hasAttribute(options,'eventName')
+    throw 'Pinkman - Define Action: missing controller' unless $p.hasAttribute(options,'controller')
+    throw 'Pinkman - Define Action: missing selector' unless $p.hasAttribute(options,'selector')
+    throw 'Pinkman - Define Action: missing callback' unless $p.hasAttribute(options,'callback')
+    throw 'Pinkman - Define Action: callback must be a function' unless $p.isFunction(options.callback)    
+    options.controller = Pinkman.controller.find(options.controller) if $p.isString(options.controller)
+    a = new PinkmanAction
+    a.set 'id', options.id
+    a.set('name', if options.name then options.name else options.id)
+    a.set 'controller', options.controller
+    a.set 'selector', options.selector
+    a.set 'eventName', options.eventName
+    a.set 'call', options.callback
+    Pinkman.actions.push(a)
+    if a.controller.actions.empty(id: a.id)
+      a.controller.actions.push(a) 
+      a.listen()
+      
+      
   # Desc: mirrors/redirects a action to another already defined
   mirror: (controllerID,actionName) ->
     # gets all actions named 'action' in all controllers with 'controller' id

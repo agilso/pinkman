@@ -118,7 +118,7 @@ class window.PinkmanObject extends window.PinkmanCommon
   @find: (id, callback='') ->
     obj = new this
     params = new Object
-    params.scope = Pinkman.scope(this)
+    params.scope = Pinkman.scope(obj)
 
     Pinkman.ajax.get
       url: Pinkman.json2url(obj.api() + id,params)
