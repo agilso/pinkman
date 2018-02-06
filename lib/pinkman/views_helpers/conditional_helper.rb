@@ -1,10 +1,10 @@
-require_relative 'base_helper.rb'
+require_relative '../base_helper.rb'
 
 module Pinkman
   module ViewsHelpers
     module ConditionalHelper
       
-      extend BaseHelper
+      extend Pinkman::BaseHelper
       
       define_helper :if do |condition, block=nil|
         p.wrap_in(condition,&block) if block.is_a?(Proc)

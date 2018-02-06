@@ -1,10 +1,10 @@
-require_relative 'base_helper.rb'
+require_relative '../base_helper.rb'
 
 module Pinkman
   module ViewsHelpers
     module TemplateHelper
       
-      extend BaseHelper
+      extend Pinkman::BaseHelper
       
       define_helper :template  do |path, block=nil|
         # definition mode

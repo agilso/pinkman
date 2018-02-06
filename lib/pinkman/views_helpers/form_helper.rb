@@ -1,10 +1,20 @@
-require_relative 'base_helper.rb'
+require_relative '../base_helper.rb'
 
 module Pinkman
   module ViewsHelpers
     module FormHelper
       
-      extend BaseHelper
+      extend Pinkman::BaseHelper
+      
+      define_helper :textfield do |attr_name,label=nil|
+        label ||= attr_name.titleize
+        render partial: 'pinkman/pinkman/form_input', locals: {attr_name: attr_name, label: label, input_options: {name: attr_name}}
+      end
+      
+      define_helper :datefield do |attr_name,label=nil|
+        label ||= attr_name.titleize
+        render partial: 'pinkman/pinkman/form_input', locals: {attr_name: attr_name, label: label, input_options: {name: attr_name}}
+      end
       
       define_helper :input do |hash|
         hash[:type] ||= 'text'

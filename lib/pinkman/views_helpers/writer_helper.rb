@@ -1,10 +1,10 @@
-require_relative 'base_helper.rb'
+require_relative '../base_helper.rb'
 
 module Pinkman
   module ViewsHelpers
     module WriterHelper
       
-      extend BaseHelper
+      extend Pinkman::BaseHelper
       
       define_helper :write do |string|
         raw "{{ #{string} }}"

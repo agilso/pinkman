@@ -3,6 +3,7 @@ require 'pathname'
 require 'active_model_serializers'
 require 'pinkman/serializer'
 require 'pinkman/views_helpers'
+require 'pinkman/form_helper'
 require 'pinkman/version'
 
 module Pinkman
