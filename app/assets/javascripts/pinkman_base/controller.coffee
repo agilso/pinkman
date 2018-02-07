@@ -193,6 +193,7 @@ class window.PinkmanAction extends window.PinkmanObject
   
   constructor: (args...) ->
     super(args...)
+    @call = ->
     @events = []
   
   # helper to define custom actions
@@ -202,24 +203,31 @@ class window.PinkmanAction extends window.PinkmanObject
     throw 'Pinkman - Define Action: missing eventName' unless $p.hasAttribute(options,'eventName')
     throw 'Pinkman - Define Action: missing controller' unless $p.hasAttribute(options,'controller')
     throw 'Pinkman - Define Action: missing selector' unless $p.hasAttribute(options,'selector')
-    throw 'Pinkman - Define Action: missing callback' unless $p.hasAttribute(options,'callback')
-    throw 'Pinkman - Define Action: callback must be a function' unless $p.isFunction(options.callback)    
-    options.controller = Pinkman.controller.find(options.controller) if $p.isString(options.controller)
-    a = new PinkmanAction
-    a.set 'id', options.id
-    a.set('name', if options.name then options.name else options.id)
-    a.set 'controller', options.controller
-    a.set 'selector', options.selector
-    a.set 'eventName', options.eventName
-    a.set 'call', options.callback
-    Pinkman.actions.push(a)
-    if a.controller.actions.empty(id: a.id)
-      a.controller.actions.push(a) 
+    # throw 'Pinkman - Define Action: missing callback' unless $p.hasAttribute(options,'callback')
+    # throw 'Pinkman - Define Action: callback must be a function' unless $p.isFunction('callback')
+    options.controller = Pinkman.controller(options.controller) if $p.isString(options.controller)
+    if options.controller.actions.empty(id: options.id)
+      a = new PinkmanAction
+      a.set 'id', options.id
+      a.set('name', if options.name then options.name else options.id)
+      a.set 'controller', options.controller
+      a.set 'selector', options.selector
+      a.set 'eventName', options.eventName
+      a.set 'call', options.callback if options.callback
+      Pinkman.actions.push(a)
+      a.controller.actions.push(a)
       a.listen()
+      return(a)
+    else
+      # console.log options.controller
+      # console.log options.id
+      return(options.controller.actions.getBy('id',options.id))
       
+    
       
   # Desc: mirrors/redirects a action to another already defined
   mirror: (controllerID,actionName) ->
+    # console.log this
     # gets all actions named 'action' in all controllers with 'controller' id
     actions = new PinkmanActions
     Pinkman.controllers.select(id: controllerID).each (c) ->
@@ -239,13 +247,15 @@ class window.PinkmanAction extends window.PinkmanObject
 
   # Desc: removes event
   clear: ->
+    @_event_listening = no
     for ev in @events
       $('body').off ev, @selector
     
   # Desc: attaches one single event
   attach: (eventName) ->
-    if Pinkman.isString(eventName)
+    if Pinkman.isString(eventName) and not @_event_listening
       action = this
+      action._event_listening = yes
       @events.push(eventName)
       $('body').on eventName, action.selector, (ev) ->
         # debugger
@@ -305,4 +315,3 @@ $(document).ready ->
       
     selector = array.join(', ')
     Pinkman.css(selector, 'cursor', 'pointer !important')
-

@@ -61,6 +61,10 @@ class window.PinkmanPath extends Pinkman.object
     else
       false
     
+  
+  deduceControllerName: ->
+    # console.log this
+    @levels.extract('entry').join('-')
 
 # receives a string and matches it through the defined routes
 class window.PinkmanRouteMatcher extends Pinkman.object
@@ -108,6 +112,20 @@ class window.PinkmanRouteMatcher extends Pinkman.object
 class window.PinkmanRoute extends Pinkman.object    
   yieldIn: ->
     @yield || @container 
+    
+  # handleNamespacedController
+  # Desc: Forces a namespaced controller to start with the namespace name.
+  # Example 1:
+  #  routes.namespace 'admin', (routes) ->
+  #     routes.match 'abc', controller: 'abc'
+  # The controller name will be set to 'admin-abc'.
+  # Example 2:
+  #  routes.namespace 'admin', (routes) ->
+  #     routes.match 'abc', controller: 'admin-abc'
+  # The controller name remains 'admin-abc'.
+  
+  handleNamespacedController: (namespace) ->
+    @set('controller',"#{namespace.replace(/\//g,'-')}-#{@controller}") if namespace and @controller and not (new RegExp("^#{namespace}")).test(@controller)
 
   
 # Routes collection. Have the capability to search a string through routes and storage all defined routes. Used once in Pinkman.routes
@@ -265,7 +283,8 @@ class window.PinkmanRouter
     @match resourceName + '/:id/edit', controller: controllerName + '-edit'
     # show
     @match resourceName + '/:id', controller: controllerName + '-show'
-  
+
+    
   match: (path, object) ->
     if Pinkman.isString(path)
       path = path.replace(/^\//,'')
@@ -276,10 +295,10 @@ class window.PinkmanRouter
       route.set('url',path)
       route.set('path',p).set('depth',p.depth).set('staticDepth',p.staticDepth).set('dynamicDepth',p.dynamicDepth)
       route.set('blank',yes) 
-      route.set('controller', if object? and object.controller? then object.controller else p.lastLevel().entry)
+      route.set('controller', if object? and object.controller? then object.controller else p.deduceControllerName())
       
       # handle namespaced controller name (add namespace prefix)
-      route.set('controller', "#{@_namespace.replace(/\//g,'-')}-#{route.controller}") if @_namespace
+      route.handleNamespacedController(@_namespace)
       
       if object? and typeof object == 'object' 
         route.set('blank',no) if (object.keep? and object.keep) or (object.blank? and not object.blank)

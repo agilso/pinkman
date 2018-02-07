@@ -93,6 +93,14 @@ class window.PinkmanCollection extends window.PinkmanCommon
     callback(selection) if typeof callback == 'function'
     return(selection)
 
+  # extract(attr): 
+  # Desc: returns an array containing the value of "attr" from each member of this collection.
+  extract: (attr) ->
+    array = []
+    @each (o) ->
+      array.push(o[attr])
+    array
+
   # every element of this collection will be substituted by the element of the collection passed
   absorb: (collection, callback) ->
     if typeof collection == 'object' and collection.isPink and collection.isCollection
@@ -427,7 +435,7 @@ class window.PinkmanCollection extends window.PinkmanCommon
         for obj in @collection
           if obj[attribute] == query
             filter.push obj
-          else if obj[attribute]? and (typeof obj[attribute] == "string") and (obj[attribute]!="") and (typeof query == "string") and (query!="") and (obj[field].toLowerCase().indexOf(query.toLowerCase()) > -1)
+          else if obj[attribute]? and (typeof obj[attribute] == "string") and (obj[attribute]!="") and (typeof query == "string") and (query!="") and (obj[attribute].toLowerCase().indexOf(query.toLowerCase()) > -1)
             filter.push obj
       callback(filter) if callback? and typeof callback == 'function'
       return filter

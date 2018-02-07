@@ -151,6 +151,12 @@ class window.PinkmanCommon
     @renderQueue = new PinkmanCollection unless @renderQueue?
     @renderQueue.directPush(options)
 
+  hasError: ->
+    @errors?
+  
+  hasErrors: ->
+    @hasError()
+
   hasErrorOn: (attr) ->
     if attr? and (Pinkman.isArray(attr) or Pinkman.isString(attr))
       array = if Pinkman.isArray(attr) then attr else [attr]
