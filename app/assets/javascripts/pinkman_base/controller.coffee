@@ -77,13 +77,46 @@ class window.PinkmanController extends window.PinkmanObject
       controller: this
       callback: (obj, j, ev) ->
         callback() if ev.keyCode == 27
-    
 
-  bindAll: (callback=null) ->
+
+  # bindAll works by attaching a 'change' event handler to all [data-action] inside a form.
+  # but... in a few ocasions, the developer must have the capability to exclude certain attributes from this binding.
+  # thats when the "except" option comes in
+  # maybe a "only" option is going to be implemented in the near future
+  bindAllSelector: (id,options) ->
+    except = options.except if $p.isObject(options) and options.except?
+    selector = "##{@id} form [data-action], ##{@id} .form [data-action]"
+    
+    # except handler
+    if except
+      throw 'Pinkman bindAll: except option should be a string or an array' if not $p.isString(except) and not $p.isArray(except)
+      except = [except] if $p.isString(except)
+      exceptionsArray = []
+      for excep in options.except
+        exceptionsArray.push "[data-action='#{excep}']"
+      selector = selector.replace(/\[data-action\]/g,"[data-action]:not(#{exceptionsArray.join(',')})")
+    
+    # debugger
+    # console.log selector
+    
+    # return selector
+    selector
+      
+  
+  bindAll: (args...) ->
+    if args.length == 1
+      if $p.isFunction(args[0])
+        callback = args[0]
+      else if $p.isObject(args[0])
+        options = args[0]
+    else if args.length == 2
+      callback = args.pop()
+      options = args.shift()
+      
     PinkmanAction.define
       id: "#{@pinkey}-bindAll"
-      selector: "##{@id} form [data-action], ##{@id} .form [data-action]"
-      eventName: 'change, keyup'
+      selector: @bindAllSelector(@id,options)
+      eventName: ['change','keyup']
       controller: this
       callback: (obj,$j) ->
         obj.set($j.attr('name'),$j.val()) if obj[$j.attr('name')] != $j.val()
@@ -98,10 +131,10 @@ class window.PinkmanController extends window.PinkmanObject
 
   bindIndividually: (attribute,callback='') ->
     if $("##{@id}").length
-      @action attribute, ['keyup','change'], (obj,jquery,args...) ->
-        if obj[attribute] != jquery.val()             
-          obj.set(attribute,jquery.val()) 
-          callback(obj,jquery,args...) if callback? and typeof callback == 'function'
+      @action attribute, ['keyup','change'], (obj,$j,args...) ->
+        if obj[attribute] != $j.val()             
+          obj.set(attribute,$j.val()) 
+          callback(obj,$j,args...) if callback? and typeof callback == 'function'
 
   # bindAll: ->
 
@@ -192,6 +225,7 @@ class window.PinkmanControllers extends window.PinkmanCollection
 class window.PinkmanAction extends window.PinkmanObject
   
   constructor: (args...) ->
+    @_event_listening = new Object
     super(args...)
     @call = ->
     @events = []
@@ -213,6 +247,7 @@ class window.PinkmanAction extends window.PinkmanObject
       a.set 'controller', options.controller
       a.set 'selector', options.selector
       a.set 'eventName', options.eventName
+      # a.log 'eventName'
       a.set 'call', options.callback if options.callback
       Pinkman.actions.push(a)
       a.controller.actions.push(a)
@@ -247,15 +282,15 @@ class window.PinkmanAction extends window.PinkmanObject
 
   # Desc: removes event
   clear: ->
-    @_event_listening = no
+    @_event_listening = new Object
     for ev in @events
       $('body').off ev, @selector
     
   # Desc: attaches one single event
   attach: (eventName) ->
-    if Pinkman.isString(eventName) and not @_event_listening
+    if Pinkman.isString(eventName) and not @_event_listening[eventName]
       action = this
-      action._event_listening = yes
+      action._event_listening[eventName] = yes
       @events.push(eventName)
       $('body').on eventName, action.selector, (ev) ->
         # debugger

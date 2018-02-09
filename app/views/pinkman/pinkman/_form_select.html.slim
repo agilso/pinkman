@@ -1,0 +1,10 @@
+.form-field
+  label for=attr_name = label
+  == p.select attr_name, html_options
+    - if placeholder
+      option value="" selected='selected' disabled='disabled' = placeholder
+    
+    - options_hash.each do |k,v|
+      option value=k = v
+      
+  == p.error_for attr_name, label

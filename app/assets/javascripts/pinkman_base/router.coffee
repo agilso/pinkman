@@ -64,7 +64,7 @@ class window.PinkmanPath extends Pinkman.object
   
   deduceControllerName: ->
     # console.log this
-    @levels.extract('entry').join('-')
+    @static.extract('entry').join('-')
 
 # receives a string and matches it through the defined routes
 class window.PinkmanRouteMatcher extends Pinkman.object

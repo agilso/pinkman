@@ -16,37 +16,41 @@ module Pinkman
       
       define_helper :text do |attr_name,label=nil|
         label ||= attr_name.titleize
-        render partial: 'pinkman/pinkman/form_input', locals: {attr_name: attr_name, label: label, input_options: {name: attr_name}}
+        render partial: 'pinkman/pinkman/form_textarea', locals: {attr_name: attr_name, label: label, textarea_options: {name: attr_name}}
       end
       
       define_helper :date do |attr_name,label=nil|
         label ||= attr_name.titleize
-        render partial: 'pinkman/pinkman/form_input', locals: {attr_name: attr_name, label: label, input_options: {name: attr_name}}
+        render partial: 'pinkman/pinkman/form_input', locals: {attr_name: attr_name, label: label, input_options: {name: attr_name, type: 'date'}}
       end
       
       define_helper :datetime do |attr_name,label=nil|
         label ||= attr_name.titleize
-        render partial: 'pinkman/pinkman/form_input', locals: {attr_name: attr_name, label: label, input_options: {name: attr_name}}
+        render partial: 'pinkman/pinkman/form_input', locals: {attr_name: attr_name, label: label, input_options: {name: attr_name}, type: 'time'}
       end
       
-      define_helper :select do |attr_name,label=nil,teste=nil|
+      define_helper :select do |attr_name,label,options_hash,html_options={}|
+        if html_options.has_key?(:placeholder)
+          placeholder = html_options[:placeholder]
+          html_options.delete(:placeholder)
+        end
         label ||= attr_name.titleize
-        render partial: 'pinkman/pinkman/form_input', locals: {attr_name: attr_name, label: label, input_options: {name: attr_name}}
+        render partial: 'pinkman/pinkman/form_select', locals: {attr_name: attr_name, label: label, options_hash: options_hash, html_options: html_options, placeholder: placeholder}
       end
       
       define_helper :password do |attr_name,label=nil|
         label ||= attr_name.titleize
-        render partial: 'pinkman/pinkman/form_input', locals: {attr_name: attr_name, label: label, input_options: {name: attr_name}}
+        render partial: 'pinkman/pinkman/form_input', locals: {attr_name: attr_name, label: label, input_options: {name: attr_name, type: 'password'}}
       end
       
       define_helper :number do |attr_name,label=nil|
         label ||= attr_name.titleize
-        render partial: 'pinkman/pinkman/form_input', locals: {attr_name: attr_name, label: label, input_options: {name: attr_name}}
+        render partial: 'pinkman/pinkman/form_input', locals: {attr_name: attr_name, label: label, input_options: {name: attr_name, type: 'number'}}
       end
       
       define_helper :money do |attr_name,label=nil|
         label ||= attr_name.titleize
-        render partial: 'pinkman/pinkman/form_input', locals: {attr_name: attr_name, label: label, input_options: {name: attr_name}}
+        render partial: 'pinkman/pinkman/form_input', locals: {attr_name: attr_name, label: label, input_options: {name: attr_name, type: 'number', min: 0, step: 0.01}}
       end
       
     end

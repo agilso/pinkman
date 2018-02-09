@@ -27,8 +27,8 @@ module Pinkman
         end
       end
       
-      define_helper :select do |attr_name,block|
-        content_tag('select',{name: attr_name, data: {pinkey: p.pinkey, action: attr_name}},&block)
+      define_helper :select do |attr_name,options_hash={}, block|
+        content_tag('select',options_hash.merge({name: attr_name, data: {pinkey: p.pinkey, action: attr_name}}),&block)
       end
       
       define_helper :form do |action_name, hash={}, block|
