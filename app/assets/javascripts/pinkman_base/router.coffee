@@ -127,6 +127,20 @@ class window.PinkmanRoute extends Pinkman.object
   handleNamespacedController: (namespace) ->
     @set('controller',"#{namespace.replace(/\//g,'-')}-#{@controller}") if namespace and @controller and not (new RegExp("^#{namespace}")).test(@controller)
 
+  definePathHelper: ->
+    helperName = @controller.replace(/-/g,'_') + '_path'
+    Pinkman.path_helpers.push helperName
+    $p.defineGlobalVar helperName, (args...) =>
+      i = 0
+      array = []
+      for level in @path.levels.collection
+        if level.dynamic
+          array.push(args[i])
+          i = i + 1
+        else
+          array.push(level.entry)
+      '/' + array.join('/')
+        
   
 # Routes collection. Have the capability to search a string through routes and storage all defined routes. Used once in Pinkman.routes
 class window.PinkmanRoutes extends Pinkman.collection
@@ -300,9 +314,11 @@ class window.PinkmanRouter
       # handle namespaced controller name (add namespace prefix)
       route.handleNamespacedController(@_namespace)
       
+      route.definePathHelper()
+      
       if object? and typeof object == 'object' 
         route.set('blank',no) if (object.keep? and object.keep) or (object.blank? and not object.blank)
-        route.set('yield',object.container|| object.yield )
+        route.set('yield',object.container || object.yield )
       Pinkman.routes.push(route)
       return(route)
       
@@ -315,3 +331,4 @@ class window.PinkmanRouter
     @match('/',controller: controller)
   
 Pinkman.router = PinkmanRouter
+Pinkman.path_helpers = []
