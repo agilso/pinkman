@@ -128,7 +128,7 @@ class window.PinkmanRoute extends Pinkman.object
     @set('controller',"#{namespace.replace(/\//g,'-')}-#{@controller}") if namespace and @controller and not (new RegExp("^#{namespace}")).test(@controller)
 
   definePathHelper: ->
-    helperName = @controller.replace(/-/g,'_') + '_path'
+    helperName = @path.deduceControllerName().replace(/-/g,'_') + '_path'
     Pinkman.path_helpers.push helperName
     $p.defineGlobalVar helperName, (args...) =>
       i = 0

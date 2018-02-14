@@ -92,7 +92,7 @@ class window.PinkmanCollection extends window.PinkmanCommon
             selection.push(object)
     callback(selection) if typeof callback == 'function'
     return(selection)
-
+  
   # extract(attr): 
   # Desc: returns an array containing the value of "attr" from each member of this collection.
   extract: (attr) ->
@@ -100,7 +100,18 @@ class window.PinkmanCollection extends window.PinkmanCommon
     @each (o) ->
       array.push(o[attr])
     array
-
+  
+  # groupBy(attr,callback)
+  # Desc: group collections by attr value
+  groupBy: (attr,callback) ->
+    obj = new Object
+    @each (record) =>
+      obj[record[attr]] = new @constructor unless obj[record[attr]]?
+      obj[record[attr]].push record
+      , ->
+      callback(obj) if $p.isFunction(callback)
+    return(obj)
+  
   # every element of this collection will be substituted by the element of the collection passed
   absorb: (collection, callback) ->
     if typeof collection == 'object' and collection.isPink and collection.isCollection
