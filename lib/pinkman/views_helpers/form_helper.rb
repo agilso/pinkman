@@ -32,7 +32,9 @@ module Pinkman
       end
       
       define_helper :form do |action_name, hash={}, block|
-        content_tag('form',hash.merge({action: '', data: {pinkey: p.pinkey, action: action_name}}),&block)
+        content_tag 'form',hash.merge({action: '', data: {pinkey: p.pinkey, action: action_name}}) do
+          block.call(Pinkman::FormHelper.dispatcher(self))
+        end
       end
       
       define_helper :submit do |val|

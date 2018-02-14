@@ -10,11 +10,5 @@ module Pinkman
     alias pink p
     alias pinkman p
     
-    def f
-      Pinkman::FormHelper.dispatcher(self)
-    end
-    
-    alias pink_form f
-    
   end
 end
