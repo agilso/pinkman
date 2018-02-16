@@ -35,11 +35,11 @@ module Pinkman
     end
     
     def controller_name
-      pink_template_arg.split('/').join('-')
+      pink_template_arg.split('/').join('-').gsub(/[_\/]/,'-')
     end
     
     def pink_template_name
-      pink_template_arg.split('/').join('-')
+      controller_name
     end  
 
   end

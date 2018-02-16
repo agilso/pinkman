@@ -29,13 +29,20 @@ module Pinkman
         render partial: 'pinkman/pinkman/form_input', locals: {attr_name: attr_name, label: label, input_options: {name: attr_name}, type: 'time'}
       end
       
+      define_helper :color do |attr_name,label=nil|
+        label ||= attr_name.titleize
+        render partial: 'pinkman/pinkman/form_input', locals: {attr_name: attr_name, label: label, input_options: {name: attr_name}}
+      end
+      
       define_helper :select do |attr_name,label,options_hash,html_options={}|
         if html_options.has_key?(:placeholder)
           placeholder = html_options[:placeholder]
+          obligatory = html_options[:obligatory]
           html_options.delete(:placeholder)
         end
+        obligatory = true if obligatory.nil?
         label ||= attr_name.titleize
-        render partial: 'pinkman/pinkman/form_select', locals: {attr_name: attr_name, label: label, options_hash: options_hash, html_options: html_options, placeholder: placeholder}
+        render partial: 'pinkman/pinkman/form_select', locals: {attr_name: attr_name, label: label, options_hash: options_hash, html_options: html_options, placeholder: placeholder, obligatory: obligatory}
       end
       
       define_helper :password do |attr_name,label=nil|

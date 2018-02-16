@@ -63,8 +63,7 @@ class window.PinkmanPath extends Pinkman.object
     
   
   deduceControllerName: ->
-    # console.log this
-    @static.extract('entry').join('-')
+    @static.extract('entry').join('-').replace(/[\/_]/g,'-').replace(/^-/,'')
 
 # receives a string and matches it through the defined routes
 class window.PinkmanRouteMatcher extends Pinkman.object
@@ -287,7 +286,7 @@ class window.PinkmanRouter
     # controllerPrefix = if @_namespace then @_namespace.replace(/\//,'-') + '-' else ''
     
     resourceName = resourceName.replace(/\/$/,'')
-    controllerName = resourceName.replace(/\//g,'-').replace(/^-/,'')
+    controllerName = resourceName.replace(/[\/_]/g,'-').replace(/^-/,'')
     
     # index
     @match resourceName, controller: controllerName + '-index'

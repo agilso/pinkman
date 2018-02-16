@@ -47,7 +47,8 @@ module Pinkman
           selected_dir_path = pinkman_views_dir_path
           selected_dir_path = selected_dir_path.join(dir_path.to_s) if dir_path.class.in?([String,Symbol])
           files = Dir.glob(selected_dir_path.join('**/_*')).map do |f|    
-            f.sub(Regexp.new("#{pinkman_views_dir_path.to_s}(?:[\\\/])"),'').sub(/_/,'')
+            f.sub!(Regexp.new("#{pinkman_views_dir_path.to_s}[\\\/]"),'')
+            f.sub(File.basename(f),File.basename(f).sub('_',''))
           end
           raw(files.map{|f| p.template(f)}.join("\n"))
         else

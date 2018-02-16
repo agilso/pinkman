@@ -2,7 +2,10 @@
   label for=attr_name = label
   == p.select attr_name, html_options
     - if placeholder
-      option value="" selected='selected' disabled='disabled' = placeholder
+      - if obligatory.present?
+        option value="" selected='selected' disabled='disabled' = placeholder
+      - else
+        option value="" selected='selected' = placeholder
     
     - options_hash.each do |k,v|
       option value=k = v

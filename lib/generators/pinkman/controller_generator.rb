@@ -22,7 +22,7 @@ module Pinkman
     end
     
     def controller_name
-      controller_arg.split('/').join('-')
+      controller_arg.split('/').join('-').gsub(/[_\/]/,'-')
     end
 
   end

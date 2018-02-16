@@ -58,6 +58,12 @@ class window.PinkmanObject extends window.PinkmanCommon
   keys: () ->
     @attributesKeys()
 
+  extract: (args...) ->
+    a = new Object
+    (a[k] = this[k]) for k in args
+    return(a)
+      
+
   toString: () ->
     array = []
     array.push("(#{@className()})")
