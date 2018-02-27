@@ -28,15 +28,27 @@ class window.PinkmanCollection extends window.PinkmanCommon
   # Desc: sum a certain attribute of every element
   sum: (attr,callback) ->
     if attr?
-      v = 0
-      @each (obj) ->
-        if Pinkman.isNumber(obj[attr])
-          v = Number(obj[attr]) + v
-        else if obj[attr]?
-          v = obj[attr] + v
-      , =>
-        callback(this, v) if typeof callback == 'function'
-      return(v)
+      if $p.isString(attr)
+        v = 0
+        @each (obj) ->
+          if Pinkman.isNumber(obj[attr])
+            v = Number(obj[attr]) + v
+          else if obj[attr]?
+            v = obj[attr] + v
+        , =>
+          callback(this, v) if typeof callback == 'function'
+        return(v)
+      else if $p.isFunction(attr)
+        v = 0
+        @each (obj) ->
+          current = attr(obj)
+          if $p.isNumber(current)
+            v = Number(current) + v
+          else
+            v = current + v
+        , =>
+          callback(this, v) if typeof callback == 'function'
+        return(v)
     else
       callback(this,0) if typeof callback == 'function'
       return(0)
