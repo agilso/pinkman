@@ -48,7 +48,7 @@ end
 # 3. If I were to define these as -- instance -- methods of a common Rails Helper,
 # then those methods wouldn't be isolated.
 
-# 4. If I were to define these as -- class -- methods of a common Rails Helper,
+# 4. If I were to define these as -- class -- methods of a common Rails Helper (PinkmanHelper.do_something),
 # then the scope would not allow us to call ActionView::Helpers like capture, raw, etc.
 
 # 5. If I were to extend/include ActionViews::Helpers directly here, 

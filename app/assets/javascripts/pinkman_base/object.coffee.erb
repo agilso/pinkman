@@ -143,9 +143,7 @@ class window.PinkmanObject extends window.PinkmanCommon
         url: @api()
         data: @_data()
         complete: (response) =>
-          @assign(response)
-          delete @errors unless response.errors?
-          callback(this) if callback? and typeof callback=='function'
+          @default_response_handling(response,callback)
       return(this)
 
   update: (callback='') ->
@@ -154,11 +152,14 @@ class window.PinkmanObject extends window.PinkmanCommon
         url: @api() + @id
         data: @_data()
         complete: (response) =>
-          @assign(response)
-          delete @errors unless response.errors?
-          callback(this) if callback? and typeof callback=='function'
+          @default_response_handling(response,callback)
       return(this)
-
+  
+  default_response_handling: (response,callback) ->
+    @assign(response)
+    @unset 'errors' unless response.errors?
+    callback(this) if callback? and typeof callback=='function'
+  
   reload: (callback) ->
     params = new Object
     params.scope = Pinkman.scope(this)

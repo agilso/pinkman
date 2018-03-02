@@ -46,14 +46,22 @@ class window.PinkmanController extends window.PinkmanObject
     
   # build a controller from user definition
   # main: boolean argument that forces main function be executed
-  build: (main) ->
+  build: (main,routeMatcher) ->
     if @builder? and typeof @builder == 'function'
       @builder(this)
+      if @layout?
+        $p.render
+          template: @layout
+          callback: (obj,content) ->
+            $('body').html(content)
+            routeMatcher.makeYielder() if routeMatcher?
+      else
+        routeMatcher.makeYielder() if routeMatcher?
       @main() if @main? and (main or ($("##{@id}").length and typeof @main == 'function'))
       return(true)
     else
       return(false)
-
+    
   action: (args...) ->
     if args.length == 1
       @actions.getBy('name',args[0])

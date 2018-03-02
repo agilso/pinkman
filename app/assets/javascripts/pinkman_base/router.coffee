@@ -75,11 +75,15 @@ class window.PinkmanRouteMatcher extends Pinkman.object
       @controllers.each (c) =>
         # console.log 'dentro dos controllers desse router'
         c.setParams(@params())
-        c.build(yes)
+        c.build(yes,this)
       , =>
         callback(this.route, this.url) if typeof callback == 'function'
     else
       false
+  
+  # removes old pink-yield div and inserts this one (new/current)
+  makeYielder: ->
+    $(@yieldIn).html("<div class='pink-yield' id='#{@controller}'></div>") if @yieldIn and @route.blank
     
   match: (url) ->
     path = new PinkmanPath(url)
@@ -208,8 +212,7 @@ class window.PinkmanRouter
   @render: (r, callback) ->
     @saveWindowScroll(Pinkman.routes.current.controller) if Pinkman.routes.current?
     Pinkman.state.initialize()
-    yieldIn = r.route.yieldIn() || @_config.yield 
-    $(yieldIn).html("<div class='pink-yield' id='#{r.controller}'></div>") if r.route.blank
+    r.yieldIn = r.route.yieldIn() || @_config.yield
     r.initialize (args...) =>
       @analytics.send(args...) if @_config.analytics?
       callback() if typeof callback == 'function'
