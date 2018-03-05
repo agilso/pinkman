@@ -9,55 +9,48 @@ module Pinkman
       
       include Pinkman::ViewsHelpers::FormHelper
       
-      define_helper :string do |attr_name,label=nil|
-        label ||= attr_name.titleize
-        render partial: 'pinkman/pinkman/form_input', locals: {attr_name: attr_name, label: label, input_options: {name: attr_name}}
+      define_helper :string do |attr_name,label=nil,html_attributes={}|
+        p.input_helper attr_name, label, html_attributes.merge(type: 'text')
       end
       
-      define_helper :text do |attr_name,label=nil|
+      define_helper :text do |attr_name,label=nil,html_attributes={}|
         label ||= attr_name.titleize
-        render partial: 'pinkman/pinkman/form_textarea', locals: {attr_name: attr_name, label: label, textarea_options: {name: attr_name}}
+        render partial: 'pinkman/pinkman/form_textarea', locals: {attr_name: attr_name, label: label, textarea_options: {name: attr_name}.merge(html_attributes) }
       end
       
-      define_helper :date do |attr_name,label=nil|
-        label ||= attr_name.titleize
-        render partial: 'pinkman/pinkman/form_input', locals: {attr_name: attr_name, label: label, input_options: {name: attr_name, type: 'date'}}
+      define_helper :date do |attr_name,label=nil,html_attributes={}|
+        p.input_helper attr_name, label, html_attributes.merge(type: 'date')
       end
       
-      define_helper :datetime do |attr_name,label=nil|
-        label ||= attr_name.titleize
-        render partial: 'pinkman/pinkman/form_input', locals: {attr_name: attr_name, label: label, input_options: {name: attr_name}, type: 'time'}
+      define_helper :datetime do |attr_name,label=nil,html_attributes={}|
+        p.input_helper attr_name, label, html_attributes.merge(type: 'time')
       end
       
-      define_helper :color do |attr_name,label=nil|
-        label ||= attr_name.titleize
-        render partial: 'pinkman/pinkman/form_input', locals: {attr_name: attr_name, label: label, input_options: {name: attr_name}}
+      define_helper :color do |attr_name,label=nil,html_attributes={}|
+        p.input_helper attr_name, label, html_attributes
       end
       
-      define_helper :select do |attr_name,label,options_hash,html_options={}|
-        if html_options.has_key?(:placeholder)
-          placeholder = html_options[:placeholder]
-          obligatory = html_options[:obligatory]
-          html_options.delete(:placeholder)
+      define_helper :select do |attr_name,label,options_hash,html_attributes={}|
+        if html_attributes.has_key?(:placeholder)
+          placeholder = html_attributes[:placeholder]
+          obligatory = html_attributes[:obligatory]
+          html_attributes.delete(:placeholder)
         end
         obligatory = true if obligatory.nil?
         label ||= attr_name.titleize
-        render partial: 'pinkman/pinkman/form_select', locals: {attr_name: attr_name, label: label, options_hash: options_hash, html_options: html_options, placeholder: placeholder, obligatory: obligatory}
+        render partial: 'pinkman/pinkman/form_select', locals: {attr_name: attr_name, label: label, options_hash: options_hash, html_attributes: html_attributes, placeholder: placeholder, obligatory: obligatory}
       end
       
-      define_helper :password do |attr_name,label=nil|
-        label ||= attr_name.titleize
-        render partial: 'pinkman/pinkman/form_input', locals: {attr_name: attr_name, label: label, input_options: {name: attr_name, type: 'password'}}
+      define_helper :password do |attr_name,label=nil,html_attributes={}|
+        p.input_helper attr_name, label, html_attributes.merge(type: 'password')
       end
       
-      define_helper :number do |attr_name,label=nil|
-        label ||= attr_name.titleize
-        render partial: 'pinkman/pinkman/form_input', locals: {attr_name: attr_name, label: label, input_options: {name: attr_name, type: 'number'}}
+      define_helper :number do |attr_name,label=nil,html_attributes={}|
+        p.input_helper attr_name, label, html_attributes.merge(type: 'number')
       end
       
-      define_helper :money do |attr_name,label=nil|
-        label ||= attr_name.titleize
-        render partial: 'pinkman/pinkman/form_input', locals: {attr_name: attr_name, label: label, input_options: {name: attr_name, type: 'number', min: 0, step: 0.01}}
+      define_helper :money do |attr_name,label=nil,html_attributes={}|
+        p.input_helper attr_name, label, html_attributes.merge(type: 'number', min: '0', step: '0.01')
       end
       
     end
