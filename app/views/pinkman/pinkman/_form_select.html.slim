@@ -1,6 +1,6 @@
 .form-field
   label for=attr_name = label
-  == p.select attr_name, html_options
+  == p.select attr_name, html_attributes
     - if placeholder
       - if obligatory.present?
         option value="" selected='selected' disabled='disabled' = placeholder
