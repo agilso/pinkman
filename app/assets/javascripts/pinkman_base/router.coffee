@@ -245,7 +245,7 @@ class window.PinkmanRouter
       Pinkman.state.push(path)
   
   @force: (path) ->
-    (window.location=path) unless @visit(path)
+    @location(path) unless @visit(path)
   
   @location: (path) ->
     window.location = path
@@ -272,6 +272,7 @@ class window.PinkmanRouter
     Pinkman.ready =>
       Pinkman.router = this
       App.router = this
+      window.$r = App.router
       @activate(window.location.pathname)
       $('body').on 'click', 'a:not([data-pinkman="false"])', (ev) =>
         ev.preventDefault()

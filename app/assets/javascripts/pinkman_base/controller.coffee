@@ -49,18 +49,25 @@ class window.PinkmanController extends window.PinkmanObject
   build: (main,routeMatcher) ->
     if @builder? and typeof @builder == 'function'
       @builder(this)
-      if @layout?
+      if @_layout and @isSummoned(main)
+        @_layout = @_layout + '-layout' unless /-layout$/.test(@_layout)
         $p.render
-          template: @layout
+          template: @_layout
           callback: (obj,content) ->
             $('body').html(content)
             routeMatcher.makeYielder() if routeMatcher?
       else
         routeMatcher.makeYielder() if routeMatcher?
-      @main() if @main? and (main or ($("##{@id}").length and typeof @main == 'function'))
+      @main() if @isSummoned(main)
       return(true)
     else
       return(false)
+  
+  isSummoned: (main) ->
+    @main? and (main or ($("##{@id}").length and typeof @main == 'function'))
+  
+  layout: (layoutName) ->
+    @_layout = layoutName
     
   action: (args...) ->
     if args.length == 1
@@ -83,6 +90,7 @@ class window.PinkmanController extends window.PinkmanObject
       id: 'esc'
       eventName: 'keyup'
       controller: this
+      selector: "##{this.id}"
       callback: (obj, j, ev) ->
         callback() if ev.keyCode == 27
 
@@ -100,7 +108,7 @@ class window.PinkmanController extends window.PinkmanObject
       throw 'Pinkman bindAll: except option should be a string or an array' if not $p.isString(except) and not $p.isArray(except)
       except = [except] if $p.isString(except)
       exceptionsArray = []
-      for excep in options.except
+      for excep in except
         exceptionsArray.push "[data-action='#{excep}']"
       selector = selector.replace(/\[data-action\]/g,"[data-action]:not(#{exceptionsArray.join(',')})")
     
@@ -138,13 +146,19 @@ class window.PinkmanController extends window.PinkmanObject
       @bindIndividually(attribute,callback)
 
   bindIndividually: (attribute,callback='') ->
-    if $("##{@id}").length
-      @action attribute, ['keyup','change'], (obj,$j,args...) ->
-        if obj[attribute] != $j.val()             
-          obj.set(attribute,$j.val()) 
-          callback(obj,$j,args...) if callback? and typeof callback == 'function'
-
-  # bindAll: ->
+    # modifiquei recentemente, verificar se houver atribuições duplas, etc
+    # if $("##{@id}").length
+    # console.log "bindou: #{attribute}, #{callback}"
+    
+    @action attribute, ['keyup','change'], (obj,$j,args...) ->
+      # console.log obj[attribute]
+      # console.log $j.val()
+      if obj[attribute] != $j.val()             
+        # console.log 'trocou de valor'
+        obj.set(attribute,$j.val()) 
+        callback(obj,$j,args...) if callback? and typeof callback == 'function'
+      # else
+      #   console.log 'mesmo valor'
 
   bottom: (callback) -> 
     if $("##{@id}").length

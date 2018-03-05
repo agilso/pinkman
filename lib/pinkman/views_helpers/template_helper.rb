@@ -17,7 +17,11 @@ module Pinkman
           render partial: "pinkman/#{path}"
         end
       end
-      define_helper_alias :layout, :template
+      
+      define_helper :layout do |path, block=nil|
+        path = path + '-layout' unless path.match /-layout$/
+        p.template(path,block)
+      end
       
       define_helper :content_tag do |*args|
         block = args.pop if args.last.is_a?(Proc)
