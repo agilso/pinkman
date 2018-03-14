@@ -13,8 +13,8 @@ class window.PinkmanState extends Pinkman.object
   
   @initialize: ->
     if Pinkman.states.empty() and window? and history? and history.replaceState?
-      state = Pinkman.states.forceNew(path: window.location.pathname)
-      history.replaceState({pinkey: state.pinkey}, "", state.path)
+      state = Pinkman.states.forceNew(path: window.location.href.replace(window.location.origin,''))
+      # history.replaceState({pinkey: state.pinkey}, "", state.path)
     
   @push: (path) ->
     if Pinkman.isString(path)

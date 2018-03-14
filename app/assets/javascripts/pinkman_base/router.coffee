@@ -33,7 +33,12 @@ class window.PinkmanPath extends Pinkman.object
       @set('staticDepth',s)
       @set('dynamicDepth',d)
       
-  
+  @depth: (url) ->
+    a = url.split('/')
+    a.shift() if a[0] == ''
+    a.pop() if a[a.length-1] == ''
+    a.length
+    
   @isExternal: (url) ->
     urlRegex = new RegExp('^(?:[a-z]+:)?//', 'i')
     hostRegex = new RegExp(window.location.origin,'i')
@@ -54,13 +59,13 @@ class window.PinkmanPath extends Pinkman.object
       match = true
       @static.each (level) ->
         match = false if level.entry != path.level(level.index).entry
-      if match
-        @dynamic.each (level) ->
-          path.params[level.entry.replace(/:/g,"")] = path.level(level.index).entry
       return(match)
     else
       false
-    
+  
+  matchParams: (path) ->
+    @dynamic.each (level) ->
+      path.params[level.entry.replace(/:/g,"")] = path.level(level.index).entry
   
   deduceControllerName: ->
     @static.extract('entry').join('-').replace(/[\/_]/g,'-').replace(/^-/,'')
@@ -86,24 +91,34 @@ class window.PinkmanRouteMatcher extends Pinkman.object
     $(@yieldIn).html("<div class='pink-yield' id='#{@controller}'></div>") if @yieldIn and @route.blank
     
   match: (url) ->
-    path = new PinkmanPath(url)
-    if path?
-      candidates = Pinkman.routes.select(depth: path.depth)
-      routes = candidates.select (candidate) ->
-        candidate.path.match(path)
-      route = routes.sortBy('staticDepth','desc').first()
+    if url?
+      route = @findRouteFor(url)
       if route?
-        @set('url',url)
-        @set('path',path)
-        @set 'route', route
-        @set 'controller', @route.controller
-        @set('controllers', Pinkman.controllers.select(id: @controller))
-        if @controllers.any()
-          return(this) 
-        else 
-          throw "(Pinkman Route) Controller '#{@route.controller}' not found."
+        return(@setup(route,url))
       else
-        return(false)
+        return(false)  
+    
+  findRouteFor: (url) ->
+    return Pinkman.routes
+      .select(depth: PinkmanPath.depth(url))
+      .select((candidate) -> candidate.path.match(url))
+      .sortBy('staticDepth','desc').first()
+  
+  setup: (route,url) ->
+    if route? and url?
+      urlPath = new PinkmanPath(url) 
+      route.path.matchParams(urlPath)
+      @set('url',url)
+      @set('path',urlPath)
+      @set 'route', route
+      @set 'controller', @route.controller
+      @set('controllers', Pinkman.controllers.select(id: @controller))
+      if @controllers.any()
+        return(this) 
+      else 
+        throw "(Pinkman Route) Controller '#{@route.controller}' not found."
+    else
+      return(false)
     
   params: ->
     # console.log @path
