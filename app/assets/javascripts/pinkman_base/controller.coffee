@@ -190,7 +190,7 @@ class window.PinkmanController extends window.PinkmanObject
     
   scrolling: (callback) -> 
     if $("##{@id}").length
-      $(window).scroll ->
+      $("window,.pink-yield").scroll ->
         unless Pinkman._stopScroll
           Pinkman._stopScroll = yes
           callback(window.scrollY) 
