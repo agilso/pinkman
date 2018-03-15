@@ -159,6 +159,60 @@ class window.PinkmanController extends window.PinkmanObject
         callback(obj,$j,args...) if callback? and typeof callback == 'function'
       # else
       #   console.log 'mesmo valor'
+      
+      
+  # === Autocomplete ===
+
+  # -- Usage: autocomplete(input_name,options)
+
+  # -- Overview
+  # 1: User types something
+  # 2: Pinkman searchs through a collection and then renders the result
+  # 3: User selects a record
+  # 4: Pinkman sends the selected record to call callback
+
+  # -- Parameters & Options
+  # @autocomplete(attribute,options)
+  # options:
+    # with: [collection] 
+    # pinkman collection responsible for filtering the objects
+    
+    # method: [search|filter|yourCustomMethod] 
+    # Search is the default. Anythings that filters by a 'query'.
+    # You can define a yourCustomMethod inside the collection model like this:
+    # yourCustomMethod: (user_query, callback) ->
+      # -- perform a selection based on user_query
+      # callback(this) if $p.isFunction(callback)
+    
+    # template: [template-id] (optional)
+    # Any template that has a 'select' action
+    # If you don't provide a template, Pinkman will try "attribute-autocomplete-template" by default
+    
+    # target: [target-id]
+    # Where pinkman should yield results
+    # If you don't provide a template, Pinkman will try "attribute-autocomplete" by default
+    
+    # before: before function
+    # Run something before searching (you can use it for some loading animation)
+    
+    # call: callback function. 
+    # What to do when user selects something?
+  autocomplete: (attr_name, options) ->
+    throw 'Pinkman Autocomplete: Missing options object' unless $p.isObject(options)
+    throw 'Pinkman Autocomplete: Missing "with" collection' unless options.with?
+    throw 'Pinkman Autocomplete: Missing "call" callback function'      
+    collection = options.with
+    callback = options.call
+    template = if options.template? then options.template else "#{attr_name}-autocomplete"
+    target = if options.target? then options.target else "#{attr_name}-autocomplete"
+    method = if options.method? then options.method else 'search'
+    @bind attr_name, (obj) ->  
+      collection[method] obj[attr_name], (collection) ->
+        collection.render
+          template: template
+          target: target
+      
+
 
   bottom: (callback) -> 
     if $("##{@id}").length
@@ -172,7 +226,7 @@ class window.PinkmanController extends window.PinkmanObject
             Pinkman._lastEndOfPage = t
             callback()
       , 50
-
+      
   endBottom: () ->
     Pinkman._bottomTriggered = false
  
