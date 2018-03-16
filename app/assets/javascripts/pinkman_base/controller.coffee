@@ -169,15 +169,15 @@ class window.PinkmanController extends window.PinkmanObject
   # 1: User types something
   # 2: Pinkman searchs through a collection and then renders the result
   # 3: User selects a record
-  # 4: Pinkman sends the selected record to call callback
+  # 4: Pinkman sends the selected record to callback function
 
   # -- Parameters & Options
   # @autocomplete(attribute,options)
   # options:
     # with: [collection] 
-    # pinkman collection responsible for filtering the objects
+    # pinkman collection responsible for filtering/searching the results
     
-    # method: [search|filter|yourCustomMethod] 
+    # method: [search|yourCustomMethod] 
     # Search is the default. Anythings that filters by a 'query'.
     # You can define a yourCustomMethod inside the collection model like this:
     # yourCustomMethod: (user_query, callback) ->
@@ -185,32 +185,84 @@ class window.PinkmanController extends window.PinkmanObject
       # callback(this) if $p.isFunction(callback)
     
     # template: [template-id] (optional)
-    # Any template that has a 'select' action
-    # If you don't provide a template, Pinkman will try "attribute-autocomplete-template" by default
+    # Any template that has a 'select-attribute' action
+    # If you don't specify a template, Pinkman will try "attribute-autocomplete-template" by default
     
     # target: [target-id]
     # Where pinkman should yield results
-    # If you don't provide a template, Pinkman will try "attribute-autocomplete" by default
+    # If you don't specify a target, Pinkman will try "attribute-autocomplete" by default
     
-    # before: before function
+    # loading: loading function
     # Run something before searching (you can use it for some loading animation)
     
     # call: callback function. 
     # What to do when user selects something?
   autocomplete: (attr_name, options) ->
+    # error handling / verifing args
     throw 'Pinkman Autocomplete: Missing options object' unless $p.isObject(options)
     throw 'Pinkman Autocomplete: Missing "with" collection' unless options.with?
-    throw 'Pinkman Autocomplete: Missing "call" callback function'      
+    throw 'Pinkman Autocomplete: Missing "call" callback function' unless $p.isFunction(options.call)
+    
+    # variables // user options // default options
     collection = options.with
     callback = options.call
     template = if options.template? then options.template else "#{attr_name}-autocomplete"
     target = if options.target? then options.target else "#{attr_name}-autocomplete"
     method = if options.method? then options.method else 'search'
-    @bind attr_name, (obj) ->  
-      collection[method] obj[attr_name], (collection) ->
-        collection.render
-          template: template
-          target: target
+    loading = options.loading if $p.isFunction(options.loading)
+    autoHide = if options.autoHide? then options.autoHide else yes
+    autoWidth = if options.autoWidth? then options.autoWidth else yes
+    wait = if options.wait? then options.wait else 0.75
+    waitTimerName = "#{attr_name}AutocompleteTimer"
+    
+    # hide initially
+    $("##{target}").hide() if autoHide
+    
+    # resize autocomplete
+    if autoWidth
+      $(window).resize ->
+        $("##{target}").width($("input[name='#{attr_name}']").innerWidth() - ($("##{target}").innerWidth() - $("##{target}").width()))
+    
+    # responding to user typing
+    @bind attr_name, (obj,j) ->  
+      
+      # loading
+      loading(obj,j,attr_name) if loading?
+      
+      # removes autocompleted Class
+      j.removeClass('autocompleted')
+      
+      # wait until user finish typing
+      clearTimeout(window[waitTimerName]) if window[waitTimerName]?
+      window[waitTimerName] = $p.sleep wait, =>
+        
+        # calls the filter method (search)
+        collection[method] obj[attr_name], (collection) ->
+          
+          # render results
+          collection.render
+            template: template
+            target: target
+            callback: ->
+              # Hide or show autocomplete
+              if autoHide
+                if obj[attr_name]? and obj[attr_name] != ''
+                  $("##{target}").fadeIn()
+                else
+                  $("##{target}").fadeOut()
+              
+              # Set the autocomplete target width to same as the input
+              if autoWidth
+                $("##{target}").width($("input[name='#{attr_name}']").innerWidth() - ($("##{target}").innerWidth() - $("##{target}").width()))
+    
+    # user chooses something and click
+    @action "select-#{attr_name}", 'click', (args...) =>
+      # console.log "#{@selector()} input[action='#{attr_name}']"
+      $input = $("#{@selector()} input[data-action='#{attr_name}']")
+      $input.addClass('autocompleted')
+      obj = Pinkman.get($input.data('pinkey'))
+      $("##{target}").fadeOut() if autoHide
+      callback(obj,$input,args...)
       
 
 
