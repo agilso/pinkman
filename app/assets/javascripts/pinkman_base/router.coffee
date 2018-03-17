@@ -99,6 +99,7 @@ class window.PinkmanRouteMatcher extends Pinkman.object
         return(false)  
     
   findRouteFor: (url) ->
+    url = url.replace(window.location.origin,'') if PinkmanPath.isInternal(url)
     return Pinkman.routes
       .select(depth: PinkmanPath.depth(url))
       .select((candidate) -> candidate.path.match(url))
@@ -245,6 +246,7 @@ class window.PinkmanRouter
   @activate: (path,callback,options) ->
     r = Pinkman.routes.match(path)
     if r? and r
+      # console.log r
       r.options = options
       if @_config.transition? and typeof @_config.transition == 'function'
         @_config.transition =>
@@ -292,7 +294,7 @@ class window.PinkmanRouter
       $('body').on 'click', 'a:not([data-pinkman="false"])', (ev) =>
         ev.preventDefault()
         path = ev.currentTarget.href
-        (window.location = path) unless path? and @visit(path)
+        @location(path) unless path? and @visit(path)
   
   namespace: (namespace, rules) ->
     namespace = namespace.replace(/^\//,'')
