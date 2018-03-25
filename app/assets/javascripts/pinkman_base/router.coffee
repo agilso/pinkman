@@ -291,7 +291,7 @@ class window.PinkmanRouter
       App.router = this
       window.$r = App.router
       @activate(window.location.pathname)
-      $('body').on 'click', 'a:not([data-pinkman="false"])', (ev) =>
+      $('body').on 'click', 'a:not([data-pinkman="false"],[target="blank"],[target="_blank"])', (ev) =>
         ev.preventDefault()
         path = ev.currentTarget.href
         @location(path) unless path? and @visit(path)
