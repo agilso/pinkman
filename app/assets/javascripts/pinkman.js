@@ -1,3 +1,5 @@
+//= require pinkman/plugins/md5
+//= require pinkman_base/cache
 //= require pinkman_base/tools
 //= require pinkman_base/pinkman
 //= require pinkman_base/mixins

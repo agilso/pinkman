@@ -90,13 +90,19 @@ class window.PinkmanCollection extends window.PinkmanCommon
   # new version: accepts a object to match against the object attributes
   select: (criteria,callback='') ->
     selection = new @constructor
+    # id version
+    if $p.isNumber(criteria)
+      return(@select(id: Number(criteria), callback))
+    
     # function version
-    if typeof criteria == 'function'
+    else if $p.isFunction(criteria)
+      # console.log 'select: function'
       @each (object) ->
         selection.push(object) if criteria(object)
 
     # object version
-    else if typeof criteria == 'object'
+    else if $p.isObject(criteria)
+      # console.log 'select: object'
       @each (object) ->
         value = true
         (value = false if object[k] != v) for k,v of criteria
@@ -467,8 +473,89 @@ class window.PinkmanCollection extends window.PinkmanCommon
       return filter
     else
       return false
+      
+  
+  # --- Cache Related --- #
+  
+  @startCaching: () ->
+    # cache structure
+    @_name_md5 = md5(if @name then @name else @toString()) unless @_name_md5?
+    $c.cache(@_name_md5, new this) unless $c.has(@_name_md5)
 
   # --- Ajax related --- #
+  
+  # @get: Smart caching system
+  # -------------
+  # Docs/Notes:
+  # It tries to find a cached version of the requested object/collection. 
+  # If it is found, nice. Otherwise, it passes the responsability to the server.
+  # --
+  # Depending on the query argument type
+  # Pinkman will try to guess what you are trying to get.  See below. 
+  # Query types:
+  #   number: find object by id
+  #   string: search
+  #   obj: select (cache) / where (server)
+  #   function: select
+    
+  @get: (query, callback) ->
+    @startCaching()
+    
+    # query md5
+    query_md5 = md5(JSON.stringify(query) + @_name_md5)
+    
+    if $c.has(query_md5)
+      @handleGetCollection($c.get(query_md5),callback)
+    else
+      # TRYING TO FIND IN CACHE
+      $c.get(@_name_md5).select query, (cache) =>
+        # CACHED FOUND
+        if cache.any()
+          # console.log 'cached'
+          @handleGetCollection(cache,callback)
+        
+        # CACHED VERSION NOT FOUND -> ASK SERVER
+        else
+          # console.log 'server'
+          col = new this
+          obj = new col.config.memberClass
+          params = new Object
+          params.scope = Pinkman.scope(obj)
+          params.query = query
+          Pinkman.ajax.get
+            url: obj.api('get')
+            data: params
+            complete: (response) =>
+              col.fetchFromArray(response)
+              # PERFOMING INSTANCES CACHE
+              col.each (obj) =>
+                $c.get(@_name_md5).push(obj)
+              
+              # CACHING THIS QUERY
+              $c.cache(query_md5,col)
+              
+              callback(col) if $p.isFunction(callback)
+          return(col)
+  
+  @handleGetCollection: (fetchedCollection,callback) ->
+    col = new this
+    col.collection = fetchedCollection.collection
+    callback(col) if $p.isFunction(callback)
+    return(col)
+  
+  @one: (query,callback) ->
+    @get(query, (col) ->
+      callback(col.first()) if col.any() and $p.isFunction(callback)
+    ).first()
+  
+  @single: (args...) ->
+    @one(args...)
+  
+  @um: (args...) ->
+    @one(args...)
+  
+  @first: (args...) ->
+    @one(args...)
 
   # Desc: Fetch records from API_URL
   # request:  get /api/API_URL/
@@ -495,34 +582,46 @@ class window.PinkmanCollection extends window.PinkmanCommon
   # request:  get /api/API_URL/
   fetchFromUrl: (options) ->
     if options? and typeof options == 'object' and options.url?
-      if Pinkman.hasScope(this)
-        options.params = new Object unless options.params?
-        options.params.scope = Pinkman.scope(this)
-
-      @doneFetching = null
-      @fetchingFrom = options.url
+      options_md5 = md5(JSON.stringify(options) + @className())
+      if $c.has(options_md5)
+        response = $c.get(options_md5)
+        @handleFetchResponse(response,options)
+      else      
+        if Pinkman.hasScope(this)
+          options.params = new Object unless options.params?
+          options.params.scope = Pinkman.scope(this)
+        @doneFetching = null
+        @fetchingFrom = options.url
+        Pinkman.ajax.get
+          url: Pinkman.json2url(options.url,options.params) 
+          complete: (response) =>
+            $c.cache(options_md5,response)
+            @handleFetchResponse(response,options)
+        return(this)
       
-      Pinkman.ajax.get
-        url: Pinkman.json2url(options.url,options.params) 
-        complete: (response) =>
-          if response?
-            [@errors, @error] = [response.errors, response.error] if response.errors? or response.error?
-            
-            if options.params? and options.params.limit?
-              @doneFetching = response.length < options.params.limit
-            else
-              @doneFetching = response.length == 0
-            
-            # separate recent when this collection is already populated
-            @_recent = new this.constructor
+  handleFetchResponse: (response,options) ->
+    @constructor.startCaching()
+    if response?
+      [@errors, @error] = [response.errors, response.error] if response.errors? or response.error?
+      
+      if options.params? and options.params.limit?
+        @doneFetching = response.length < options.params.limit
+      else
+        @doneFetching = response.length == 0
+      
+      # separate recent when this collection is already populated
+      @_recent = new this.constructor
 
-            if response.length > 0
-              @_recent.fetchFromArray(response) 
-              @fetchFromArray(response)
+      if response.length > 0
+        # CACHING INSTANCES
+        $c.get(@constructor._name_md5).fetchFromArray(response)
+        
+        @_recent.fetchFromArray(response) 
+        @fetchFromArray(response)
 
-          @doneFetching = true unless response?
-          options.callback(this) if options.callback? and typeof options.callback == 'function'
-      return(this)
+    @doneFetching = true unless response?
+    options.callback(this) if options.callback? and typeof options.callback == 'function'
+    
 
   # Desc: Fetch next records from last fetched URL or main API_URl
   # request:  get /api/API_URL/?offset="COLLECTION_SIZE"&limit=n
