@@ -279,6 +279,9 @@ class window.PinkmanRouter
   @go: (args...) ->
     @force(args...)
   
+  @to: (args...) ->
+    @force(args...)
+  
   @forward: ->
     window.history.forward() if window.history?
   

@@ -36,8 +36,10 @@ module Pinkman
         Slim::Engine.set_options attr_list_delims: {'(' => ')', '[' => ']'}
       end
       
-      # Class method: serializer
+      # Extending ActiveRecord
       ActiveRecord::Base.singleton_class.class_eval do 
+        
+        # Serializer
         def serializer= value
           @serializer = value
         end
@@ -45,6 +47,22 @@ module Pinkman
         def serializer
           @serializer || (begin eval(self.to_s + 'Serializer') rescue nil end)
         end
+        
+        # Get: Pinkman way of fetching records
+        def get query
+          if (begin Integer(query) rescue false end)
+            [find(query)]
+          elsif query.is_a? Hash
+            where(query)
+          elsif query.is_a? Array
+            where(id: query)
+          elsif query.is_a? String
+            search(query)
+          else
+            []
+          end
+        end
+        
       end
 
       # Active Record Relation: json

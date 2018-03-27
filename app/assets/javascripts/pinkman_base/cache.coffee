@@ -14,4 +14,5 @@ class window.PinkmanCache
   @get: (name) ->
     @_caching[name]
     
-window.$c = PinkmanCache
+$(document).ready ->
+  window.$c = window.PinkmanCache

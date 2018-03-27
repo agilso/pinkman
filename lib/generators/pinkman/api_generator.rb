@@ -15,6 +15,7 @@ module Pinkman
         %/
     resources :#{api_name} do
       collection do 
+        get 'get(\/:query)', action: 'get'
         get 'search(\/:query)', action: 'search'
       end
     end 

@@ -13,6 +13,22 @@ class Api::<%= controller_name %> < ApiController
   def show
     render json: @<%= instance_name %>.json(current_scope)
   end
+  
+  # get api/<%= api_name %>/get
+  def get
+    <%= collection_name %> = <%= active_record_model_name %>.get(handle_query_param)
+    render json: <%= collection_name %>.json(current_scope)
+  end
+  
+  # --- TO DO: Revise this ---
+  def handle_query_param
+    if params[:query].is_a? ActionController::Parameters 
+      params[:query].permit!
+      params[:query].to_h
+    else
+      params[:query]
+    end
+  end
 
   # get api/<%= api_name %>/search/:query
   def search
