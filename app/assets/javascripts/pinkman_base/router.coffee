@@ -222,8 +222,6 @@ class window.PinkmanRouter
         path = if host.test(path) then path.replace(host,'') else path
         ga('set', 'page', path)
         ga('send', 'pageview', path)
-    
-  
 
   @render: (r, callback) ->
     @saveWindowScroll(Pinkman.routes.current.controller) if Pinkman.routes.current?
@@ -281,6 +279,7 @@ class window.PinkmanRouter
   
   @to: (args...) ->
     @force(args...)
+    
   
   @forward: ->
     window.history.forward() if window.history?

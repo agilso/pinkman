@@ -146,7 +146,7 @@ class window.PinkmanCommon
         template: options + '-template'
         target: options
 
-  queue: (options) ->
+  _queue: (options) ->
     options.id = options.template
     @renderQueue = new PinkmanCollection unless @renderQueue?
     @renderQueue.directPush(options)

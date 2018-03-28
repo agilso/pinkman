@@ -165,7 +165,7 @@ Pinkman.render = (options) ->
     options.collectionReRender = true unless options.collectionReRender? and options.collectionReRender == false
     options.engine = Pinkman.template_engine unless options.engine? and options.engine != ''
     Pinkman.template_engines.render(options) 
-    options.object.queue(options) if options.reRender and options.object? and options.object.isPink
+    options.object._queue(options) if options.reRender and options.object? and options.object.isPink
   else
     throw "Pinkman.render: options argument is neither an object nor a string."
 

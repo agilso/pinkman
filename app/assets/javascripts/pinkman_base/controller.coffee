@@ -83,8 +83,6 @@ class window.PinkmanController extends window.PinkmanObject
         selector: "##{this.id} [data-action='#{name}']"
       
   
-  # verificar - verify
-  # mudei recentemente, pode estar cagado
   esc: (callback) ->
     PinkmanAction.define
       id: 'esc'
@@ -92,6 +90,7 @@ class window.PinkmanController extends window.PinkmanObject
       controller: this
       selector: "##{this.id}"
       callback: (obj, j, ev) ->
+        # console.log ev
         callback() if ev.keyCode == 27
 
 
