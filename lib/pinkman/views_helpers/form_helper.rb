@@ -6,9 +6,10 @@ module Pinkman
       
       extend Pinkman::BaseHelper
       
-      define_helper :input_helper do |attr_name,label=nil,html_attributes={}|
+      define_helper :input_helper do |attr_name,label=nil,options={}|
         label ||= attr_name.titleize
-        render partial: 'pinkman/pinkman/form_input', locals: {attr_name: attr_name, label: label, html_attributes: html_attributes.merge(name: attr_name)}
+        error_for_name = options.delete(:error_for) || attr_name
+        render partial: 'pinkman/pinkman/form_input', locals: {attr_name: attr_name, label: label, error_for_name: error_for_name, html_attributes: options.merge(name: attr_name)}
       end
       
       define_helper :textfield do |attr_name,label=nil|

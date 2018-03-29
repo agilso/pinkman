@@ -15,7 +15,8 @@ module Pinkman
       
       define_helper :text do |attr_name,label=nil,html_attributes={}|
         label ||= attr_name.titleize
-        render partial: 'pinkman/pinkman/form_textarea', locals: {attr_name: attr_name, label: label, textarea_options: {name: attr_name}.merge(html_attributes) }
+        error_for_name = html_attributes.delete(:error_for) || attr_name
+        render partial: 'pinkman/pinkman/form_textarea', locals: {attr_name: attr_name, label: label, error_for_name: error_for_name, textarea_options: {name: attr_name}.merge(html_attributes) }
       end
       
       define_helper :date do |attr_name,label=nil,html_attributes={}|
@@ -38,7 +39,8 @@ module Pinkman
         end
         obligatory = true if obligatory.nil?
         label ||= attr_name.titleize
-        render partial: 'pinkman/pinkman/form_select', locals: {attr_name: attr_name, label: label, options_hash: options_hash, html_attributes: html_attributes, placeholder: placeholder, obligatory: obligatory}
+        error_for_name = html_attributes.delete(:error_for) || attr_name
+        render partial: 'pinkman/pinkman/form_select', locals: {attr_name: attr_name, label: label, error_for_name: error_for_name, options_hash: options_hash, html_attributes: html_attributes, placeholder: placeholder, obligatory: obligatory}
       end
       
       define_helper :password do |attr_name,label=nil,html_attributes={}|
