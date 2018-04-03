@@ -115,6 +115,15 @@ module Pinkman
           ActiveSupport::Deprecation.warn('"json_for" deprecated. Use "json" instead.')
           json(*args,&block)
         end
+        
+        def has_json_key? key, scope
+          json_version = JSON.parse(json(scope))
+          json_version.has_key?(key.to_s) and json_version[key.to_s].present?
+        end
+        
+        def json_hash scope
+          JSON.parse(json(scope))
+        end
 
       end
     end
