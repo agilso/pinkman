@@ -294,8 +294,8 @@ class window.PinkmanController extends window.PinkmanObject
     Pinkman.cable.subscriptions.create params, received: callback
     
   scrolling: (callback) -> 
-    if $("##{@id}").length
-      $(document).scroll ->
+    $(document).on 'scroll', =>
+      if $(@selector()).length
         unless Pinkman._stopScroll
           Pinkman._stopScroll = yes
           callback(window.scrollY) 
@@ -346,7 +346,7 @@ class window.PinkmanControllers extends window.PinkmanCollection
     , callback
     
   unbindScrolling: ->
-    $(window).off('scroll')
+    $(document).off('scroll')
       
 # --- actions object
 class window.PinkmanAction extends window.PinkmanObject
