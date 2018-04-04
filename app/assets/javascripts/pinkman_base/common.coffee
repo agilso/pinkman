@@ -102,12 +102,12 @@ class window.PinkmanCommon
   log: (attr) ->
     console.log this[attr]
     
-  render: (options) ->
+  render: (options,callback) ->
     if typeof options == 'object'
       options.object = this
       Pinkman.render options
     else if typeof options == 'string'
-      opts = {object: this, target: options, template: options + '-template'}
+      opts = {object: this, target: options, template: options + '-template', callback: callback}
       Pinkman.render opts
     else
       @reRender()
