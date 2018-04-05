@@ -41,6 +41,9 @@ class window.Pinkman
 
 
   # --- tools and facilities
+  
+  @top: ->
+    window.scrollTo(0,0)
 
   @ctrl_c: (text) ->
     textArea = document.createElement('textarea')
