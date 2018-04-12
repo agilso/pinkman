@@ -1,0 +1,10 @@
+class <%= channel_name %> < PinkmanChannel
+  
+  def subscribed
+    stream_from(room) if <%= model_name %>.allow_streaming?(room,scope)
+  end
+
+  def unsubscribed
+  end
+  
+end

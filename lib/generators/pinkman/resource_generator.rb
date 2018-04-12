@@ -10,6 +10,7 @@ module Pinkman
       generate "pinkman:api #{class_name}"
       generate "pinkman:model #{class_name}"
       generate "pinkman:serializer #{class_name}"
+      generate "pinkman:channel #{class_name}"
     end
   end
 end

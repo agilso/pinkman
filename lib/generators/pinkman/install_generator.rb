@@ -45,6 +45,10 @@ module Pinkman
       generate 'pinkman:initializer'
     end
     
+    def create_pinkman_channel
+      generate 'pinkman:pinkman_channel'
+    end
+    
     def install_hello_world_controller
       copy_file "hello.controller.coffee.erb", Rails.root.join('app','assets','javascripts','pinkman','app','controllers','hello.coffee')
     end
