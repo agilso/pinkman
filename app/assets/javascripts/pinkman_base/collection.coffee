@@ -282,9 +282,29 @@ class window.PinkmanCollection extends window.PinkmanCommon
       return @collection[(@collection.length - n - 1)..]
 
   # Desc: return trues if has at least one member. If a criteria is specificied, returns true if at least one member satisfies it.
-  any: (criteria='') ->
-    if criteria? and (typeof criteria == 'function' or typeof criteria == 'object')
-      @select(criteria).count() > 0
+  any: (criteria) ->
+    if criteria?
+      # id version
+      if $p.isNumber(criteria)
+        return(@find(criteria)?)
+      
+      # function version
+      else if $p.isFunction(criteria)
+        # console.log 'select: function'
+        value = false
+        @each (object) ->
+          value = true if criteria(object)
+        return(value)
+
+      # object version
+      else if $p.isObject(criteria)
+        # console.log 'select: object'
+        masterValue = false
+        @each (object) ->
+          value = true
+          (value = false if object[k] != v) for k,v of criteria
+          masterValue = true if value
+        return(masterValue)
     else
       @count() > 0
   

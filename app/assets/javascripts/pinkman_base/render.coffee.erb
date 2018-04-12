@@ -32,7 +32,9 @@ Pinkman.template_engines =
       throw 'Pinkman: markup not found.'
 
   template: (options) ->
-    if Pinkman.templates.include(template: options.template, engine: options.engine)
+    # console.log options.template
+    # console.log options.engine
+    if Pinkman.templates.any(template: options.template, engine: options.engine)
       template = Pinkman.templates.get(template: options.template, engine: options.engine)
     else
       template = new Pinkman.object(template: options.template, engine: options.engine)
