@@ -291,7 +291,9 @@ class window.PinkmanController extends window.PinkmanObject
       throw 'Callback not found.'
     params = if (typeof opt == 'object' and opt['params']?) then opt['params'] else new Object
     params.channel = channel
-    params.room = opt.room if $p.isObject(opt) and opt.room?
+    if $p.isObject(opt)
+      params.room = opt.room if opt.room?
+      params.filter_by = (opt.filter_by or opt.filterBy ) if (opt.filterBy? or opt.filter_by?)
     Pinkman.cable.subscriptions.create params, received: callback
     
   scrolling: (callback) -> 

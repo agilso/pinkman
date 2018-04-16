@@ -5,6 +5,7 @@ require 'pinkman/serializer'
 require 'pinkman/views_helpers'
 require 'pinkman/form_helper'
 require 'pinkman/version'
+require 'pinkman/broadcaster'
 
 module Pinkman
 
@@ -38,23 +39,6 @@ module Pinkman
       
       # Extending ActiveRecord
       ActiveRecord::Base.singleton_class.class_eval do 
-        
-        # Real time
-        def broadcast_to room, scope
-          @broadcasting_to ||= {}
-          @broadcasting_to[room] = scope
-          ['create','update','destroy'].each do |action|
-            send("after_#{action}".to_sym, "broadcast_#{action}_#{room}".to_sym)
-            define_method "broadcast_#{action}_#{room}" do
-              ActionCable.server.broadcast room, {action: action, data: json_hash(scope)}
-            end  
-          end
-        end
-        
-        def allow_streaming? room, scope
-          @broadcasting_to.is_a?(Hash) and @broadcasting_to[room] == scope
-        end
-    
         
         # Serializer
         def serializer= value
