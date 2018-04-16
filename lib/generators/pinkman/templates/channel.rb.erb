@@ -1,10 +1,45 @@
 class <%= channel_name %> < PinkmanChannel
   
-  def subscribed
-    stream_from(room) if <%= model_name %>.allow_streaming?(room,scope)
+  # TO DO: use connection/params to determine the current scope
+  def current_scope
+    :public
   end
-
-  def unsubscribed
-  end
+  
+  # broadcast :public do |config|
+  #   config.room :<%= room_name %>
+  # end
+  
+  # --- Quick Broadcast Guide
+  
+  # Start a broadcast here to transmit <%= model_name %>.
+  
+  # Who consumes the transmission?
+  # Everyone that subscribes to <%= channel_name %> and have a current_scope that is broadcasting something.
+  
+  # What gets broadcasted?
+  # Every instance of <%= model_name %> that gets created, updated or destroyed 
+  # is broadcasted as json of the passed scope.
+  
+  # Optionally, you can use filter_by to restrict 
+  # the transmission to a particular group of records.
+  
+  # --- Usage
+  
+  # -- js/coffe - client:
+  #  App.controller 'any-controller', ->
+  #    @main = ->
+  #      
+  #      @subscribe '<%= channel_name %>',
+  #        room: '<%= room_name %>'
+  #        filter_by: 123
+  
+  # -- ruby / server: here (<%= filename %>)
+  #  broadcast :public do |config|
+  #    config.room :<%= room_name %>
+  #    
+  #    config.filter_by :attribute
+  #    # Only records that got `attribute == 123` will be broadcasted.
+  #  
+  #  end
   
 end

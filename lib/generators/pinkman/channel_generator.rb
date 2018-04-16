@@ -16,13 +16,18 @@ module Pinkman
       class_name.camelize
     end
     
+    def room_name
+      model_name.tableize
+    end
+    
     def channel_name
       model_name + 'Channel'
     end
 
     def file_name
       class_name.underscore + "_channel.rb"
-    end 
+    end
+    alias filename file_name 
     
   end
 end

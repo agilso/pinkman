@@ -1,10 +1,6 @@
 require 'pinkman/broadcaster'
 
 class PinkmanChannel < ActionCable::Channel::Base
-
-  def scope 
-    :public
-  end
   
   def self.model 
     @model || self.to_s.gsub('Channel','').constantize
@@ -45,7 +41,7 @@ class PinkmanChannel < ActionCable::Channel::Base
   end
   
   def stream
-    Pinkman::Broadcaster.stream(self,scope,params)
+    Pinkman::Broadcaster.stream(self,current_scope,params)
   end
 
 

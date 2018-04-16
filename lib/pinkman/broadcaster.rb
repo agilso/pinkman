@@ -19,16 +19,16 @@ class Pinkman::Broadcaster
   end 
   
   def self.broadcast room, scope, action, record
-    ActionCable.server.broadcast room_name_from_record(room,record), {action: action, data: record.json_hash(scope)}
+    ActionCable.server.broadcast(room_name_from_record(room,record), {action: action, data: record.json_hash(scope)})
   end
   
   def self.stream channel, scope, params
     if params[:room].present?
       broadcaster = broadcasters[params[:room].to_sym]
-      if broadcaster.present?
+      if broadcaster.present? and broadcaster.scope == scope
         channel.stream_from(room_name_from_params(broadcaster,params))
       else
-        raise "Room '#{params[:room]}' not found."
+        raise "Insuficient permissions or room '#{params[:room]}' not found."
       end
     else
       raise 'Room not specified through client.'
@@ -104,12 +104,13 @@ class Pinkman::Broadcaster
       ['create','update','destroy'].each do |action|
         current_room = room
         current_scope = scope
-        model.define_method "broadcast_#{action}_to_#{room}" do
-          Pinkman::Broadcaster.broadcast(current_room, current_scope, action, self)
-        end  
-        
-        model.send("after_#{action}".to_sym, "broadcast_#{action}_to_#{room}".to_sym)
-      
+        method_name = "broadcast_#{action}_to_#{room}".to_sym
+        unless model.instance_methods.include?(method_name)
+          model.define_method method_name do
+            Pinkman::Broadcaster.broadcast(current_room, current_scope, action, self)
+          end  
+          model.send("after_#{action}".to_sym, method_name)
+        end
       end
       true
     end
