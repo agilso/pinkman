@@ -289,10 +289,15 @@ class window.PinkmanController extends window.PinkmanObject
       callback = if typeof opt == 'function' then opt else opt['callback']
     catch
       throw 'Callback not found.'
+    throw 'Subscriber: blank options param' unless opt
+    throw 'Subscriber: options not a object' unless $p.isObject(opt)
+    throw 'Subscriber: options missing room value' unless opt.room?
+    throw 'Subscriber: options missing scope value' unless opt.scope?
     params = if (typeof opt == 'object' and opt['params']?) then opt['params'] else new Object
     params.channel = channel
     if $p.isObject(opt)
-      params.room = opt.room if opt.room?
+      params.room = opt.room
+      params.scope = opt.scope
       params.filter_by = (opt.filter_by or opt.filterBy ) if (opt.filterBy? or opt.filter_by?)
     Pinkman.cable.subscriptions.create params, received: callback
     

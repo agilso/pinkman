@@ -22,24 +22,25 @@ class Pinkman::Broadcaster
     ActionCable.server.broadcast(room_name_from_record(room,record), {action: action, data: record.json_hash(scope)})
   end
   
-  def self.stream channel, scope, params
-    if params[:room].present?
+  def self.stream channel, current_allowed_scopes, params
+    if params[:room].present? and params[:scope].present?
       broadcaster = broadcasters[params[:room].to_sym]
-      if broadcaster.present? and broadcaster.scope == scope
+      raise 'Unknown scope' unless params[:scope].is_a?(String)
+      if broadcaster.present? and params[:scope].to_sym.in?(current_allowed_scopes)
         channel.stream_from(room_name_from_params(broadcaster,params))
       else
         raise "Insuficient permissions or room '#{params[:room]}' not found."
       end
     else
-      raise 'Room not specified through client.'
+      raise 'Room or Scope not specified through client.'
     end
   end
   
   def self.room_name_from_params broadcaster, params
-    if params[:filter_by].is_a? String
-      broadcaster.encrypt(broadcaster.room,params[:filter_by])
+    if params[:filter_by].is_a?(String) or params[:filter_by].is_a?(Numeric)
+      broadcaster.encrypt(broadcaster.room,params[:filter_by].to_s)
     elsif params[:filter_by].is_a? Array
-      broadcaster.encrypt(broadcaster.room, params[:filter_by].join(' '))
+      broadcaster.encrypt(broadcaster.room, params[:filter_by].map(&:to_s).join(' '))
     else
       broadcaster.room
     end

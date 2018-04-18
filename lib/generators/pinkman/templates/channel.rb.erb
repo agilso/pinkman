@@ -1,8 +1,8 @@
 class <%= channel_name %> < PinkmanChannel
   
-  # TO DO: use connection/params to determine the current scope
-  def current_scope
-    :public
+  # TO DO: use connection/params and return an array of scopes (symbols) the current user can subscribe
+  def current_allowed_scopes
+    [:public]
   end
   
   # broadcast :public do |config|

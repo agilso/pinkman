@@ -41,7 +41,7 @@ class PinkmanChannel < ActionCable::Channel::Base
   end
   
   def stream
-    Pinkman::Broadcaster.stream(self,current_scope,params)
+    Pinkman::Broadcaster.stream(self,current_allowed_scopes,params)
   end
 
 

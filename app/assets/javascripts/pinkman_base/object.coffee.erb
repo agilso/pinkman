@@ -7,7 +7,25 @@ class window.PinkmanObject extends window.PinkmanCommon
     @isObject = true
     @pinkmanType = 'object'
     @collections = new PinkmanCollection
+    if $p.isArray(@constructor.instances)
+      @constructor.instances.push(this)
+    else
+      @constructor.instances = [this]
     Pinkman.objects.push(this)
+    
+  @sync: (obj,callback,each) ->
+    if $p.isArray(@instances) and $p.isObject(obj) and obj.id?
+      length = @instances.length
+      i = 0
+      for instance in @instances
+        i = i + 1
+        if instance.id? and instance.id == obj.id
+          if obj.isPink then instance.assign(obj.attributes()) else instance.assign(obj)
+          each(instance) if $p.isFunction(each) and obj.pinkey != instance.pinkey
+          callback() if (length == i) and $p.isFunction(callback)
+            
+    else
+      true
 
   # Desc: assign attributes from a pure javascript object
   # Usage: a.assign( {attribute: value} )
@@ -97,7 +115,9 @@ class window.PinkmanObject extends window.PinkmanCommon
 
   # Desc: remove this object from all collections
   clearCollections: ->
-    c.remove(this) for c in @collections.collection
+    @collections.each (c) =>
+      # console.log this
+      c.removeId(@id) if @id?
 
   # alias for clearCollections
   removeFromCollections: ->
@@ -184,6 +204,7 @@ class window.PinkmanObject extends window.PinkmanCommon
   save: (callback='') ->
     if @id? and @id!='' then @update(callback) else @create(callback)
 
+  # delete and remove from collections
   destroy: (callback='') ->
     if @id?
       @removeFromAllCollections()
@@ -199,6 +220,7 @@ class window.PinkmanObject extends window.PinkmanCommon
     else
       return(false)
 
+  # delete and dont touch collections
   delete: (callback='') ->
     if @id?
       Pinkman.ajax.delete

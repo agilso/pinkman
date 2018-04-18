@@ -212,13 +212,25 @@ class window.PinkmanCollection extends window.PinkmanCommon
   shift: ->
     @remove(@first())
 
+  removeId: (id,callback) ->
+    @find id, (obj) =>
+      if obj?
+        i = @collection.indexOf(obj)
+        @collection.splice(i,1)
+        callback(this) if $p.isFunction(callback)
+        
   # Desc: remove a object from the collection
   remove: (object,callback) ->
-    if typeof object == 'object' and object.id? and (a = @find(object.id))?
-      i = @collection.indexOf a
-      @collection.splice(i,1)
-      value = a
+    if typeof object == 'object' and object.id?
+      # console.log 'id'
+      if (@any (o) -> o.id == object.id)
+        # console.log 'any'
+        value = @find(object.id)
+        # console.log value
+        i = @collection.indexOf(value)
+        @collection.splice(i,1)
     else
+      console.log 'js'
       i = @collection.indexOf object
       @collection.splice(i,1)
       value = object
