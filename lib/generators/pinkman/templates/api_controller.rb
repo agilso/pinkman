@@ -7,9 +7,14 @@ class ApiController < ApplicationController
     params[:offset] = 0 if params[:offset].blank?
   end
   
-  # TO DO: rewrite the current_scope method the way you want.
-  def current_scope
-    :public
+  # TO DO: allowed_scopes
+  # This method should return array of allowed scopes based on current user info.
+  def allowed_scopes
+    [:public]
+  end
+  
+  def requested_scope
+    begin params[:scope].to_sym rescue :public end
   end
 
   # You can define it according to the current user and his permissions
@@ -20,26 +25,9 @@ class ApiController < ApplicationController
   # *                                                                                       *
   # *     Never pass params[:scope] directly to serializers.                                *
   # *     params[:scope] must to be whitelisted if you are going to allow/use it.           *
-  # *     See examples bellow.                                                              *
   # *                                                                                       *
-  #******************************************************************************************
+  # *****************************************************************************************
   
-  # --- Examples
-  
-  # Example 1:
-  # def current_scope
-  #   current_user.admin? ? :admin : :public
-  # end  
-
-  # Example 2:
-  # def current_scope
-  #   params[:scope].in?(['public','user_allowed','vip']) ? params[:scope].to_sym : :public
-  # end
-
-  # Example 3:
-  # def current_scope
-  #  your_custom_scope_verification_method?(params[:scope]) ? params[:scope].to_sym : :public
-  # end
   
   # --- Settings scope in client
   
