@@ -537,7 +537,7 @@ class window.PinkmanCollection extends window.PinkmanCommon
     query_md5 = md5(JSON.stringify(query) + @_name_md5)
     
     if $c.has(query_md5)
-      @handleGetCollection($c.get(query_md5),callback)
+      @handleGetCollection($c.get(query_md5), callback)
     else
       # TRYING TO FIND IN CACHE
       $c.get(@_name_md5).select query, (cache) =>
@@ -564,18 +564,18 @@ class window.PinkmanCollection extends window.PinkmanCommon
                 $c.get(@_name_md5).push(obj)
               
               # CACHING THIS QUERY
-              $c.cache(query_md5,col)
+              $c.cache(query_md5, col)
               
               callback(col) if $p.isFunction(callback)
           return(col)
   
-  @handleGetCollection: (fetchedCollection,callback) ->
+  @handleGetCollection: (fetchedCollection, callback) ->
     col = new this
     col.collection = fetchedCollection.collection
     callback(col) if $p.isFunction(callback)
     return(col)
   
-  @one: (query,callback) ->
+  @one: (query, callback) ->
     @get(query, (col) ->
       callback(col.first()) if col.any() and $p.isFunction(callback)
     ).first()
@@ -592,9 +592,21 @@ class window.PinkmanCollection extends window.PinkmanCommon
   # Desc: Fetch records from API_URL
   # request:  get /api/API_URL/
   # in rails: api::controller#index
-  fetch: (callback = '') ->
-    @fetchFromUrl url: @api(), callback: callback      
-  
+  fetch: (args...) ->
+    switch args.length
+      when 1
+        if $p.isFunction(args[0])
+          callback = args[0]
+          @fetchFromUrl url: @api(), callback: callback, scope: 'public'
+        
+        else if $p.isObject(args[0])
+          options = args[0]
+          @fetchFromUrl url: (options.url || @api()), callback: options.callback, scope: options.scope    
+      when 2
+        scope = args[0]
+        callback = args[1]
+        @fetchFromUrl url: @api(), callback: callback, scope: scope
+    
   # Desc: Fetch records from another action of this model api
   # request:  get /api/API_URL/:action/#id
   # in rails: api::controller#action
@@ -614,22 +626,22 @@ class window.PinkmanCollection extends window.PinkmanCommon
   # request:  get /api/API_URL/
   fetchFromUrl: (options) ->
     if options? and typeof options == 'object' and options.url?
-      options_md5 = md5(JSON.stringify(options) + @className())
-      if $c.has(options_md5)
-        response = $c.get(options_md5)
-        @handleFetchResponse(response,options)
-      else      
-        if Pinkman.hasScope(this)
-          options.params = new Object unless options.params?
-          options.params.scope = Pinkman.scope(this)
-        @doneFetching = null
-        @fetchingFrom = options.url
-        Pinkman.ajax.get
-          url: Pinkman.json2url(options.url,options.params) 
-          complete: (response) =>
-            $c.cache(options_md5,response)
-            @handleFetchResponse(response,options)
-        return(this)
+      options_md5 = md5(JSON.stringify(options) + @className())   
+      options.params = new Object unless options.params?
+      
+      if options.scope?
+        options.params.scope = options.scope
+      else
+        throw 'Pinkman Error: Trying to fetch without a specified scope'
+      
+      @doneFetching = null
+      @fetchingFrom = options.url
+      Pinkman.ajax.get
+        url: Pinkman.json2url(options.url, options.params) 
+        complete: (response) =>
+          $c.cache(options_md5, response) unless options.cache
+          @handleFetchResponse(response, options)
+      return(this)
       
   handleFetchResponse: (response,options) ->
     @constructor.startCaching()

@@ -69,12 +69,12 @@ module Pinkman
       # Active Record Relation: json
       ActiveRecord::Relation.class_eval do 
         def json scope_name, params_hash = {}
-          serialize_for(scope_name,params_hash).to_json
+          serialize_for(scope_name, params_hash).to_json
         end
         
         def json_for *args, &block
           ActiveSupport::Deprecation.warn('"json_for" deprecated. Use "json" instead.')
-          json(*args,&block)
+          json(*args, &block)
         end
         
         def serialize_for scope_name, params_hash = {}
@@ -86,12 +86,12 @@ module Pinkman
 
       Array.class_eval do
         def json scope_name, params_hash = {}
-          serialize_for(scope_name,params_hash).to_json
+          serialize_for(scope_name, params_hash).to_json
         end
         
         def json_for *args, &block
           ActiveSupport::Deprecation.warn('"json_for" deprecated. Use "json" instead.')
-          json(*args,&block)
+          json(*args, &block)
         end
         
         def serialize_for scope_name, params_hash = {}
@@ -114,7 +114,7 @@ module Pinkman
         
         def json_for *args, &block
           ActiveSupport::Deprecation.warn('"json_for" deprecated. Use "json" instead.')
-          json(*args,&block)
+          json(*args, &block)
         end
         
         def has_json_key? key, scope
