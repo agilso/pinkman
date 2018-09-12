@@ -304,6 +304,12 @@ class window.PinkmanRouter
     namespaced._namespace = if @_namespace then ("#{@_namespace}/#{namespace}") else namespace
     rules(namespaced) if typeof rules == 'function'
     
+  scope: (scope, rules) ->
+    scope = scope.replace(/^\//,'')
+    scoped = new @constructor()
+    scoped._scope = if @_scope then ("#{@_scope}/#{scope}") else scope
+    rules(scoped) if typeof rules == 'function'
+    
   resources: (resourceName) ->
     
     # controllerPrefix = if @_namespace then @_namespace.replace(/\//,'-') + '-' else ''
@@ -325,6 +331,7 @@ class window.PinkmanRouter
     if Pinkman.isString(path)
       path = path.replace(/^\//,'')
       path = "/#{@_namespace}/" + path if @_namespace
+      path = "/#{@_scope}/" + path if @_scope
       p = new PinkmanPath(path)
       route = new PinkmanRoute
       route.set('id',path)

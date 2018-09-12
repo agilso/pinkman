@@ -626,9 +626,9 @@ class window.PinkmanCollection extends window.PinkmanCommon
   # request:  get /api/API_URL/
   fetchFromUrl: (options) ->
     if options? and typeof options == 'object' and options.url?
-      options_md5 = md5(JSON.stringify(options) + @className())   
+      options_md5 = md5(JSON.stringify(options) + @className())
       options.params = new Object unless options.params?
-      
+      options.cache = yes unless options.cache?
       if options.scope?
         options.params.scope = options.scope
       else
@@ -639,7 +639,7 @@ class window.PinkmanCollection extends window.PinkmanCommon
       Pinkman.ajax.get
         url: Pinkman.json2url(options.url, options.params) 
         complete: (response) =>
-          $c.cache(options_md5, response) unless options.cache
+          $c.cache(options_md5, response) if options.cache
           @handleFetchResponse(response, options)
       return(this)
       

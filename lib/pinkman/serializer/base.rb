@@ -26,8 +26,10 @@ module Pinkman
         else
           if @scopes[name.to_sym]
             @scopes[name.to_sym]
+          elsif Pinkman.configuration.scope_fallback and @scopes[Pinkman.configuration.scope_fallback]
+            @scopes[Pinkman.configuration.scope_fallback]
           else
-            raise ArgumentError.new("Scope '#{name}' not found/defined for #{self.to_s}.")
+            raise(ArgumentError, (Pinkman.configuration.scope_fallback ? ("Scope '#{name}' and fallback scope '#{Pinkman.configuration.scope_fallback}' were not found in #{self.to_s}.") : ("Scope '#{name}' not found in #{self.to_s}.") ))
           end
         end
       end

@@ -9,7 +9,7 @@ require 'pinkman/broadcaster'
 
 module Pinkman
 
-  @@configuration = OpenStruct.new js_template_engine: 'handlebars'
+  @@configuration = OpenStruct.new(js_template_engine: 'handlebars')
 
   def self.root
     Pathname.new(File.dirname(__FILE__)).join('..')
@@ -26,7 +26,7 @@ module Pinkman
   class Engine < ::Rails::Engine
     config.after_initialize do
       Rails.application.routes.append do
-        mount Pinkman::Engine => '/'
+        mount(Pinkman::Engine => '/')
       end
       
       module ApplicationHelper
@@ -34,7 +34,7 @@ module Pinkman
       end
       
       if defined? Slim
-        Slim::Engine.set_options attr_list_delims: {'(' => ')', '[' => ']'}
+        Slim::Engine.set_options(attr_list_delims: {'(' => ')', '[' => ']'})
       end
       
       # Extending ActiveRecord
