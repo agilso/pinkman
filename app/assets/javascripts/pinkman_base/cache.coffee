@@ -10,6 +10,14 @@ class window.PinkmanCache
   
   @has: (name) ->
     @_caching[name]?
+  
+  @getOrInsert: (name, value) =>
+    if @has(name) 
+      # console.log "has: #{name}"
+      return(@get(name)) 
+    else
+      # console.log "caching: #{name}"
+      return(@cache(name, value))
     
   @get: (name) ->
     @_caching[name]

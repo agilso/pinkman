@@ -1,37 +1,41 @@
 class window.PinkmanPath extends Pinkman.object
    
   constructor: (url) ->
-    @levels = new Pinkman.collection
-    @static = new Pinkman.collection
-    @dynamic = new Pinkman.collection
-    @params = new Object
-    super()
-    if Pinkman.isString(url)
-      url = url.replace(window.location.origin,'') if PinkmanPath.isInternal(url)
-      a = url.split('/')
-      a.shift() if a[0] == ''
-      a.pop() if a[a.length-1] == ''
-      i = 0
-      s = 0
-      d = 0
-      for l in a
-        i = i + 1
-        obj = new Pinkman.object({entry: l, index: i})
-        if /:/.test(l[0])
-          d = d + 1
-          obj.set('dynamic',yes)
-          obj.set('static',no)
-          @dynamic.push(obj)
-        else
-          s = s + 1
-          obj.set('dynamic',no)
-          obj.set('static',yes)
-          @static.push(obj)
-        @levels.push(obj)
-      
-      @set('depth',i)
-      @set('staticDepth',s)
-      @set('dynamicDepth',d)
+    if PinkmanCache.has("p-path-#{url}")
+      return(PinkmanCache.get("p-path-#{url}"))
+    else
+      @levels = new Pinkman.collection
+      @static = new Pinkman.collection
+      @dynamic = new Pinkman.collection
+      @params = new Object
+      super()
+      if Pinkman.isString(url)
+        url = url.replace(window.location.origin,'') if PinkmanPath.isInternal(url)
+        a = url.split('/')
+        a.shift() if a[0] == ''
+        a.pop() if a[a.length-1] == ''
+        i = 0
+        s = 0
+        d = 0
+        for l in a
+          i = i + 1
+          obj = new Pinkman.object({entry: l, index: i})
+          if /:/.test(l[0])
+            d = d + 1
+            obj.set('dynamic',yes)
+            obj.set('static',no)
+            @dynamic.push(obj)
+          else
+            s = s + 1
+            obj.set('dynamic',no)
+            obj.set('static',yes)
+            @static.push(obj)
+          @levels.push(obj)
+        
+        @set('depth',i)
+        @set('staticDepth',s)
+        @set('dynamicDepth',d)
+        PinkmanCache.cache("p-path-#{url}",this)
       
   @depth: (url) ->
     a = url.split('/')
@@ -100,10 +104,14 @@ class window.PinkmanRouteMatcher extends Pinkman.object
     
   findRouteFor: (url) ->
     url = url.replace(window.location.origin,'') if PinkmanPath.isInternal(url)
-    return Pinkman.routes
-      .select(depth: PinkmanPath.depth(url))
-      .select((candidate) -> candidate.path.match(url))
-      .sortBy('staticDepth','desc').first()
+    if PinkmanCache.has("p-router-#{url}")
+      PinkmanCache.get("p-router-#{url}")
+    else
+      r = Pinkman.routes
+        .select(depth: PinkmanPath.depth(url))
+        .select((candidate) -> candidate.path.match(url))
+        .sortBy('staticDepth','desc').first()
+      return(PinkmanCache.cache("p-router-#{url}", r))
   
   setup: (route,url) ->
     if route? and url?
