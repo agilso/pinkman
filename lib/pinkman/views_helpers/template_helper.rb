@@ -40,9 +40,7 @@ module Pinkman
           content_tag('script',{id: id, type: 'text/p-partial', class: 'p'},&block)
         # rendering template partial mode
         else
-          content_tag 'div', {id: name} do 
-            raw("{{ partial(#{id}) }}")
-          end
+          raw("{{ partial(#{id}) }}")
         end
       end
       
