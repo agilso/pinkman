@@ -19,8 +19,10 @@ class window.PinkmanCache
       # console.log "caching: #{name}"
       return(@cache(name, value))
     
-  @get: (name) ->
-    @_caching[name]
+  @get: (name, callback) ->
+    callback(@_caching[name]) if $p.isFunction(callback)
+    return(@_caching[name])
+    
     
 $(document).ready ->
   window.$c = window.PinkmanCache

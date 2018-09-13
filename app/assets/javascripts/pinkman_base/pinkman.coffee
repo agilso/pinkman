@@ -38,8 +38,14 @@ class window.Pinkman
   @sleep = (s,callback) -> 
     ms = s*1000
     window['_sleeping'] = setTimeout(callback,ms)
-
-
+  
+  @mergeObjects: (a, b) ->
+    clone = Object.assign({}, a)
+    if @isObject(b) and @isObject(a)
+      for k,v of b
+        clone[k] = v
+    return(clone)
+    
   # --- tools and facilities
   
   @top: ->

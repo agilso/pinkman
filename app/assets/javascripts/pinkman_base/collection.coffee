@@ -529,56 +529,41 @@ class window.PinkmanCollection extends window.PinkmanCommon
   #   string: search
   #   obj: select (cache) / where (server)
   #   function: select
-    
-  @get: (query, callback) ->
-    @startCaching()
-    
-    # query md5
-    query_md5 = md5(JSON.stringify(query) + @_name_md5)
-    
-    if $c.has(query_md5)
-      @handleGetCollection($c.get(query_md5), callback)
+  
+  @get: (options) ->
+    if $p.isObject(options) and (options.query? or options.params?) and $p.isFunction(options.callback)
+      @startCaching()
+      options.cache = yes unless options.cache?
+      query = Pinkman.mergeObjects(options.query, options.params)
+      query_md5 = md5(JSON.stringify(query) + @_name_md5)
+      if options.cache and $c.has(query_md5)
+        $c.get(query_md5, options.callback)
+      else
+        col = new this
+        obj = new col.config.memberClass
+        params = new Object
+        params.scope = options.scope || Pinkman.scope(obj)
+        params.query = options.query
+        params = Pinkman.mergeObjects(params, options.params)
+        Pinkman.ajax.get
+          url: obj.api('get')
+          data: params
+          complete: (response) =>
+            col.fetchFromArray(response)
+            $c.cache(query_md5, col)
+            options.callback(col)
     else
-      # TRYING TO FIND IN CACHE
-      $c.get(@_name_md5).select query, (cache) =>
-        # CACHED FOUND
-        if cache.any()
-          # console.log 'cached'
-          @handleGetCollection(cache,callback)
-        
-        # CACHED VERSION NOT FOUND -> ASK SERVER
+      throw "Pinkman Error: collection.get invalid options #{options.toString()}"
+
+  @one: (options) ->
+    @get
+      query: options.query
+      params. options.params
+      callback: (col) ->
+        if $p.isFunction(options.callback)
+          return(options.callback(col.first()))
         else
-          # console.log 'server'
-          col = new this
-          obj = new col.config.memberClass
-          params = new Object
-          params.scope = Pinkman.scope(obj)
-          params.query = query
-          Pinkman.ajax.get
-            url: obj.api('get')
-            data: params
-            complete: (response) =>
-              col.fetchFromArray(response)
-              # PERFOMING INSTANCES CACHE
-              col.each (obj) =>
-                $c.get(@_name_md5).push(obj)
-              
-              # CACHING THIS QUERY
-              $c.cache(query_md5, col)
-              
-              callback(col) if $p.isFunction(callback)
-          return(col)
-  
-  @handleGetCollection: (fetchedCollection, callback) ->
-    col = new this
-    col.collection = fetchedCollection.collection
-    callback(col) if $p.isFunction(callback)
-    return(col)
-  
-  @one: (query, callback) ->
-    @get(query, (col) ->
-      callback(col.first()) if col.any() and $p.isFunction(callback)
-    ).first()
+          return(throw("Pinkman Error: #{this.toString()}.one called without a callback function"))
   
   @single: (args...) ->
     @one(args...)
