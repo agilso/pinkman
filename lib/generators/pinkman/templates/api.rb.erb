@@ -1,23 +1,23 @@
 class Api::<%= controller_name %> < ApiController
 
+  before_action :verify_permissions
   before_action :set_objects
-  before_action :permissions
 
   # get api/<%= api_name %>
   def index
-    <%= collection_name %> = <%= active_record_model_name %>.limit(params[:limit]).offset(params[:offset])
-    render json: <%= collection_name %>.json(current_scope)
+    <%= collection_name %> = <%= active_record_model_name %>.limit(current_limit).offset(current_offset)
+    render json: <%= collection_name %>.json(requested_scope)
   end
 
   # get api/<%= api_name %>/:id
   def show
-    render json: @<%= instance_name %>.json(current_scope)
+    render json: @<%= instance_name %>.json(requested_scope)
   end
   
   # get api/<%= api_name %>/get
   def get
     <%= collection_name %> = <%= active_record_model_name %>.get(handle_query_param)
-    render json: <%= collection_name %>.json(current_scope)
+    render json: <%= collection_name %>.json(requested_scope)
   end
   
   # --- TO DO: Revise this ---
@@ -33,8 +33,8 @@ class Api::<%= controller_name %> < ApiController
   # get api/<%= api_name %>/search/:query
   def search
     if params[:query].present?
-      <%= collection_name %> = <%= active_record_model_name %>.search(params[:query]).limit(params[:limit]).offset(params[:offset])
-      render json: <%= collection_name %>.json(current_scope)
+      <%= collection_name %> = <%= active_record_model_name %>.search(params[:query]).limit(current_limit).offset(current_offset)
+      render json: <%= collection_name %>.json(requested_scope)
     end
   end
 
@@ -42,28 +42,28 @@ class Api::<%= controller_name %> < ApiController
   def create
     @<%= instance_name %>.assign_attributes <%= params_method_name %>
     @<%= instance_name %>.save
-    render json: @<%= instance_name %>.json(current_scope)
+    render json: @<%= instance_name %>.json(requested_scope)
   end
 
   # put/patch api/<%= api_name %>/:id
   def update
     @<%= instance_name %>.update <%= params_method_name %>
-    render json: @<%= instance_name %>.json(current_scope)
+    render json: @<%= instance_name %>.json(requested_scope)
   end
 
   # delete api/<%= api_name %>/:id
   def destroy
     @<%= instance_name %>.destroy
-    render json: @<%= instance_name %>.json(current_scope)
+    render json: @<%= instance_name %>.json(requested_scope)
   end
 
   protected
 
   # --- begin permissions  --- #
 
-  def permissions
-    unless <%= serializer_name %>.scope(current_scope).can_access? action_name
-      render json: {errors: 'You have no permission.'}
+  def verify_permissions
+    unless requested_scope.in?(allowed_scopes) and <%= serializer_name %>.scope(requested_scope).can_access? action_name
+      render json: {error: 'Unauthorized'}, status: :unauthorized
     end
   end
 
@@ -79,7 +79,7 @@ class Api::<%= controller_name %> < ApiController
 
   def <%= params_method_name %>
     if params['pink_obj']
-      params["pink_obj"].keep_if {|k,v| <%= serializer_name %>.scope(current_scope).can_write?(k)}
+      params["pink_obj"].keep_if {|k,v| <%= serializer_name %>.scope(requested_scope).can_write?(k)}
       params["pink_obj"].permit!
     else
       {}

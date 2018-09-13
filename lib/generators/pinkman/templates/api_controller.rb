@@ -1,10 +1,13 @@
 class ApiController < ApplicationController
 
-  before_action :default_limit_and_offset
-
-  def default_limit_and_offset
-    params[:limit] = 20 if params[:limit].blank?
-    params[:offset] = 0 if params[:offset].blank?
+  def current_limit
+    # default: 20
+    # max: 200
+    [(params[:limit].to_i || 10), 100].min
+  end
+  
+  def current_offset
+    params[:offset] || 0
   end
   
   # TO DO: allowed_scopes

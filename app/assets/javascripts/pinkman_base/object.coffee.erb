@@ -23,7 +23,6 @@ class window.PinkmanObject extends window.PinkmanCommon
           if obj.isPink then instance.assign(obj.attributes()) else instance.assign(obj)
           each(instance) if $p.isFunction(each) and obj.pinkey != instance.pinkey
           callback() if (length == i) and $p.isFunction(callback)
-            
     else
       true
 
