@@ -45,6 +45,7 @@ module Pinkman
       generate 'pinkman:initializer'
     end
     
+    # TO DO < pinkman channel
     def create_pinkman_channel
       generate 'pinkman:pinkman_channel'
     end

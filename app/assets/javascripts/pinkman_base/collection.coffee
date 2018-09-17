@@ -534,7 +534,7 @@ class window.PinkmanCollection extends window.PinkmanCommon
     if $p.isObject(options) and (options.query? or options.params?) and $p.isFunction(options.callback)
       @startCaching()
       options.cache = yes unless options.cache?
-      query = Pinkman.mergeObjects(options.query, options.params)
+      query = Pinkman.mergeObjects(options.scope, Pinkman.mergeObjects(options.query, options.params))
       query_md5 = md5(JSON.stringify(query) + @_name_md5)
       if options.cache and $c.has(query_md5)
         $c.get(query_md5, options.callback)
