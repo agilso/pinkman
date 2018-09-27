@@ -48,6 +48,10 @@ class window.Pinkman
       for k,v of b
         clone[k] = v
     return(clone)
+  
+  @dup: (a) ->
+    if @isObject(a) then Object.assign({}, a) else throw("Pinkman Error: can't dup #{a.toString()}. It is not an object.")
+    
     
   # --- tools and facilities
   

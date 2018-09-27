@@ -556,14 +556,13 @@ class window.PinkmanCollection extends window.PinkmanCommon
       throw "Pinkman Error: collection.get invalid options #{options.toString()}"
 
   @one: (options) ->
-    @get
-      query: options.query
-      params. options.params
-      callback: (col) ->
-        if $p.isFunction(options.callback)
-          return(options.callback(col.first()))
-        else
-          return(throw("Pinkman Error: #{this.toString()}.one called without a callback function"))
+    if $p.isObject(options) and $p.isFunction(options.callback)
+      args = Pinkman.dup(options)
+      args.callback = (col) ->
+        return(options.callback(col.first()))
+      @get(args)
+    else
+      return(throw("Pinkman Error: #{this.toString()}.one called without wrong arguments."))
   
   @single: (args...) ->
     @one(args...)
