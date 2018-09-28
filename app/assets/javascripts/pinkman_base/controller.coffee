@@ -37,7 +37,6 @@ class window.PinkmanController extends window.PinkmanObject
       @params = JSON.parse('{"' + decodeURI(query).replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g,'":"') + '"}')
     else
       @params = new Object
-      
     (@params[k] = v) for k,v of params if params? and typeof params == 'object'
     @params
   

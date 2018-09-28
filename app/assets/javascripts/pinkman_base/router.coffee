@@ -7,10 +7,17 @@ class window.PinkmanPath extends Pinkman.object
       @levels = new Pinkman.collection
       @static = new Pinkman.collection
       @dynamic = new Pinkman.collection
-      @params = new Object
       super()
       if Pinkman.isString(url)
         url = url.replace(window.location.origin,'') if PinkmanPath.isInternal(url)
+        
+        # setting params
+        paramsRegex = /\?.*/
+        if paramsRegex.test(url)
+          paramsString = /\?(.*)/.exec(url)[1]
+          @params = JSON.parse('{"' + decodeURI(paramsString).replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g,'":"') + '"}')
+          url = url.replace("?#{paramsString}", '')
+          
         a = url.split('/')
         a.shift() if a[0] == ''
         a.pop() if a[a.length-1] == ''
@@ -31,7 +38,6 @@ class window.PinkmanPath extends Pinkman.object
             obj.set('static',yes)
             @static.push(obj)
           @levels.push(obj)
-        
         @set('depth',i)
         @set('staticDepth',s)
         @set('dynamicDepth',d)
@@ -60,9 +66,13 @@ class window.PinkmanPath extends Pinkman.object
   match: (path) ->
     path = new PinkmanPath(path) if Pinkman.isString(path)
     if PinkmanPath.isInstance(path) and path.depth == @depth
+      # console.log 'tentou'
       match = true
       @static.each (level) ->
-        match = false if level.entry != path.level(level.index).entry
+        if level.entry != path.level(level.index).entry
+          # console.log level.entry
+          # console.log path.level(level.index).entry
+          match = false 
       return(match)
     else
       false
@@ -104,6 +114,8 @@ class window.PinkmanRouteMatcher extends Pinkman.object
     
   findRouteFor: (url) ->
     url = url.replace(window.location.origin,'') if PinkmanPath.isInternal(url)
+    # console.log 'tentando achar route'
+    # console.log(url)
     if PinkmanCache.has("p-router-#{url}")
       PinkmanCache.get("p-router-#{url}")
     else
@@ -260,6 +272,7 @@ class window.PinkmanRouter
       else
         @render(r,callback)
     else
+      # console.log 'route not found'
       false
     
   # Goes to a path
