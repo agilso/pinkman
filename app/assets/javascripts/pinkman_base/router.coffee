@@ -82,7 +82,7 @@ class window.PinkmanPath extends Pinkman.object
     @dynamic.each (level) ->
       # console.log level
       # console.log path
-      path.params[level.entry.replace(/:/g,"")] = path.level(level.index).entry
+      path.params[level.entry.replace(/:/g,"")] = path.level(level.index).entry.replace(/[#?].*/,'')
   
   deduceControllerName: ->
     @static.extract('entry').join('-').replace(/[\/_]/g,'-').replace(/^-/,'')
@@ -269,6 +269,7 @@ class window.PinkmanRouter
     if r? and r
       # console.log r
       r.options = options
+      @_config.beforeRender(r) if $p.isFunction(@_config.beforeRender)
       if @_config.transition? and typeof @_config.transition == 'function'
         @_config.transition =>
           @render(r,callback)
