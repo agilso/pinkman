@@ -7,6 +7,7 @@ class window.PinkmanPath extends Pinkman.object
       @levels = new Pinkman.collection
       @static = new Pinkman.collection
       @dynamic = new Pinkman.collection
+      @params = new Object
       super()
       if Pinkman.isString(url)
         url = url.replace(window.location.origin,'') if PinkmanPath.isInternal(url)
@@ -79,6 +80,8 @@ class window.PinkmanPath extends Pinkman.object
   
   matchParams: (path) ->
     @dynamic.each (level) ->
+      # console.log level
+      # console.log path
       path.params[level.entry.replace(/:/g,"")] = path.level(level.index).entry
   
   deduceControllerName: ->
