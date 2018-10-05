@@ -26,7 +26,7 @@ class window.PinkmanCommon
     if typeof attributesObject == 'object'
       for key, value of attributesObject
         @set(key,value) if PinkmanObject.privateAttributes.indexOf(key) is -1
-
+  
   # Desc: return api url path
   api: (paths...) ->
     if @config? and @config.api?

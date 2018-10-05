@@ -1,6 +1,13 @@
 class window.PinkmanPath extends Pinkman.object
    
   constructor: (url) ->
+    # setting params
+    paramsRegex = /\?.*/
+    if paramsRegex.test(url)
+      paramsString = /\?(.*)/.exec(url)[1]
+      @query = JSON.parse('{"' + decodeURI(paramsString).replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g,'":"') + '"}')
+      url = url.replace("?#{paramsString}", '')
+      
     if PinkmanCache.has("p-path-#{url}")
       return(PinkmanCache.get("p-path-#{url}"))
     else
@@ -12,12 +19,6 @@ class window.PinkmanPath extends Pinkman.object
       if Pinkman.isString(url)
         url = url.replace(window.location.origin,'') if PinkmanPath.isInternal(url)
         
-        # setting params
-        paramsRegex = /\?.*/
-        if paramsRegex.test(url)
-          paramsString = /\?(.*)/.exec(url)[1]
-          @params = JSON.parse('{"' + decodeURI(paramsString).replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g,'":"') + '"}')
-          url = url.replace("?#{paramsString}", '')
           
         a = url.split('/')
         a.shift() if a[0] == ''
@@ -147,7 +148,7 @@ class window.PinkmanRouteMatcher extends Pinkman.object
   params: ->
     # console.log @path
     # console.log @path.params
-    @path.params if @path and @path.params?
+    Pinkman.mergeObjects(@path.params, @path.query)
     
     
 # every route defined turn into a object of this class: PinkmanRoute

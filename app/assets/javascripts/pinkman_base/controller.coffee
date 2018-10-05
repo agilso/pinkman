@@ -32,11 +32,9 @@ class window.PinkmanController extends window.PinkmanObject
     '#' + @id
 
   setParams: (params) ->
-    query = location.search.substring(1);
-    if query? and query!=''
-      @params = JSON.parse('{"' + decodeURI(query).replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g,'":"') + '"}')
-    else
-      @params = new Object
+    console.log params
+    @params = new Object
+      
     (@params[k] = v) for k,v of params if params? and typeof params == 'object'
     @params
   
