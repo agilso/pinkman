@@ -68,7 +68,7 @@ module Pinkman
 
       # Active Record Relation: json
       ActiveRecord::Relation.class_eval do 
-        def json scope_name, params_hash = {}
+        def json scope_name=:public, params_hash = {}
           serialize_for(scope_name, params_hash).to_json
         end
         
@@ -85,7 +85,7 @@ module Pinkman
       end
 
       Array.class_eval do
-        def json scope_name, params_hash = {}
+        def json scope_name=:public, params_hash = {}
           serialize_for(scope_name, params_hash).to_json
         end
         
@@ -108,7 +108,7 @@ module Pinkman
           self.class.serializer.new(self,options)
         end
 
-        def json scope_name, params_hash={}
+        def json scope_name=:public, params_hash={}
           serialize_for(scope_name,params_hash).to_json
         end
         

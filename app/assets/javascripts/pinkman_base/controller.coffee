@@ -32,7 +32,7 @@ class window.PinkmanController extends window.PinkmanObject
     '#' + @id
 
   setParams: (params) ->
-    console.log params
+    # console.log params
     @params = new Object
       
     (@params[k] = v) for k,v of params if params? and typeof params == 'object'
