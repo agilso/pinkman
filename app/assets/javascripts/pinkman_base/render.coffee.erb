@@ -110,10 +110,28 @@ Pinkman.template_engines =
       $('#' + options.target).html(content)
       $('#' + options.target).attr('data-pinkey',options.object.pinkey) if options.object? and typeof options.object == 'object' and options.object.isPink
 
-      # checks and sync select options with the pinkman object
+      # checks and sync select, checkboxes and radiobuttons options with the pinkman object
+      # select
       $("##{options.target} select").each (i,el) ->
         obj = Pinkman.get($(el).data('pinkey'))
         $(el).find("option[value='#{obj[$(el).attr('name')]}']").attr('selected','selected')
+      
+      # checkboxes and radios
+      $("##{options.target} input[type='checkbox'], ##{options.target} input[type='radio']").each (i,el) ->
+        obj = Pinkman.get($(el).data('pinkey'))
+        $el = $(el)
+        attr = $el.attr('name')
+        value = $el.attr('value')
+        # console.log attr
+        # console.log value.toString()
+        # console.log obj[attr].toString()
+        
+        if attr? and value? and obj? and obj[attr]? and obj[attr] and obj[attr].toString() == value.toString()
+          $el.attr('checked', yes) 
+        else
+          $el.attr('checked', no)
+      
+      
 
   render: (options) ->
       

@@ -109,7 +109,7 @@ module Pinkman
         end
 
         def json scope_name=:public, params_hash={}
-          serialize_for(scope_name,params_hash).to_json
+          serialize_for(scope_name, params_hash).to_json
         end
         
         def json_for *args, &block
@@ -117,15 +117,19 @@ module Pinkman
           json(*args, &block)
         end
         
-        def has_json_key? key, scope
-          json_version = JSON.parse(json(scope))
-          json_version.has_key?(key.to_s) and json_version[key.to_s].present?
+        def has_json_key? key, scope=:public, options={}
+          json_version(scope, options).has_key?(key.to_s) and json_version(scope, options)[key.to_s].present?
         end
         
-        def json_hash scope
-          JSON.parse(json(scope))
+        def json_version *args
+          JSON.parse(json(*args))
         end
-
+        alias json_hash json_version
+        
+        def json_key key, scope=:public, options={}
+          json_version(scope, options)[key.to_s]
+        end
+        
       end
     end
     

@@ -562,7 +562,7 @@ class window.PinkmanCollection extends window.PinkmanCommon
         return(options.callback(col.first()))
       @get(args)
     else
-      return(throw("Pinkman Error: #{this.toString()}.one called without wrong arguments."))
+      return(throw("Pinkman Error: #{this.toString()}.one called with wrong arguments."))
   
   @single: (args...) ->
     @one(args...)
