@@ -39,9 +39,10 @@ class window.Pinkman
     ms = s*1000
     window['_sleeping'] = setTimeout(callback,ms)
   
+  
   @mergeObjects: (a, b) ->
     if a? and @isObject(a)
-      clone = Object.assign({}, a)
+      clone = @dup(a)
     else
       clone = new Object
     if b? and @isObject(b)
@@ -50,7 +51,10 @@ class window.Pinkman
     return(clone)
   
   @dup: (a) ->
-    if @isObject(a) then Object.assign({}, a) else throw("Pinkman Error: can't dup #{a.toString()}. It is not an object.")
+    if @isFunction(Object.assign)
+      if @isObject(a) then Object.assign({}, a) else throw("Pinkman Error: can't dup #{a.toString()}. It is not an object.")
+    else
+      if @isObject(a) then jQuery.extend({}, a) else throw("Pinkman Error: can't dup #{a.toString()}. It is not an object.")
     
     
   # --- tools and facilities
