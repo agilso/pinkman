@@ -681,8 +681,17 @@ class window.PinkmanCollection extends window.PinkmanCommon
   # request:  get /api/API_URL/search?query=YOUR_QUERY
   # in rails: api::controller#search
   # assume models to have a Model.search("YOUR_QUERY") method.
-  search: (query,callback='') ->
+  search: (args...) ->
     @removeAll()
-    @fetchFromUrl { url: @api() + 'search', params: {query: query}, callback: callback }
+    if args.length == 2
+      [query, callback] = args
+    else if args.length == 1 and $p.isObject(args[0])
+      options = args[0]
+      query = options.query
+      callback = options.callback
+      scope = options.scope || 'public'
+    return(@fetchFromUrl { url: @api() + 'search', params: {query: query}, callback: callback, scope: (scope || 'public') })
+      
+      
 
 window.Pinkman.collection = window.PinkmanCollection

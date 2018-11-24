@@ -32,15 +32,18 @@ module Pinkman
         end
       end
        
-      define_helper :partial do |path, block=nil|
+      define_helper :partial do |path, opts_or_block=nil|
         # definition mode
         name = path.to_s
         id = (/(?:-template)$/ =~ name) ? name : (name + '-template')
-        if block.is_a?(Proc)
-          content_tag('script',{id: id, type: 'text/p-partial', class: 'p'},&block)
+        if opts_or_block.is_a?(Proc)
+          block = opts_or_block
+          content_tag('script',{id: id, type: 'text/p-partial', class: 'p'}, &block)
         # rendering template partial mode
         else
-          raw("{{ partial(#{id}) }}")
+          opts = opts_or_block if opts_or_block.is_a?(Hash)
+          div = opts && opts[:div]
+          div ? raw("<div id='#{id.sub(/(-template)$/,'')}'>{{ partial(#{id}) }}</div>") : raw("{{ partial(#{id}) }}")
         end
       end
       
