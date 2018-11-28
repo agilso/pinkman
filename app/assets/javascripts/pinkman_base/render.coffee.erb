@@ -80,7 +80,12 @@ Pinkman.template_engines =
   partialAdapter: (templateBody) ->
     if templateBody? and templateBody != ''
       partialRegex = /{{(?:\s)*partial\((?:\s)*((?:\w|-)*)(?:\s)*\)(?:\s)*}}/gm
-      templateBody.replace(partialRegex,@partialInception)
+      i = 0
+      while partialRegex.test(templateBody)
+        # i++
+        # console.log("partial-inception level: #{i}")
+        templateBody = templateBody.replace(partialRegex,@partialInception)
+      return(templateBody)
     else
       ''
   
