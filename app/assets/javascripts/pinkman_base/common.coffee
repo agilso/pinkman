@@ -152,7 +152,7 @@ class window.PinkmanCommon
     @renderQueue.directPush(options)
 
   hasError: ->
-    @errors?
+    return(this) if @errors?
   
   hasErrors: ->
     @hasError()

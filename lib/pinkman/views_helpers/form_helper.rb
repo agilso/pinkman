@@ -9,6 +9,10 @@ module Pinkman
       define_helper :input_helper do |attr_name,label=nil,options={}|
         label ||= attr_name.titleize
         error_for_name = options.delete(:error_for) || attr_name
+        
+        error_prepend = options.delete(:error_prepend)
+        error_for_name = error_prepend + error_for_name if error_prepend
+        
         render partial: 'pinkman/pinkman/form_input', locals: {attr_name: attr_name, label: label, error_for_name: error_for_name, html_attributes: options.merge(name: attr_name)}
       end
       

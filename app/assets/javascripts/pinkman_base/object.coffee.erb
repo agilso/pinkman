@@ -67,7 +67,7 @@ class window.PinkmanObject extends window.PinkmanCommon
     if $p.isPink(this[attr])
       pack = this[attr]
       attrs = pack.json()
-      @set("#{attr}[#{k}]", v) for k,v of attrs
+      @set("#{attr}_attributes[#{k}]", v) for k,v of attrs
     attrs
 
   # Desc: returns a array of attributes keys
