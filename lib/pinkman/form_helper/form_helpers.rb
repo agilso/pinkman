@@ -58,7 +58,7 @@ module Pinkman
       end
       
       define_helper :money do |attr_name,label=nil,html_attributes={}|
-        p.input_helper attr_name, label, html_attributes.merge(type: 'number', min: '0', step: '0.01')
+        p.input_helper attr_name, label, html_attributes.merge(type: 'number', step: '0.01')
       end
       
     end
