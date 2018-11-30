@@ -230,7 +230,7 @@ class window.PinkmanCollection extends window.PinkmanCommon
         i = @collection.indexOf(value)
         @collection.splice(i,1)
     else
-      console.log 'js'
+      # console.log 'js'
       i = @collection.indexOf object
       @collection.splice(i,1)
       value = object

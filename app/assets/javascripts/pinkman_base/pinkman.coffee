@@ -14,6 +14,9 @@ class window.Pinkman
 
   # --- predicate
 
+  @isPink: (obj) ->
+    @isObject(obj) && obj.isPink
+    
   @isNumber: (n) ->
     !isNaN(parseFloat(n)) && isFinite(n)
 
@@ -117,6 +120,12 @@ class window.Pinkman
     else
       ''
 
+  @padNum: (number, size=2) ->
+    output = number.toString()
+    output = '0' + output while (output.length < size)
+    output
+
+    
   @objToArray: (obj) ->
     i = 0
     a = []
@@ -140,6 +149,28 @@ class window.Pinkman
   
   @calledFunctions = []
 
+
+  @each: (array, exec, callback) ->
+    if @isArray(array) and @isFunction(exec)
+      l = array.length
+      i = 0
+      for item in array
+        exec(item)
+        i++
+        callback(array) if i == l and @isFunction(callback)
+
+    else
+      throw "Pinkman.each: wrong args: expect a array, apply function and a callback function. Got #{arguments}."
+  
+  @map: (array, exec, callback) ->
+    if @isArray(array) and @isFunction(exec)
+      outputArray = []
+      @each array, (item) =>
+        outputArray.push(exec(item))
+      , =>
+        callback(outputArray) if @isFunction(callback)
+      return(outputArray)
+  
   # --- Scope
 
   @scope: (obj) ->

@@ -41,7 +41,7 @@ class window.PinkmanObject extends window.PinkmanCommon
 
   # Desc: returns a javascript object version of this
   # Usage: a.attributes() #-> {key: value, key: value, ...}
-  attributes: () ->
+  attributes: ->
     a = new Object
     for k,v of this
       if PinkmanObject.privateAttributes.indexOf(k) == -1 and typeof v != 'function'
@@ -53,16 +53,22 @@ class window.PinkmanObject extends window.PinkmanCommon
 
   # Desc: json version of this
   # desc: used in api comunications
-  json: () ->
+  json: ->
+    (@pack(toBePacked) for toBePacked in @_pack_list) if $p.isArray(@_pack_list)
     a = new Object
     for k,v of this
-      if PinkmanObject.privateAttributes.indexOf(k) == -1 and typeof v != 'function'
-        if (v? and typeof v == 'object' and v.isPink)
-          # do not include collections in json format since they are supposed to have their own model/api
-          a[k] = v.json() unless v.isCollection
-        else
-          a[k] = v
+      a[k] = v if PinkmanObject.privateAttributes.indexOf(k) == -1 and not $p.isFunction(v) and not $p.isObject(v)
     return a
+    
+  # Desc: prepare for rails accept nested attributes
+  pack: (attr) ->
+    @_pack_list = [] unless @_pack_list?
+    @_pack_list.push(attr) if @_pack_list.indexOf(attr) == -1
+    if $p.isPink(this[attr])
+      pack = this[attr]
+      attrs = pack.json()
+      @set("#{attr}[#{k}]", v) for k,v of attrs
+    attrs
 
   # Desc: returns a array of attributes keys
   # Usage:
@@ -72,7 +78,7 @@ class window.PinkmanObject extends window.PinkmanCommon
     Object.keys(@attributes())
 
   # Desc: Alias for attributesKeys
-  keys: () ->
+  keys: ->
     @attributesKeys()
 
   extract: (args...) ->
@@ -81,7 +87,7 @@ class window.PinkmanObject extends window.PinkmanCommon
     return(a)
       
 
-  toString: () ->
+  toString: ->
     array = []
     array.push("(#{@className()})")
     for a in @attributesKeys()

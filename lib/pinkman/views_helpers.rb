@@ -64,8 +64,8 @@ end
 # as procs. So...
 
 # Use:
-#   define_method :method_name do |one, two, block=nil|
+#   define_helper :method_name do |one, two, block=nil|
 
 # DONT't use:
-#   define_method :method_name do |one, two, &block| 
+#   define_helper :method_name do |one, two, &block| 
 #   (this won't work)
