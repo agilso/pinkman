@@ -84,7 +84,7 @@ Pinkman.template_engines =
       while partialRegex.test(templateBody)
         # i++
         # console.log("partial-inception level: #{i}")
-        templateBody = templateBody.replace(partialRegex,@partialInception)
+        templateBody = templateBody.replace(partialRegex, @partialInception)
       return(templateBody)
     else
       ''
@@ -97,7 +97,7 @@ Pinkman.template_engines =
     if p.length
       p.html()
     else
-      match
+      throw "Pinkman Render Error - Could not find partial named #{id}."
 
   context: (options) ->
     options.object = options.context if options.context?
