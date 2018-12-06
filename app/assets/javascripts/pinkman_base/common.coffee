@@ -22,10 +22,17 @@ class window.PinkmanCommon
   @isInstance: (object) ->
     object.constructor is this
     
+  @firstInstanceOrInitialize: ->
+    obj = if $p.isArray(@instances) and @instances.length >= 1 then @instances[0] else new this
+        
+  @api: (args...) ->
+    @firstInstanceOrInitialize().api(args...)
+  
   initialize: (attributesObject) ->
     if typeof attributesObject == 'object'
       for key, value of attributesObject
         @set(key,value) if PinkmanObject.privateAttributes.indexOf(key) is -1
+    
   
   # Desc: return api url path
   api: (paths...) ->

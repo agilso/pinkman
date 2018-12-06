@@ -1,6 +1,9 @@
 class window.PinkmanCollection extends window.PinkmanCommon
 
   @pinkmanType = 'collection'
+    
+  @objectClass: ->
+    @firstInstanceOrInitialize().config.memberClass
   
   config:
     memberClass: PinkmanObject
@@ -10,7 +13,14 @@ class window.PinkmanCollection extends window.PinkmanCommon
     @isCollection = true
     @pinkmanType = 'collection'
     @collection = []
+    if @constructor.name? and @constructor.name!='PinkmanCollection'
+      if $p.isArray(@constructor.instances)
+        @constructor.instances.push(this)
+      else
+        @constructor.instances = [this]
+      
     Pinkman.collections.push(this)
+    
 
   # Desc: return an array of all members
   # this behaviour makes life easier... trust me
