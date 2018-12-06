@@ -13,6 +13,9 @@ class window.PinkmanObject extends window.PinkmanCommon
       @constructor.instances = [this]
     Pinkman.objects.push(this)
     
+  @alias: (newFunc, existingFunc) ->
+    @prototype[newFunc] = @prototype[existingFunc]
+
   @sync: (obj,callback,each) ->
     if $p.isArray(@instances) and $p.isObject(obj) and obj.id?
       length = @instances.length
