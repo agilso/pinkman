@@ -87,7 +87,8 @@ module Pinkman
           model.column_names.each {|attribute| hash[attribute] = object.send(attribute) } if include_all && model && model.methods.include?(:column_names)
           pinkmanscope.read.each {|attribute| hash[attribute] = send(attribute) if self.methods.include?(attribute)}
           pinkmanscope.read.each {|attribute| hash[attribute] ||= object.send(attribute) if object.methods.include?(attribute)}
-          pinkmanscope.read_ghost.each {|attribute| begin hash[attribute] ||= object.send(attribute) rescue nil end }
+          pinkmanscope.read_ghost.each {|attribute| begin hash[attribute] ||= object.send(attribute) rescue nil end }            
+          hash[:destroyed] = true if object.destroyed?
           hash[:errors] = self.class.format_errors(errors) if errors.present? and errors.any?
           hash
         end

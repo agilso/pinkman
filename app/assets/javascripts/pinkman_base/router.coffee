@@ -280,6 +280,9 @@ class window.PinkmanRouter
       # console.log 'route not found'
       false
     
+  @path: ->
+    window.location.pathname
+    
   # Goes to a path
   @visit: (path) ->
     @activate path, ->
@@ -312,6 +315,12 @@ class window.PinkmanRouter
   
   @back: ->
     window.history.back() if window.history?
+    
+  @refresh: ->
+    @go(@path())
+    
+  @reload: ->
+    window.location.reload()
     
   @start: ->
     Pinkman.ready =>
