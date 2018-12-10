@@ -97,7 +97,7 @@ Pinkman.template_engines =
     if p.length
       p.html()
     else
-      throw "Pinkman Render Error - Could not find partial named #{id}."
+      throw "Pinkman: Partial Error - Could not find partial named #{id}."
 
   context: (options) ->
     options.object = options.context if options.context?
