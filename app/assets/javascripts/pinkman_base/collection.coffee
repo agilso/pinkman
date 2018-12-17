@@ -556,7 +556,7 @@ class window.PinkmanCollection extends window.PinkmanCommon
         params.query = options.query
         params = Pinkman.mergeObjects(params, options.params)
         Pinkman.ajax.get
-          url: obj.api('get')
+          url: options.url || obj.api('get')
           data: params
           complete: (response) =>
             col.fetchFromArray(response)

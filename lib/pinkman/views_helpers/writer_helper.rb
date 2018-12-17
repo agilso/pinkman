@@ -7,12 +7,13 @@ module Pinkman
       extend Pinkman::BaseHelper
       
       define_helper :write do |string|
-        raw "{{ #{string} }}"
+        raw "{{. #{string} }}"
       end
       define_helper_alias :w, :write
       
       define_helper :write_and_escape_sync do |string|
-        raw("{{. #{string} }}")
+        ActiveSupport::Deprecation.warn('"p._w" deprecated. Use "p.w" instead.')
+        p.write(string)
       end
       define_helper_alias :_w, :write_and_escape_sync
       

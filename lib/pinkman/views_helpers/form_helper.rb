@@ -32,8 +32,8 @@ module Pinkman
       end
     
       define_helper :textarea do |hash|
-        content_tag('textarea',hash.merge(data: {pinkey: p.pinkey, action: hash[:name]}, value: p._w(hash[:name]))) do 
-          p._w(hash[:name])
+        content_tag('textarea',hash.merge(data: {pinkey: p.pinkey, action: hash[:name]}, value: p.w(hash[:name]))) do 
+          p.w(hash[:name])
         end
       end
       
@@ -65,7 +65,7 @@ module Pinkman
       end
       
       define_helper :first_error do
-        p._w('firstError')
+        p.w('firstError')
       end
       
     end

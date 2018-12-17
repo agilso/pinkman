@@ -95,7 +95,7 @@ class window.PinkmanController extends window.PinkmanObject
   # but... in a few ocasions, the developer must have the capability to exclude certain attributes from this binding.
   # thats when the "except" option comes in
   # maybe a "only" option is going to be implemented in the near future
-  bindAllSelector: (id,options) ->
+  bindAllSelector: (id, options) ->
     except = options.except if $p.isObject(options) and options.except?
     selector = "##{@id} form [data-action], ##{@id} .form [data-action]"
     
@@ -127,7 +127,7 @@ class window.PinkmanController extends window.PinkmanObject
       
     PinkmanAction.define
       id: "#{@pinkey}-bindAll"
-      selector: @bindAllSelector(@id,options)
+      selector: @bindAllSelector(@id, options)
       eventName: ['change','keyup']
       controller: this
       callback: (obj,$j) ->
