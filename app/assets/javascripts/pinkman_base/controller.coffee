@@ -159,7 +159,7 @@ class window.PinkmanController extends window.PinkmanObject
       
   # === Autocomplete ===
 
-  # -- Usage: autocomplete(input_name,options)
+  # -- Usage: autocomplete(input_name, options)
 
   # -- Overview
   # 1: User types something
@@ -168,7 +168,7 @@ class window.PinkmanController extends window.PinkmanObject
   # 4: Pinkman sends the selected record to callback function
 
   # -- Parameters & Options
-  # @autocomplete(attribute,options)
+  # @autocomplete(attribute, options)
   # options:
     # with: [collection] 
     # pinkman collection responsible for filtering/searching the results
@@ -176,9 +176,19 @@ class window.PinkmanController extends window.PinkmanObject
     # method: [search|yourCustomMethod] 
     # Search is the default. Anythings that filters by a 'query'.
     # You can define a yourCustomMethod inside the collection model like this:
-    # yourCustomMethod: (user_query, callback) ->
-      # -- perform a selection based on user_query
-      # callback(this) if $p.isFunction(callback)
+    # yourCustomMethod: (options) ->
+      
+      # 1. perfom some filter on the collection based on options.query
+      
+      # 2. don't forget to verify if user can access the requested scope in case of api comunications
+      
+      # 3. call options.callback whenever the collection is ready
+      
+      # options object explanation:
+      #   options.query: what user is trying to find/search
+      #   options.scope: scope user is trying to access (in case of api comunications)
+      #   options.callback: call this function with the filtered collection when it's ready
+      
     
     # template: [template-id] (optional)
     # Any template that has a 'select-attribute' action
@@ -202,6 +212,7 @@ class window.PinkmanController extends window.PinkmanObject
     # variables // user options // default options
     collection = options.with
     callback = options.call
+    scope = if options.scope? then options.scope else 'public'
     template = if options.template? then options.template else "#{attr_name}-autocomplete"
     target = if options.target? then options.target else "#{attr_name}-autocomplete"
     method = if options.method? then options.method else 'search'
@@ -233,23 +244,26 @@ class window.PinkmanController extends window.PinkmanObject
       window[waitTimerName] = $p.sleep wait, =>
         
         # calls the filter method (search)
-        collection[method] obj[attr_name], (collection) ->
+        collection[method] 
+          query: obj[attr_name]
+          scope: scope
+          callback: (collection) ->
           
-          # render results
-          collection.render
-            template: template
-            target: target
-            callback: ->
-              # Hide or show autocomplete
-              if autoHide
-                if obj[attr_name]? and obj[attr_name] != ''
-                  $("##{target}").fadeIn()
-                else
-                  $("##{target}").fadeOut()
-              
-              # Set the autocomplete target width to same as the input
-              if autoWidth
-                $("##{target}").width($("input[name='#{attr_name}']").innerWidth() - ($("##{target}").innerWidth() - $("##{target}").width()))
+            # render results
+            collection.render
+              template: template
+              target: target
+              callback: ->
+                # Hide or show autocomplete
+                if autoHide
+                  if obj[attr_name]? and obj[attr_name] != ''
+                    $("##{target}").fadeIn()
+                  else
+                    $("##{target}").fadeOut()
+                
+                # Set the autocomplete target width to same as the input
+                if autoWidth
+                  $("##{target}").width($("input[name='#{attr_name}']").innerWidth() - ($("##{target}").innerWidth() - $("##{target}").width()))
     
     # user chooses something and click
     @action "select-#{attr_name}", 'click', (args...) =>
