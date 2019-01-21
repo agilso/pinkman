@@ -47,6 +47,13 @@ module Pinkman
         end
       end
       
+      # wrap and insert partial = imprint
+      define_helper :imprint do |path|
+        p.wrap_in path do
+          p.partial path
+        end
+      end
+      
       define_helper :load_templates do |dir_path=nil|
         if Rails
           pinkman_views_dir_path = Rails.root.join('app','views','pinkman')
