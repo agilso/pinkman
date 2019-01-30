@@ -1,16 +1,17 @@
 class window.PinkmanPath extends Pinkman.object
    
   constructor: (url) ->
-    # setting params
-    paramsRegex = /\?.*/
-    if paramsRegex.test(url)
-      paramsString = /\?(.*)/.exec(url)[1]
-      @query = JSON.parse('{"' + decodeURI(paramsString).replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g,'":"') + '"}')
-      url = url.replace("?#{paramsString}", '')
-      
     if PinkmanCache.has("p-path-#{url}")
       return(PinkmanCache.get("p-path-#{url}"))
     else
+      # setting params
+      paramsRegex = /\?.*/
+      if paramsRegex.test(url)
+        paramsString = /\?(.*)/.exec(url)[1]
+        @query = JSON.parse('{"' + decodeURI(paramsString).replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g,'":"') + '"}')
+        url = url.replace("?#{paramsString}", '')
+      
+      
       @levels = new Pinkman.collection
       @static = new Pinkman.collection
       @dynamic = new Pinkman.collection
@@ -66,6 +67,7 @@ class window.PinkmanPath extends Pinkman.object
     @levels.last()
   
   match: (path) ->
+    # console.log "PinkmanPath#match - path arg: #{path}"
     path = new PinkmanPath(path) if Pinkman.isString(path)
     if PinkmanPath.isInstance(path) and path.depth == @depth
       # console.log 'tentou'
@@ -131,6 +133,7 @@ class window.PinkmanRouteMatcher extends Pinkman.object
   
   setup: (route,url) ->
     if route? and url?
+      # console.log "PinkmanRouterMatcher#setup - url arg: #{url}"
       urlPath = new PinkmanPath(url) 
       route.path.matchParams(urlPath)
       @set('url',url)
