@@ -324,6 +324,14 @@ class window.PinkmanRouter
     
   @reload: ->
     window.location.reload()
+  
+  @paramsObject: ->
+    regex = /\?(.*)/
+    if regex.test(window.location.href)
+      paramsString = regex.exec(window.location.href)[1]
+      JSON.parse('{"' + decodeURI(paramsString).replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g,'":"') + '"}')
+    else
+      return new Object
     
   @start: ->
     Pinkman.ready =>
