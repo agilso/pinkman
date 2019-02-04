@@ -3,7 +3,7 @@ class ApiController < ApplicationController
   def current_limit
     # default: 20
     # max: 200
-    [(params[:limit].to_i || 10), 100].min
+    [(params[:limit] || 10).to_i, 100].min
   end
   
   def current_offset
