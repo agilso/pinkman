@@ -152,6 +152,28 @@ class window.PinkmanCommon
       @append
         template: options + '-template'
         target: options
+        
+  prepend: (options) ->
+    if options? and typeof options == 'object' and options.target?
+      options.template = options.target + '-template' unless options.template? and options.template != ''
+      newOptions = new Object
+      for k,v of options
+        newOptions[k] = v if k != 'target' and k != 'callback'
+      newOptions.reRender = no
+      target = options.target
+      wrapIn = options.wrapIn
+      newOptions.object = this
+      newOptions.callback = (object,content) ->
+        if wrapIn?
+          $('#'+target).prepend("<div class='#{wrapIn}'>#{content}</div>")
+        else
+          $('#'+target).prepend(content)
+        options.callback(object,content) if options.callback? and typeof options.callback == 'function'
+      Pinkman.render(newOptions)
+    else if options? and Pinkman.isString(options)
+      @prepend
+        template: options + '-template'
+        target: options
 
   _queue: (options) ->
     options.id = options.template
