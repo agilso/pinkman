@@ -1,6 +1,6 @@
 # Pinkman
 
-Rails js framework.
+Rails js framework. V1 RC.
 
 ## Installation
 

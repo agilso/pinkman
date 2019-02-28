@@ -222,6 +222,9 @@ class window.PinkmanController extends window.PinkmanObject
     wait = if options.wait? then options.wait else 0.75
     waitTimerName = "#{attr_name}AutocompleteTimer"
     
+    
+    # collection.set('_autocompleting', attr_name)
+    
     # hide initially
     $("##{target}").hide() if autoHide
     
