@@ -19,7 +19,21 @@ module Pinkman
       def read_attributes *args
         self.read = args
         self.read = [] unless args.first
+        read.each do |attribute|
+          unless :all.in?(read.map(&:to_sym))
+            optimize_select << "#{serializer.model.table_name}.#{attribute}" if attribute.to_s.in?(serializer.model.column_names)
+          end
+          optimize_includes << attribute.to_sym if attribute.to_s.in?(serializer.model.reflections.keys)
+        end
         read
+      end
+      
+      def optimize_select
+        @optimize_select ||= []
+      end
+      
+      def optimize_includes
+        @optimize_includes ||= []
       end
       
       def read_ghost_attributes *args
