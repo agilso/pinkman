@@ -1,3 +1,5 @@
+require 'rails'
+
 module Pinkman
   class Base < ::ActiveRecord::Base
     
