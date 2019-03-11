@@ -1,5 +1,5 @@
 module Pinkman
-  class Base < ActiveRecord::Base
+  class Base < ::ActiveRecord::Base
     
     self.abstract_class = true
     
