@@ -17,11 +17,14 @@ module Pinkman
       end
 
       self.root = false
-
+      def self.table_name
+        model.table_name
+      end
+      
       def self.scope name=:public, &block
         @scopes ||= {}
         if block_given?
-          @scopes[name.to_sym] = Pinkman::Serializer::Scope.new(serializer: self)
+          @scopes[name.to_sym] = Pinkman::Serializer::Scope.new(serializer: self, name: name.to_s)
           yield(@scopes[name.to_sym]) 
         else
           if @scopes[name.to_sym]
@@ -32,6 +35,10 @@ module Pinkman
             raise(ArgumentError, (Pinkman.configuration.scope_fallback ? ("Scope '#{name}' and fallback scope '#{Pinkman.configuration.scope_fallback}' were not found in #{self.to_s}.") : ("Scope '#{name}' not found in #{self.to_s}.") ))
           end
         end
+      end
+      
+      def self.has_scope?(name)
+        scopes.has_key?(name.to_sym)
       end
 
       def self.scopes
@@ -76,6 +83,12 @@ module Pinkman
         e = Hash.new
         errors.each {|k,v| e[k] = [v].flatten}
         e
+      end
+      
+      # assocs
+      
+      def self.reflections
+        model.reflections
       end
 
       def attributes *args

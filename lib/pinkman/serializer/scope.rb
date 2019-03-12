@@ -1,12 +1,16 @@
 module Pinkman
   module Serializer
     class Scope
+      
+      attr_accessor :name, :read, :write, :access, :serializer
 
       def initialize hash
-       self.serializer = hash[:serializer] if hash.is_a?(Hash) and hash[:serializer]
-      end
-
-      attr_accessor :read, :write, :access, :serializer
+       if hash.is_a?(Hash)
+         self.serializer = hash[:serializer]
+         self.name = hash[:name]
+       end
+       self
+     end
       
       def read_ghost
         @read_ghost || []
@@ -19,21 +23,45 @@ module Pinkman
       def read_attributes *args
         self.read = args
         self.read = [] unless args.first
-        read.each do |attribute|
-          unless :all.in?(read.map(&:to_sym))
-            optimize_select << "#{serializer.model.table_name}.#{attribute}" if attribute.to_s.in?(serializer.model.column_names)
-          end
-          optimize_includes << attribute.to_sym if attribute.to_s.in?(serializer.model.reflections.keys)
-        end
+        query_optimizer
         read
       end
       
-      def optimize_select
-        @optimize_select ||= []
+      def associations
+        read.select{ |attribute| attribute_is_association?(attribute) }
       end
       
-      def optimize_includes
-        @optimize_includes ||= []
+      def fields
+        read.select{ |attribute| attribute_is_in_db?(attribute) }
+      end
+      
+      def query_optimizer 
+        select_optimizer
+        include_optimizer
+      end
+      
+      def select_optimizer
+        unless :all.in?(read.map(&:to_sym))
+          fields.each do |attribute|
+            selecting << "#{serializer.table_name}.#{attribute}"
+          end
+        end
+        selecting
+      end
+      
+      def include_optimizer
+        associations.each do |attribute|
+          including << attribute_inclusion_clause(attribute)
+        end
+        including
+      end
+      
+      def selecting
+        @selecting ||= []
+      end
+      
+      def including
+        @including ||= []
       end
       
       def read_ghost_attributes *args
@@ -59,7 +87,7 @@ module Pinkman
       end
 
       def can_write? attribute
-        (write.include?(:all) or write.include?(attribute.to_sym)) and (serializer.model.column_names.include?(attribute.to_s) or (serializer.model.instance_methods.include?("#{attribute.to_s}=".to_sym) and write.include?(attribute.to_sym)))
+        (write.include?(:all) or write.include?(attribute.to_sym)) and (serializer.column_names.include?(attribute.to_s) or (serializer.instance_methods.include?("#{attribute.to_s}=".to_sym) and write.include?(attribute.to_sym)))
       end
 
       def can_access? action
@@ -77,6 +105,69 @@ module Pinkman
       def can_access
         access
       end
+      
+      # private
+      
+      def reflections
+        serializer.reflections
+      end
+      
+      def attribute_is_in_db?(attribute)
+        attribute.to_s.in?(serializer.model.column_names)
+      end
+      
+      def attribute_is_association?(attribute)
+        attribute.to_s.in?(reflections.keys.map(&:to_s))
+      end
+      
+      def attribute_inclusion_clause attribute
+        if attribute_has_nested_associated?(attribute)
+          a = []
+          assoc_scope = attribute_assoc_scope(attribute)
+          assoc_scope.associations.each do |assoc_attribute|
+            a << assoc_scope.attribute_inclusion_clause(assoc_attribute)
+          end
+          { attribute.to_sym => a }
+        else
+          attribute.to_sym
+        end
+      end
+      
+      
+      
+      def get_associated_model(reflection)
+        reflection.klass
+      end
+      
+      def get_associated_serializer(attribute)
+        begin
+          get_associated_model(reflections[attribute.to_s]).serializer if attribute_is_association?(attribute.to_s)
+        rescue
+          raise ArgumentError, "#{serializer}.#{name}: association named - #{attribute} - found but I can't find its serializer."
+        end
+      end
+      
+      def attribute_assoc_scope(attribute)
+        assoc_serializer = get_associated_serializer(attribute)
+        if assoc_serializer
+          assoc_serializer.scope(name.to_sym) 
+        else
+          raise ArgumentError, "#{serializer}.#{name}: association named - #{attribute} - found but I can't find its serializer."
+        end
+      end
+    
+      # given that a attribute is a association,
+      # and the associated serializer has same scope defined,
+      # checks if a nested association is present
+      def attribute_has_nested_associated?(attribute)
+        attribute = attribute.to_s
+        if attribute_is_association?(attribute)
+          assoc_scope = attribute_assoc_scope(attribute)
+          assoc_scope && assoc_scope.associations.any? && assoc_scope.serializer.model != serializer.model
+        end
+      end
+      
     end
+  
   end
 end
