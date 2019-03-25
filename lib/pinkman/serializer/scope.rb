@@ -87,7 +87,7 @@ module Pinkman
       end
 
       def can_write? attribute
-        (write.include?(:all) or write.include?(attribute.to_sym)) and (serializer.column_names.include?(attribute.to_s) or (serializer.instance_methods.include?("#{attribute.to_s}=".to_sym) and write.include?(attribute.to_sym)))
+        (write.include?(:all) or write.include?(attribute.to_sym)) and (serializer.model.column_names.include?(attribute.to_s) or (serializer.instance_methods.include?("#{attribute.to_s}=".to_sym) and write.include?(attribute.to_sym)))
       end
 
       def can_access? action
@@ -136,7 +136,11 @@ module Pinkman
       
       
       def get_associated_model(reflection)
-        reflection.klass
+        if reflection.options[:polymorphic]
+          reflection.klass
+        else
+          reflection.active_record
+        end
       end
       
       def get_associated_serializer(attribute)
@@ -152,6 +156,7 @@ module Pinkman
         if assoc_serializer
           assoc_serializer.scope(name.to_sym) 
         else
+          binding.pry
           raise ArgumentError, "#{serializer}.#{name}: association named - #{attribute} - found but I can't find its serializer."
         end
       end
