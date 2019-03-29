@@ -100,7 +100,7 @@ class window.PinkmanRouteMatcher extends Pinkman.object
       @controllers.each (c) =>
         # console.log 'dentro dos controllers desse router'
         c.setParams(@params())
-        c.build(yes,this)
+        c.build(yes, this)
       , =>
         callback(this.route, this.url) if typeof callback == 'function'
     else
@@ -131,13 +131,13 @@ class window.PinkmanRouteMatcher extends Pinkman.object
         .sortBy('staticDepth','desc').first()
       return(PinkmanCache.cache("p-router-#{url}", r))
   
-  setup: (route,url) ->
+  setup: (route, url) ->
     if route? and url?
       # console.log "PinkmanRouterMatcher#setup - url arg: #{url}"
       urlPath = new PinkmanPath(url) 
       route.path.matchParams(urlPath)
-      @set('url',url)
-      @set('path',urlPath)
+      @set('url', url)
+      @set('path', urlPath)
       @set 'route', route
       @set 'controller', @route.controller
       @set('controllers', Pinkman.controllers.select(id: @controller))
@@ -257,7 +257,7 @@ class window.PinkmanRouter
     r.initialize (args...) =>
       @analytics.send(args...) if @_config.analytics?
       callback() if typeof callback == 'function'
-      @_config.callback(args...) if typeof @_config.callback == 'function'
+      @_config.after(@currentMatcher, @previousMatcher) if typeof @_config.after == 'function'
     Pinkman.routes.set('current',r.route)
     unless Pinkman.router._config.freeze or (r.options? and r.options.freeze)
       # console.log 'topo'
@@ -268,17 +268,19 @@ class window.PinkmanRouter
     true
     
   # Search path throughout routes. On match, activate respective controllers: clears template and execute main(s) function(s)
-  @activate: (path,callback,options) ->
+  @activate: (path, callback, options) ->
     r = Pinkman.routes.match(path)
     if r? and r
+      @previousMatcher = @currentMatcher if @currentMatcher?
+      @currentMatcher = r
       # console.log r
       r.options = options
-      @_config.beforeRender(r) if $p.isFunction(@_config.beforeRender)
+      @_config.before(@currentMatcher, @previousMatcher) if $p.isFunction(@_config.before)
       if @_config.transition? and typeof @_config.transition == 'function'
         @_config.transition =>
-          @render(r,callback)
+          @render(r, callback)
       else
-        @render(r,callback)
+        @render(r, callback)
     else
       # console.log 'route not found'
       false
