@@ -45,12 +45,13 @@ class window.PinkmanObject extends window.PinkmanCommon
 
   # Desc: returns a javascript object version of this
   # Usage: a.attributes() #-> {key: value, key: value, ...}
-  attributes: ->
+  attributes: (initialObj)->
     a = new Object
     for k,v of this
       if PinkmanObject.privateAttributes.indexOf(k) == -1 and typeof v != 'function'
         if (v? and typeof v == 'object' and v.isPink)
-          a[k] = v.attributes()
+          # initial obj with unless condition stops circular reference
+          a[k] = v.attributes(this) unless (initialObj? and initialObj.pinkey == v.pinkey)
         else
           a[k] = v
     return a
