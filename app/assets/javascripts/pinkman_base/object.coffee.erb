@@ -15,8 +15,8 @@ class window.PinkmanObject extends window.PinkmanCommon
     
   @alias: (newFunc, existingFunc) ->
     @prototype[newFunc] = @prototype[existingFunc]
-
-  @sync: (obj,callback,each) ->
+    
+  @sync: (obj, callback, each) ->
     if $p.isArray(@instances) and $p.isObject(obj) and obj.id?
       length = @instances.length
       i = 0
@@ -25,7 +25,7 @@ class window.PinkmanObject extends window.PinkmanCommon
         if instance.id? and instance.id == obj.id
           if obj.isPink then instance.assign(obj.attributes()) else instance.assign(obj)
           each(instance) if $p.isFunction(each) and obj.pinkey != instance.pinkey
-          callback() if (length == i) and $p.isFunction(callback)
+        callback() if (length == i) and $p.isFunction(callback)
     else
       true
     
