@@ -18,6 +18,7 @@ Pinkman.closest = (jquery,level=0) ->
 class window.PinkmanController extends window.PinkmanObject
   
   clear: ->
+    @clearSubscriptions()
     @actions.each (a) ->
       a.clear()
 
@@ -26,6 +27,7 @@ class window.PinkmanController extends window.PinkmanObject
 
   constructor: (args...) ->
     @actions = new PinkmanActions
+    @subscriptions = []
     super(args...)
     
   selector: ->
@@ -294,7 +296,15 @@ class window.PinkmanController extends window.PinkmanObject
       
   endBottom: () ->
     Pinkman._bottomTriggered = false
- 
+   
+  clearSubscriptions: ->
+    i = 0
+    for sub in @subscriptions
+      i = i + 1
+      sub.unsubscribe()
+      # console.log sub
+      # console.log 'unsubscribed'
+      @subscriptions = [] if i == @subscriptions.length
  
   subscribe: (channel,opt) ->
     throw 'ActionCable not found.' unless Pinkman.cable?
@@ -313,7 +323,7 @@ class window.PinkmanController extends window.PinkmanObject
       params.room = opt.room
       params.scope = opt.scope
       params.filter_by = (opt.filter_by or opt.filterBy ) if (opt.filterBy? or opt.filter_by?)
-    Pinkman.cable.subscriptions.create params, received: callback
+    @subscriptions.push(Pinkman.cable.subscriptions.create params, received: callback)
     
   scrolling: (callback) -> 
     $(document).on 'scroll', =>
@@ -377,7 +387,7 @@ class window.PinkmanAction extends window.PinkmanObject
     @_event_listening = new Object
     super(args...)
     @call = ->
-    @events = []
+    @_events = []
   
   # helper to define custom actions
   @define: (options) ->
@@ -432,15 +442,16 @@ class window.PinkmanAction extends window.PinkmanObject
   # Desc: removes event
   clear: ->
     @_event_listening = new Object
-    for ev in @events
+    for ev in @_events
       $('body').off ev, @selector
+      
     
   # Desc: attaches one single event
   attach: (eventName) ->
     if Pinkman.isString(eventName) and not @_event_listening[eventName]
       action = this
       action._event_listening[eventName] = yes
-      @events.push(eventName)
+      @_events.push(eventName)
       $('body').on eventName, action.selector, (ev) ->
         # debugger
         # console.log "#{action.id}: called - #{action.name}"

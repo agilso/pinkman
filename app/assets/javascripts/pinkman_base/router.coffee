@@ -97,6 +97,7 @@ class window.PinkmanRouteMatcher extends Pinkman.object
     if @controllers.any()?
       Pinkman.controllers.unbindScrolling()
       # console.log 'clear dos Pinkman.controllers'
+      
       @controllers.each (c) =>
         # console.log 'dentro dos controllers desse router'
         c.setParams(@params())
@@ -272,6 +273,11 @@ class window.PinkmanRouter
     r = Pinkman.routes.match(path)
     if r? and r
       @previousMatcher = @currentMatcher if @currentMatcher?
+      
+      if @previousMatcher? 
+        @previousMatcher.controllers.each (c) ->
+          c.clearSubscriptions()
+        
       @currentMatcher = r
       # console.log r
       r.options = options
