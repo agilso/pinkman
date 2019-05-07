@@ -139,8 +139,8 @@ class window.PinkmanCollection extends window.PinkmanCommon
     @each (record) =>
       obj[record[attr]] = new @constructor unless obj[record[attr]]?
       obj[record[attr]].push record
-      , ->
-      callback(obj) if $p.isFunction(callback)
+    , ->
+    callback(obj) if $p.isFunction(callback)
     return(obj)
   
   # every element of this collection will be substituted by the element of the collection passed
