@@ -87,7 +87,7 @@ module Pinkman
       end
 
       def can_write? attribute
-        (write.include?(:all) or write.include?(attribute.to_sym)) and (serializer.model.column_names.include?(attribute.to_s) or (serializer.instance_methods.include?("#{attribute.to_s}=".to_sym) and write.include?(attribute.to_sym)))
+        (write.include?(:all) or write.include?(attribute.to_sym)) and (serializer.model.column_names.include?(attribute.to_s) or (serializer.model.instance_methods.include?("#{attribute.to_s}=".to_sym) and write.include?(attribute.to_sym)))
       end
 
       def can_access? action
