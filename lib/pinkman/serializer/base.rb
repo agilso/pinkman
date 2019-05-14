@@ -21,6 +21,12 @@ module Pinkman
         model.table_name
       end
       
+      def self.define_scopes *args, &block
+        args.each do |scope_name|
+          self.scope(scope_name, &block)
+        end
+      end
+      
       def self.scope name=:public, &block
         @scopes ||= {}
         if block_given?
