@@ -38,7 +38,7 @@ module Pinkman
         options_select = options[:select] || []
         
         scope_obj = serializer.scope(scope)
-        including_array = scope_obj.including + options_includes
+        including_array = scope_obj.including + scope_obj.associations_inclusion + options_includes
         selecting_array = scope_obj.selecting + options_select
         
         includes(including_array).select(selecting_array)

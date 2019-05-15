@@ -81,6 +81,18 @@ module Pinkman
         self.access = [] unless args.first
         access
       end
+      
+      def associations_inclusion
+        @associations_inclusion ||= []
+      end
+      
+      def associations_inclusion= val
+        @associations_inclusion = val
+      end
+      
+      def include_associations *args
+        self.associations_inclusion = args
+      end
 
       def can_read? attribute
         read.include?(:all) or read.include?(attribute.to_sym) or attribute.to_sym == :error or attribute.to_sym == :errors or read_ghost.include?(attribute.to_sym)
