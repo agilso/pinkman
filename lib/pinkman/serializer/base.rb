@@ -65,7 +65,7 @@ module Pinkman
             define_method attribute do
               reflection = object.class.reflections[attribute.to_s] 
               if reflection
-                Pinkman::Serializer::array(object.send(attribute), scope: @scope, params: @params)
+                Pinkman::Serializer::array(object.send(attribute), scope: get_assoc_scope(attribute, @scope), params: @params)
               end
             end
           end
@@ -78,7 +78,7 @@ module Pinkman
             define_method attribute do
               reflection = object.class.reflections[attribute.to_s] 
               if reflection
-                reflection.klass.serializer.new(object.send(attribute), scope: @scope, params: @params)
+                reflection.klass.serializer.new(object.send(attribute), scope: get_assoc_scope(attribute, @scope), params: @params)
               end
             end
           end
@@ -95,6 +95,15 @@ module Pinkman
       
       def self.reflections
         model.reflections
+      end
+      
+      def get_assoc_scope assoc, scope
+        assoc_scopes = begin self.class.scope(scope).assoc_scopes rescue nil end
+        if assoc_scopes.is_a?(Hash) and assoc_scopes[assoc]
+          assoc_scopes[assoc]
+        else
+          scope
+        end
       end
 
       def attributes *args

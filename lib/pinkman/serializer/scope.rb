@@ -2,7 +2,7 @@ module Pinkman
   module Serializer
     class Scope
       
-      attr_accessor :name, :read, :write, :access, :serializer
+      attr_accessor :name, :read, :write, :access, :serializer, :assoc_scopes
 
       def initialize hash
        if hash.is_a?(Hash)
@@ -21,8 +21,18 @@ module Pinkman
       end
 
       def read_attributes *args
-        self.read = args
-        self.read = [] unless args.first
+        read_attrs = []
+        assoc_scopes = {}
+        args.each do |field|
+          if field.is_a?(Hash)
+           assoc_scopes.merge!(field)
+           read_attrs = read_attrs + field.keys
+          else
+           read_attrs << field
+          end
+        end
+        self.read = read_attrs
+        self.assoc_scopes = assoc_scopes
         query_optimizer
         read
       end
