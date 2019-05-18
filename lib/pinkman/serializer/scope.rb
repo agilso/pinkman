@@ -26,7 +26,7 @@ module Pinkman
         args.each do |field|
           if field.is_a?(Hash)
            assoc_scopes.merge!(field)
-           read_attrs = read_attrs + field.keys
+           read_attrs = read_attrs + field.keys if field.any?
           else
            read_attrs << field
           end
@@ -51,7 +51,7 @@ module Pinkman
       end
       
       def select_optimizer
-        unless :all.in?(read.map(&:to_sym))
+        unless :all.in?(read.map { |read_attr| begin read_attr.to_sym rescue read_attr end})
           fields.each do |attribute|
             selecting << "#{serializer.table_name}.#{attribute}"
           end
