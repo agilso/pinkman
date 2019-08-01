@@ -293,7 +293,14 @@ class window.PinkmanRouter
     
   @path: ->
     window.location.pathname
-    
+  
+  # Helper for composing the current url with a new params  
+  @composePath: (obj) ->
+    if $p.isObject(obj)
+      $p.json2url($r.path(),($p.mergeObjects $r.paramsObject(), obj))
+    else
+      throw "Pinkman Router $r: composePath called with wrong args: #{obj}"
+  
   # Goes to a path
   @visit: (path) ->
     @activate path, ->
