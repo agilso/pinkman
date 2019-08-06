@@ -44,7 +44,7 @@ class window.PinkmanPath extends Pinkman.object
         @set('depth',i)
         @set('staticDepth',s)
         @set('dynamicDepth',d)
-        PinkmanCache.cache("p-path-#{url}",this)
+        PinkmanCache.cache("p-path-#{url}", this)
       
   @depth: (url) ->
     a = url.split('/')

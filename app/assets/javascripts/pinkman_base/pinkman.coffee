@@ -62,6 +62,12 @@ class window.Pinkman
     
   # --- tools and facilities
   
+  @md5: (args...) ->
+    md5(args...)
+    
+  @objHash: (obj) ->
+    @md5(JSON.stringify(obj))
+  
   @top: ->
     window.scrollTo(0,0)
 

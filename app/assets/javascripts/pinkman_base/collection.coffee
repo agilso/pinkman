@@ -519,10 +519,23 @@ class window.PinkmanCollection extends window.PinkmanCommon
   
   # --- Cache Related --- #
   
+  @mangleKey: (key) ->
+    @startCaching() unless @_name_md5
+    @_name_md5 + key
+    
+  @cache: (key, value) ->
+    $c.cache(@mangleKey(key), value)
+  
+  @hasCache: (key) ->
+    $c.has(@mangleKey(key))
+    
+  @getCache: (key, callback) ->
+    $c.get(@mangleKey(key), callback)
+  
   @startCaching: () ->
     # cache structure
     @_name_md5 = md5(if @name then @name else @toString()) unless @_name_md5?
-    $c.cache(@_name_md5, new this) unless $c.has(@_name_md5)
+    # $c.cache(@_name_md5, new this) unless $c.has(@_name_md5)
 
   # --- Ajax related --- #
   
@@ -542,25 +555,23 @@ class window.PinkmanCollection extends window.PinkmanCommon
   
   @get: (options) ->
     if $p.isObject(options) and (options.query? or options.params?) and $p.isFunction(options.callback)
-      @startCaching()
-      options.cache = yes unless options.cache?
-      query = Pinkman.mergeObjects(options.scope, Pinkman.mergeObjects(options.query, options.params))
-      query_md5 = md5(JSON.stringify(query) + @_name_md5)
-      if options.cache and $c.has(query_md5)
-        $c.get(query_md5, options.callback)
+      options.cache = false unless options.cache?
+      query_md5 = $p.objHash(options)
+      if options.cache and @hasCache(query_md5)
+        @getCache(query_md5, options.callback)
       else
         col = new this
         obj = new col.config.memberClass
         params = new Object
         params.scope = options.scope || Pinkman.scope(obj)
         params.query = options.query
-        params = Pinkman.mergeObjects(params, options.params)
-        Pinkman.ajax.get
+        params = $p.mergeObjects(params, options.params)
+        $p.ajax.get
           url: options.url || obj.api('get')
           data: params
           complete: (response) =>
             col.fetchFromArray(response)
-            $c.cache(query_md5, col)
+            @cache(query_md5, col)
             options.callback(col)
     else
       throw "Pinkman Error: collection.get invalid options #{options.toString()}"
@@ -622,7 +633,6 @@ class window.PinkmanCollection extends window.PinkmanCommon
     if options? and typeof options == 'object' and options.url?
       options_md5 = md5(JSON.stringify(options) + @className())
       options.params = new Object unless options.params?
-      options.cache = yes unless options.cache?
       if options.scope?
         options.params.scope = options.scope
       else
@@ -633,12 +643,11 @@ class window.PinkmanCollection extends window.PinkmanCommon
       Pinkman.ajax.get
         url: Pinkman.json2url(options.url, options.params) 
         complete: (response) =>
-          $c.cache(options_md5, response) if options.cache
           @handleFetchResponse(response, options)
       return(this)
       
-  handleFetchResponse: (response,options) ->
-    @constructor.startCaching()
+  handleFetchResponse: (response, options) ->
+    # @constructor.startCaching()
     if response?
       [@errors, @error] = [response.errors, response.error] if response.errors? or response.error?
       
@@ -652,7 +661,7 @@ class window.PinkmanCollection extends window.PinkmanCommon
 
       if response.length > 0
         # CACHING INSTANCES
-        $c.get(@constructor._name_md5).fetchFromArray(response)
+        # $c.get(@constructor._name_md5).fetchFromArray(response)
         
         @_recent.fetchFromArray(response) 
         @fetchFromArray(response)
