@@ -72,13 +72,14 @@ class window.PinkmanController extends window.PinkmanObject
     if args.length == 1
       @actions.getBy('name',args[0])
     else
-      [name, eventName,callback,unknown...] = args
+      [name, eventName, callback, preventDefault, unknown...] = args
       PinkmanAction.define
         id: "#{@pinkey}-#{name}-#{eventName}"
         name: name
         eventName: eventName
         callback: callback
         controller: this
+        preventDefault: preventDefault || true
         selector: "##{this.id} [data-action='#{name}']"
       
   
@@ -406,6 +407,10 @@ class window.PinkmanAction extends window.PinkmanObject
       a.set 'controller', options.controller
       a.set 'selector', options.selector
       a.set 'eventName', options.eventName
+      
+      # default value for preventDefault: yes
+      a.set 'preventDefault', options.preventDefault
+      
       # a.log 'eventName'
       a.set 'call', options.callback if options.callback
       Pinkman.actions.push(a)
@@ -455,7 +460,7 @@ class window.PinkmanAction extends window.PinkmanObject
       $('body').on eventName, action.selector, (ev) ->
         # debugger
         # console.log "#{action.id}: called - #{action.name}"
-        ev.preventDefault() if eventName != 'keypress' and eventName != 'mousedown'
+        ev.preventDefault() if (eventName != 'keypress' and eventName != 'mousedown') and @preventDefault
         obj = window.Pinkman.closest($(this))
         action.call(obj,$(this),ev)
 
