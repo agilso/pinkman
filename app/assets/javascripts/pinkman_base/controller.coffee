@@ -460,7 +460,15 @@ class window.PinkmanAction extends window.PinkmanObject
       $('body').on eventName, action.selector, (ev) ->
         # debugger
         # console.log "#{action.id}: called - #{action.name}"
-        ev.preventDefault() if (eventName != 'keypress' and eventName != 'mousedown') and @preventDefault
+        
+        ev.preventDefault()  if (eventName != 'keypress' and eventName != 'mousedown') and action.preventDefault
+        # # debug mode
+        # if (eventName != 'keypress' and eventName != 'mousedown') and action.preventDefault
+        #   console.log 'chamou prevent default'
+        #   ev.preventDefault() 
+        # else
+        #   console.log 'não chamou prevent default'
+        
         obj = window.Pinkman.closest($(this))
         action.call(obj,$(this),ev)
 
