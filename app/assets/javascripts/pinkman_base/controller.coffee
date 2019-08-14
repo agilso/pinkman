@@ -79,7 +79,7 @@ class window.PinkmanController extends window.PinkmanObject
         eventName: eventName
         callback: callback
         controller: this
-        preventDefault: preventDefault || true
+        preventDefault: if preventDefault? then preventDefault else true
         selector: "##{this.id} [data-action='#{name}']"
       
   
@@ -409,6 +409,7 @@ class window.PinkmanAction extends window.PinkmanObject
       a.set 'eventName', options.eventName
       
       # default value for preventDefault: yes
+      # console.log options.preventDefault
       a.set 'preventDefault', options.preventDefault
       
       # a.log 'eventName'
@@ -462,7 +463,7 @@ class window.PinkmanAction extends window.PinkmanObject
         # console.log "#{action.id}: called - #{action.name}"
         
         ev.preventDefault()  if (eventName != 'keypress' and eventName != 'mousedown') and action.preventDefault
-        # # debug mode
+        # debug mode
         # if (eventName != 'keypress' and eventName != 'mousedown') and action.preventDefault
         #   console.log 'chamou prevent default'
         #   ev.preventDefault() 
