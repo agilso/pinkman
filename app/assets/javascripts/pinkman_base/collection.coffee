@@ -94,6 +94,18 @@ class window.PinkmanCollection extends window.PinkmanCommon
         transformation(o)
         callback(this) if (i == @count()) and typeof callback == 'function'
     return this
+    
+  # rails/ruby equivalent: map
+  # Desc: receive a function and apply it to all members and returns an array of values
+  map: (transformation='',callback) ->
+    array = []
+    if transformation? and typeof transformation=='function' 
+      i = 0
+      for o in @collection
+        i = i+1
+        array.push(transformation(o))
+        callback(array) if (i == @count()) and typeof callback == 'function'
+    return array
 
   # rails/ruby equivalent: where/select
   # Desc: returns a new collection of all members that satisfies a criteria (criteria(obj) returns true)
