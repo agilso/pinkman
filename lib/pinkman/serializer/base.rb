@@ -16,7 +16,7 @@ module Pinkman
         self
       end
 
-      self.root = false
+      # self.root = false
       def self.table_name
         model.table_name
       end
@@ -109,15 +109,19 @@ module Pinkman
       def attributes *args
         hash = super(*args)
         if scope
-          pinkmanscope = self.class.scope(scope)
-          include_all = pinkmanscope.read.include?(:all)
-          model = self.class.model
-          model.column_names.each {|attribute| hash[attribute] = object.send(attribute) } if include_all && model && model.methods.include?(:column_names)
-          pinkmanscope.read.each {|attribute| hash[attribute] = send(attribute) if self.methods.include?(attribute)}
-          pinkmanscope.read.each {|attribute| hash[attribute] ||= object.send(attribute) if object.methods.include?(attribute)}
-          pinkmanscope.read_ghost.each {|attribute| begin hash[attribute] ||= object.send(attribute) rescue nil end }            
-          hash[:destroyed] = true if object.destroyed?
-          hash[:errors] = self.class.format_errors(errors) if errors.present? and errors.any?
+          begin
+            pinkmanscope = self.class.scope(scope)
+            include_all = pinkmanscope.read.include?(:all)
+            model = self.class.model
+            model.column_names.each {|attribute| hash[attribute] = object.send(attribute) } if include_all && model && model.methods.include?(:column_names)
+            pinkmanscope.read.each {|attribute| hash[attribute] = send(attribute) if self.methods.include?(attribute)}
+            pinkmanscope.read.each {|attribute| hash[attribute] ||= object.send(attribute) if object.methods.include?(attribute)}
+            pinkmanscope.read_ghost.each {|attribute| begin hash[attribute] ||= object.send(attribute) rescue nil end }            
+            hash[:destroyed] = true if object.destroyed?
+            hash[:errors] = self.class.format_errors(errors) if errors.present? and errors.any?
+          rescue
+            nil
+          end
           hash
         end
       end
