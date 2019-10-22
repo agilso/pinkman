@@ -7,6 +7,13 @@ module Pinkman
         @rails_helper = value
       end
       
+      def form_helpers
+        Pinkman::FormHelper.dispatcher(@rails_helper)
+      end
+      def f
+        form_helpers
+      end
+      
       def method_missing m, *args, &block
         if Pinkman::ViewsHelpers.respond_to?(m)
           if block_given?
