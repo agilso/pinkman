@@ -62,17 +62,25 @@ class window.PinkmanObject extends window.PinkmanCommon
     (@pack(toBePacked) for toBePacked in @_pack_list) if $p.isArray(@_pack_list)
     a = new Object
     for k,v of this
-      a[k] = v if PinkmanObject.privateAttributes.indexOf(k) == -1 and not $p.isFunction(v) and not $p.isObject(v)
+      a[k] = v if PinkmanObject.privateAttributes.indexOf(k) == -1 and not $p.isFunction(v) and (not $p.isObject(v) or $p.isArray(v)) and k[0] != '_'
+      # 
+      # else
+      #   console.log "recusou: #{k}"
     return a
     
   # Desc: prepare for rails accept nested attributes
   pack: (attr) ->
+    # console.log 'tá pegando'
     @_pack_list = [] unless @_pack_list?
     @_pack_list.push(attr) if @_pack_list.indexOf(attr) == -1
     if $p.isPink(this[attr])
       pack = this[attr]
       attrs = pack.json()
-      @set("#{attr}_attributes[#{k}]", v) for k,v of attrs
+      if pack.isCollection
+        # console.log 'entrou pra collection'
+        @set("#{attr}_attributes", pack.json())
+      else
+        @set("#{attr}_attributes[#{k}]", v) for k,v of attrs
     attrs
 
   # Desc: returns a array of attributes keys
