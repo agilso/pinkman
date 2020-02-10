@@ -220,7 +220,31 @@ class window.PinkmanObject extends window.PinkmanCommon
       return false
 
   save: (callback='') ->
-    if @id? and @id!='' then @update(callback) else @create(callback)
+    @handleBeforeSave()
+    callback = @handleAfterSaveCallback(callback)
+    if @id? and @id!='' then @update(callback) else @create(callback)  
+    
+  handleBeforeSave: ->
+    if $p.isArray(@beforeSave)
+      for f in @beforeSave
+        f(this) if $p.isFunction(f)
+    else if $p.isFunction(@beforeSave)
+      @beforeSave(this)
+            
+  handleAfterSaveCallback: (callback) ->
+    if $p.isArray(@afterSave)
+      (obj) =>
+        i = 0
+        for f in @afterSave
+          f(obj) if $p.isFunction(f)
+          i = i + 1
+          callback(obj) if i == @afterSave.length and $p.isFunction(callback)
+    else if $p.isFunction(@afterSave)
+      (obj) =>
+        @afterSave(obj)
+        callback(obj) if $p.isFunction()
+    else
+      callback
 
   # delete and remove from collections
   destroy: (callback='') ->
