@@ -23,7 +23,7 @@ class window.PinkmanObject extends window.PinkmanCommon
       for instance in @instances
         i = i + 1
         if instance.id? and instance.id == obj.id
-          if obj.isPink then instance.assign(obj.attributes()) else instance.assign(obj)
+          if obj.isPink then instance.assign(obj.json()) else instance.assign(obj)
           each(instance) if $p.isFunction(each) and obj.pinkey != instance.pinkey
         callback() if (length == i) and $p.isFunction(callback)
     else
