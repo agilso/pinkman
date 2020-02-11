@@ -187,7 +187,7 @@ class window.PinkmanObject extends window.PinkmanCommon
   update: (callback='') ->
     if @id?
       Pinkman.ajax.patch
-        url: @api() + @id
+        url: @api(@id)
         data: @_data()
         complete: (response) =>
           @default_response_handling(response,callback)
@@ -202,7 +202,7 @@ class window.PinkmanObject extends window.PinkmanCommon
     params = new Object
     params.scope = Pinkman.scope(this)
     Pinkman.ajax.get
-      url: Pinkman.json2url(@api() + @id,params)
+      url: Pinkman.json2url(@api(@id),params)
       complete: (response) =>
         @assign(response)
         if @error? or @errors?
@@ -251,8 +251,8 @@ class window.PinkmanObject extends window.PinkmanCommon
     if @id?
       @removeFromAllCollections()
       Pinkman.ajax.delete
-        url: @api() + @id
-        data: { scope: Pinkman.scope(this) }
+        url: @api(@id)
+        data: @_data()
         complete: (response) =>
           @assign(response)
           delete @errors unless response.errors?
@@ -266,8 +266,8 @@ class window.PinkmanObject extends window.PinkmanCommon
   delete: (callback='') ->
     if @id?
       Pinkman.ajax.delete
-        url: @api() + @id
-        data: { scope: Pinkman.scope(this) }
+        url: @api(@id)
+        data: @_data()
         complete: (response) =>
           @assign(response)
           delete @errors unless response.errors?
