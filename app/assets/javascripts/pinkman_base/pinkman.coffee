@@ -280,12 +280,11 @@ class window.Pinkman
             contentType: false
         ajax.done (response) =>
           if response? and response.errors?
-            options.error(this) if options.error? and typeof options.error == 'function'
-            return false
+            options.error(response) if $p.isFunction(options.error)
           else
-            options.success(response) if options.success? and typeof options.success == 'function'
-          options.complete(response) if options.complete? and typeof options.complete == 'function'
-        return this
+            options.success(response) if $p.isFunction(options.success)
+          options.complete(response) if $p.isFunction(options.complete)
+          return response
       else
         return false
 
