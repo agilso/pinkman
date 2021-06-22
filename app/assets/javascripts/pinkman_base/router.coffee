@@ -235,16 +235,19 @@ class window.PinkmanRouter
   
   @analytics: 
     create: (id) ->
-      # console.log 'chamou'
-      # console.log id
-      ga('create', id, 'auto');
-      ga('send', 'pageview');
+      try
+        ga('create', id, 'auto');
+        ga('send', 'pageview');
+        true
+      catch 
+        console.log('ga blocked')
+        false
+        
       
     send: (route,path) ->
       unless @created? and @created
         # console.log this
-        @create(Pinkman.router._config.analytics)
-        @created = true
+        @created = @create(Pinkman.router._config.analytics)
       else
         host = new RegExp(window.location.origin)
         path = if host.test(path) then path.replace(host,'') else path
